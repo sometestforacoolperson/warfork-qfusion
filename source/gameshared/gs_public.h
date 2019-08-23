@@ -79,7 +79,7 @@ extern vec3_t item_box_maxs;
 #define DEFAULT_FOV			100
 
 #define	MIN_ZOOMFOV			3
-#define MAX_ZOOMFOV			60
+#define MAX_ZOOMFOV			75
 #define DEFAULT_ZOOMFOV		30
 
 //==================================================================
