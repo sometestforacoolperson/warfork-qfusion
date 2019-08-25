@@ -719,7 +719,7 @@ void VID_Init( void )
 	vid_parentwid = Cvar_Get( "vid_parentwid", "0", CVAR_NOSET );
 
 	win_noalttab = Cvar_Get( "win_noalttab", "0", CVAR_ARCHIVE );
-	win_nowinkeys = Cvar_Get( "win_nowinkeys", "0", CVAR_ARCHIVE );
+	win_nowinkeys = Cvar_Get( "win_nowinkeys", "1", CVAR_ARCHIVE );
 
 	/* Add some console commands that we want to handle */
 	Cmd_AddCommand( "vid_restart", VID_Restart_f );
