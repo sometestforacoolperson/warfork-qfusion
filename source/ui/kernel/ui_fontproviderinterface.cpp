@@ -9,8 +9,9 @@
 namespace WSWUI
 {
 
-using namespace Rocket::Core;
+using namespace Rml::Core;
 
+#if 0
 static UI_FontProviderInterface *instance = nullptr;
 
 UI_FontProviderInterface::UI_FontProviderInterface( RenderInterface *render_interface ) :
@@ -175,5 +176,6 @@ int UI_FontProviderInterface::GenerateString( FontHandle handle, GeometryList& g
 
 	return string_width;
 }
+#endif
 
 }

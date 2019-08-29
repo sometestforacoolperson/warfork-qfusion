@@ -23,32 +23,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "kernel/ui_utils.h"
 #include "widgets/ui_widgets.h"
 
-#include <Rocket/Controls.h>
+#include <RmlUi/Controls.h>
 
 namespace WSWUI
 {
-using namespace Rocket::Core;
-using namespace Rocket::Controls;
+using namespace Rml::Core;
+using namespace Rml::Controls;
 
 class SelectableDataGrid : public ElementDataGrid
 {
 public:
 	SelectableDataGrid( const String& tag ) :
-		ElementDataGrid( tag ), lastSelectedRow( NULL ), lastSelectedRowIndex( -1 ) {
+		ElementDataGrid( tag ), lastSelectedRow(), lastSelectedRowIndex( -1 ) {
 		SetProperty( "selected-row", "-1" );
 	}
 
 	~SelectableDataGrid() {
-		if( lastSelectedRow != NULL ) {
+		if( lastSelectedRow.get() != nullptr ) {
 			lastSelectedRow->SetPseudoClass( "selected", false );
-			lastSelectedRow->RemoveReference();
+			lastSelectedRow = nullptr;
 		}
 	}
 
 	/// Called for every event sent to this element or one of its descendants.
 	/// @param[in] event The event to process.
-	void ProcessEvent( Rocket::Core::Event& evt ) {
-		ElementDataGrid::ProcessEvent( evt );
+	void ProcessDefaultAction( Rml::Core::Event& evt ) {
+		ElementDataGrid::ProcessDefaultAction( evt );
 
 		if( evt == "click" || evt == "dblclick" ) {
 			Element* elem;
@@ -84,7 +84,7 @@ public:
 			if( elem ) {
 				ElementDataGridRow *row = static_cast<ElementDataGridRow*>( elem );
 				int index = row->GetTableRelativeIndex();
-				Rocket::Core::String indexStr( toString( index ).c_str() );
+				Rml::Core::String indexStr( toString( index ).c_str() );
 
 				// this should never happen
 				if( index >= this->GetNumRows() ) {
@@ -92,26 +92,25 @@ public:
 				}
 				if( index >= 0 ) {
 					// deselect last selected row
-					if( lastSelectedRow != row ) {
+					if( lastSelectedRow.get() != row ) {
 						if( lastSelectedRow ) {
 							lastSelectedRow->SetPseudoClass( "selected", false );
-							lastSelectedRow->RemoveReference();
+							lastSelectedRow = nullptr;
 						}
 					}
 
 					// select clicked row
-					lastSelectedRow = row;
+					lastSelectedRow = ElementPtr( row );
 					lastSelectedRowIndex = index;
 
 					this->SetProperty( "selected-row", indexStr );
 
 					row->SetPseudoClass( "selected", true );
-					row->AddReference();
 				}
 
-				Rocket::Core::Dictionary parameters;
-				parameters.Set( "index", indexStr );
-				parameters.Set( "column_index", column );
+				Rml::Core::Dictionary parameters;
+				parameters[ "index" ] = indexStr;
+				parameters[ "column_index" ] = column;
 				if( evt == "click" ) {
 					DispatchEvent( "rowselect", parameters );
 				} else {
@@ -131,7 +130,7 @@ public:
 			int firstRowAdded = evt.GetParameter< int >( "first_row_added", 0 );
 			if( lastSelectedRowIndex >= firstRowAdded ) {
 				lastSelectedRowIndex += numRowsAdded;
-				Rocket::Core::String indexStr( toString( lastSelectedRowIndex ).c_str() );
+				Rml::Core::String indexStr( toString( lastSelectedRowIndex ).c_str() );
 				this->SetProperty( "selected-row", indexStr );
 			}
 		} else if( evt == "rowremove" ) {
@@ -146,8 +145,7 @@ public:
 
 			int firstRowRemoved = evt.GetParameter< int >( "first_row_removed", 0 );
 			if( lastSelectedRowIndex >= firstRowRemoved && lastSelectedRowIndex < firstRowRemoved + numRowsRemoved ) {
-				lastSelectedRow->RemoveReference();
-				lastSelectedRow = NULL;
+				lastSelectedRow = nullptr;
 
 				lastSelectedRowIndex = -1;
 				this->SetProperty( "selected-row", "-1" );
@@ -156,13 +154,13 @@ public:
 	}
 
 private:
-	Element *lastSelectedRow;
+	ElementPtr lastSelectedRow;
 	int lastSelectedRowIndex;
 };
 
 //=====================
 
-Rocket::Core::ElementInstancer *GetSelectableDataGridInstancer( void ) {
+Rml::Core::ElementInstancer *GetSelectableDataGridInstancer( void ) {
 	return __new__( GenericElementInstancer<SelectableDataGrid>)();
 }
 }

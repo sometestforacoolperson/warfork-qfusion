@@ -14,17 +14,11 @@ typedef WSWUI::OptionsForm OptionsForm;
 
 WSWUI::OptionsForm* Element_CastToOptionsForm( Element *self ) {
 	WSWUI::OptionsForm *form = dynamic_cast<WSWUI::OptionsForm*>( self );
-	if( form ) {
-		form->AddReference();
-	}
 	return form;
 }
 
 static Element *OptionsForm_CastToElement( OptionsForm *self ) {
 	Element *e = dynamic_cast<Element *>( self );
-	if( e ) {
-		e->AddReference();
-	}
 	return e;
 }
 
@@ -36,7 +30,6 @@ void BindOptionsForm( ASInterface *as ) {
 	asIScriptEngine *engine = as->getEngine();
 
 	ASBind::GetClass<OptionsForm>( engine )
-	.refs( &OptionsForm::AddReference, &OptionsForm::RemoveReference )
 
 	.method( &OptionsForm::restoreOptions, "restoreOptions" )
 	.method( &OptionsForm::storeOptions, "storeOptions" )
@@ -46,7 +39,7 @@ void BindOptionsForm( ASInterface *as ) {
 	;
 
 	// Cast behavior for the Element class
-	ASBind::GetClass<Rocket::Core::Element>( engine )
+	ASBind::GetClass<Rml::Core::Element>( engine )
 	.refcast( &Element_CastToOptionsForm, true, true )
 	;
 }

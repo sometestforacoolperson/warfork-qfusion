@@ -13,8 +13,8 @@ namespace WSWUI
 class RocketModule
 {
 	// some typical Rocket shortcuts
-	typedef Rocket::Core::Element Element;
-	typedef Rocket::Core::Event Event;
+	typedef Rml::Core::Element Element;
+	typedef Rml::Core::Event Event;
 
 public:
 	RocketModule( int vidWidth, int vidHeight, float pixelRatio );
@@ -33,7 +33,7 @@ public:
 		HIDECURSOR_ELEMENT  = 1 << 2,     // hidden by an element
 		HIDECURSOR_ALL      = ( 1 << 3 ) - 1
 	};
-	void loadCursor( int contextId, const String& rmlCursor );
+	void loadCursor( int contextId, const std::string& rmlCursor );
 	void hideCursor( int contextId, unsigned int addBits, unsigned int clearBits );
 
 	// system events
@@ -48,12 +48,12 @@ public:
 	void update( void );
 	void render( int contextId );
 
-	Rocket::Core::ElementDocument *loadDocument( int contextId, const char *filename, bool show = false, void *user_data = NULL );
-	void closeDocument( Rocket::Core::ElementDocument *doc );
+	Rml::Core::ElementDocument *loadDocument( int contextId, const char *filename, bool show = false, void *user_data = NULL );
+	void closeDocument( Rml::Core::ElementDocument *doc );
 
 	// called from ElementInstancer after it instances an element, set up default
 	// attributes, properties, events etc..
-	void registerElementDefaults( Rocket::Core::Element * );
+	void registerElementDefaults( Rml::Core::Element * );
 
 	// GET/SET Submodules
 	UI_SystemInterface *getSystemInterface() { return systemInterface; }
@@ -63,24 +63,24 @@ public:
 	void clearShaderCache( void );
 	void touchAllCachedShaders( void );
 
-	int idForContext( Rocket::Core::Context *context );
+	int idForContext( Rml::Core::Context *context );
 
 private:
-	void registerElement( const char *tag, Rocket::Core::ElementInstancer* );
-	void registerFontEffect( const char *name, Rocket::Core::FontEffectInstancer * );
-	void registerDecorator( const char *name, Rocket::Core::DecoratorInstancer * );
-	void registerEventInstancer( Rocket::Core::EventInstancer * );
-	void registerEventListener( Rocket::Core::EventListenerInstancer * );
+	void registerElement( const char *tag, Rml::Core::ElementInstancer* );
+	void registerFontEffect( const char *name, Rml::Core::FontEffectInstancer * );
+	void registerDecorator( const char *name, Rml::Core::DecoratorInstancer * );
+	void registerEventInstancer( Rml::Core::EventInstancer * );
+	void registerEventListener( Rml::Core::EventListenerInstancer * );
 
 	// translates UI_CONTEXT_ constants to rocket contexts and vise versa
-	Rocket::Core::Context *contextForId( int contextId );
+	Rml::Core::Context *contextForId( int contextId );
 
 	bool rocketInitialized;
 	unsigned int hideCursorBits[UI_NUM_CONTEXTS];
 
 	struct contextTouch {
 		int id;
-		Rocket::Core::Vector2f origin;
+		Rml::Core::Vector2f origin;
 		int y;
 		bool scroll;
 	};
@@ -89,14 +89,14 @@ private:
 	UI_SystemInterface *systemInterface;
 	UI_FileInterface *fsInterface;
 	UI_RenderInterface *renderInterface;
-	UI_FontProviderInterface *fontProviderInterface;
+	//UI_FontProviderInterface *fontProviderInterface;
 
-	Rocket::Core::Context *contextMain;
-	Rocket::Core::Context *contextQuick;
+	Rml::Core::Context *contextMain;
+	Rml::Core::Context *contextQuick;
 
 	// hold this so we can unref these in the end
-	std::list<Rocket::Core::ElementInstancer*> elementInstancers;
-	Rocket::Core::EventListenerInstancer *scriptEventListenerInstancer;
+	std::list<Rml::Core::ElementInstancer*> elementInstancers;
+	Rml::Core::EventListenerInstancer *scriptEventListenerInstancer;
 };
 }
 

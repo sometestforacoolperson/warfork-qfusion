@@ -59,7 +59,6 @@ public:
 			ElementDocument *doc = it->first;
 			FunctionCallScheduler *scheduler = it->second;
 
-			doc->RemoveReference();
 			doc->RemoveEventListener( "beforeUnload", this );
 
 			scheduler->shutdown();
@@ -84,9 +83,7 @@ public:
 		WSWUI::Document *ui_document = new_stack->pushDocument( location.buffer );
 		if( !ui_document ) {
 			return NULL;
-
 		}
-		ui_document->addReference();
 		return ui_document->getRocketDocument();
 	}
 
@@ -187,22 +184,19 @@ public:
 		scheduler->shutdown();
 		__delete__( scheduler );
 
-		doc->RemoveReference();
-
 		schedulers.erase( it );
 	}
 
 	ElementDocument *getDocument( void ) const {
 		ElementDocument *document = GetCurrentUIDocument();
 		assert( document != NULL );
-		document->AddReference();
 		return document;
 	}
 
 	asstring_t *getLocation( void ) const {
 		ElementDocument *document = GetCurrentUIDocument();
 		assert( document != NULL );
-		return ASSTR( document->GetSourceURL().CString() );
+		return ASSTR( document->GetSourceURL().c_str() );
 	}
 
 	void setLocation( const asstring_t &location ) {
@@ -377,7 +371,6 @@ private:
 
 		FunctionCallScheduler *scheduler;
 		if( it == schedulers.end() ) {
-			doc->AddReference();
 			doc->AddEventListener( "beforeUnload", this );
 
 			scheduler = __new__( FunctionCallScheduler )();
