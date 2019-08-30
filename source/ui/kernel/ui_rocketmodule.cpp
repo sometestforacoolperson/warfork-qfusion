@@ -66,8 +66,8 @@ RocketModule::RocketModule( int vidWidth, int vidHeight, float pixelRatio )
 	fsInterface = __new__( UI_FileInterface )();
 	Rml::Core::SetFileInterface( fsInterface );
 
-	//fontProviderInterface = __new__( UI_FontProviderInterface )( renderInterface );
-	//Rml::Core::SetFontProviderInterface( fontProviderInterface );
+	fontProviderInterface = __new__( UI_FontProviderInterface )( renderInterface );
+	Rml::Core::SetFontSubsystemInterface( fontProviderInterface );
 
 	rocketInitialized = Rml::Core::Initialise();
 	if( !rocketInitialized ) {
@@ -88,22 +88,16 @@ RocketModule::RocketModule( int vidWidth, int vidHeight, float pixelRatio )
 	memset( contextsTouch, -1, sizeof( *contextsTouch ) * UI_NUM_CONTEXTS );
 }
 
-// here for hax0rz, TODO: move to "common" area
-template<typename T>
-void unref_object( T *obj ) {
-	obj->RemoveReference();
-}
-
 RocketModule::~RocketModule() {
 	contextMain = 0;
 	contextQuick = 0;
 
 	if( rocketInitialized ) {
+		rocketInitialized = false;
 		Rml::Core::Shutdown();
 	}
-	rocketInitialized = false;
 
-	//__SAFE_DELETE_NULLIFY( fontProviderInterface );
+	__SAFE_DELETE_NULLIFY( fontProviderInterface );
 	__SAFE_DELETE_NULLIFY( fsInterface );
 	__SAFE_DELETE_NULLIFY( systemInterface );
 	__SAFE_DELETE_NULLIFY( renderInterface );

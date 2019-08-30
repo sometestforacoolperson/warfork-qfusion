@@ -109,16 +109,15 @@ class UI_ScriptDocumentInstancer : public ElementInstancer
 public:
 	// UI_ScriptDocumentInstancer() {}
 	virtual ElementPtr InstanceElement( Element *parent, const std::string &tag, const XMLAttributes &attr ) {
-		return ElementPtr(static_cast<Element*>(__new__(UI_ScriptDocument)( tag )));
+		//return ElementPtr(static_cast<Element*>(__new__(UI_ScriptDocument)( tag )));
+		return ElementPtr(__new__(UI_ScriptDocument)( tag ));
 	}
 
 	virtual void ReleaseElement( Element* element ) {
 		//ElementDocument *doc = dynamic_cast<ElementDocument*>( element );
-		//Com_Printf("ReleaseElement called %s\n", doc ? doc->GetSourceURL().CString() : "" );
+		//Com_Printf("ReleaseElement called %s\n", doc ? doc->GetSourceURL().c_str() : "" );
 		__delete__(element);
 	}
-
-	virtual void Release() { delete this; }
 };
 
 ElementInstancer *GetScriptDocumentInstancer( void ) {

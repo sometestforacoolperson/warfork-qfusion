@@ -89,7 +89,7 @@ private:
 	UI_SystemInterface *systemInterface;
 	UI_FileInterface *fsInterface;
 	UI_RenderInterface *renderInterface;
-	//UI_FontProviderInterface *fontProviderInterface;
+	UI_FontProviderInterface *fontProviderInterface;
 
 	Rml::Core::Context *contextMain;
 	Rml::Core::Context *contextQuick;

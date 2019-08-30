@@ -22,7 +22,7 @@ Document::~Document() {
 }
 
 void Document::Show( bool show, bool modal ) {
-	auto *doc = static_cast<Rml::Core::ElementDocument*>(rocketDocument.get());
+	auto *doc = rocketDocument;
 	if( doc == nullptr ) {
 		return;
 	}
@@ -35,7 +35,7 @@ void Document::Show( bool show, bool modal ) {
 }
 
 void Document::Hide() {
-	auto *doc = static_cast<Rml::Core::ElementDocument*>(rocketDocument.get());
+	auto *doc = rocketDocument;
 	if( doc == nullptr ) {
 		return;
 	}
@@ -43,7 +43,7 @@ void Document::Hide() {
 }
 
 void Document::Focus() {
-	auto *doc = static_cast<Rml::Core::ElementDocument*>(rocketDocument.get());
+	auto *doc = rocketDocument;
 	if( doc == nullptr ) {
 		return;
 	}
@@ -52,7 +52,7 @@ void Document::Focus() {
 }
 
 void Document::FocusFirstTabElement() {
-	auto *doc = static_cast<Rml::Core::ElementDocument*>(rocketDocument.get());
+	auto *doc = rocketDocument;
 	if( doc == nullptr ) {
 		return;
 	}
@@ -63,7 +63,7 @@ void Document::FocusFirstTabElement() {
 }
 
 bool Document::IsModal() {
-	auto *doc = static_cast<Rml::Core::ElementDocument*>(rocketDocument.get());
+	auto *doc = rocketDocument;
 	if( doc == nullptr ) {
 		return false;
 	}
