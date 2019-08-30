@@ -51,6 +51,18 @@ void R_TakeScreenShot( const char *path, const char *name, const char *fmtString
 	if( !R_IsRenderingToScreen() )
 		return;
 	
+/*
+* R_TakeScreenShot Temporary
+* Force local TGA. Remove this later. Steam is handling screenshots anyway.
+*/
+
+	extension = ".tga";
+	quality = 100;
+        
+
+/* 
+*Original R_TakeScreenShot
+	
 	if( r_screenshot_jpeg->integer ) {
 		extension = ".jpg";
 		quality = r_screenshot_jpeg_quality->integer;
@@ -59,6 +71,8 @@ void R_TakeScreenShot( const char *path, const char *name, const char *fmtString
 		extension = ".tga";
 		quality = 100;
 	}
+*/
+
 	
 	if( name && name[0] && Q_stricmp(name, "*") )
 	{

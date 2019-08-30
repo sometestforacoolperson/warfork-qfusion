@@ -71,7 +71,11 @@ class DatabaseHandler(object):
 		connection.autocommit(True)
 		self.connection = connection
 		return self.connection != None
-		
+	
+	def ping(self):
+		if( self.connection ) :
+			self.connection.ping(True)
+
 	def close(self):
 		if( self.connection ) :
 			self.connection.close()
@@ -620,7 +624,7 @@ class DatabaseHandler(object):
 			AND mp.matchresult_id = mr.id
 			AND mr.gametype_id = %%s
 			ORDER BY mr.utctime DESC
-			LIMIT 1;
+			LIMIT 1
 			''' % { 'mp' : table_MatchPlayers.tablename,
 					'mr' : table_MatchResults.tablename
 					}
@@ -632,7 +636,7 @@ class DatabaseHandler(object):
 			AND mp.matchresult_id = mr.id
 			AND mr.gametype_id = %%s
 			ORDER BY mr.utctime DESC
-			LIMIT 1;
+			LIMIT 1
 			''' % { 'mp' : table_MatchPlayers.tablename,
 					'mr' : table_MatchResults.tablename
 					}
@@ -1121,48 +1125,39 @@ class DatabaseWrapper:
 		self.obj = DatabaseHandler(wmm, host, user, passwd, db, engine, charset)
 		self.lock = threading.Lock()
 		atexit.register(self._releaselock_)
-	
+
 	def _releaselock_(self):
 		self.lock.release()
-
-	def verifyconnection(self):
-		numtries = 10
-		while(numtries):
-			try:
-				cursor = self.obj.connection.cursor()
-				cursor.execute('select 1')
-				cursor.close()
-				return True
-			except:
-				# Re-establish the connection
-				self.obj.open()
-				numtries-=1
-		return False
 
 	def __getattr__(self, name):
 		attr = getattr(self.obj, name)
 
 		def f(*args, **kwargs):
 			self.lock.acquire(True)
+
 			#self.obj.wmm.log('--> %s (%s %s) thread %d' % (name,
 			#	inspect.stack()[2][3], inspect.stack()[3][3],
 			#	threading.current_thread().ident))
-			cursor = None
-			r = None
-			if(not self.verifyconnection()):
-				self.obj.wmm.log('DatabaseWrapper failed to verify connection')
-				self.lock.release()
-				return
 
-			try:
-				cursor = self.obj.connection.cursor()
-				r = attr(cursor, *args, **kwargs)
-			except Exception as e:
-				self.obj.wmm.log('DatabaseWrapper exception (%s) %s' % (name, str(e)))
-			finally:
-				if(cursor != None):
-					cursor.close()
-				self.lock.release()
+			r = None
+			tryNum = 0
+
+			while tryNum < 10:
+			  try:
+				  cursor = None
+				  cursor = self.obj.connection.cursor()
+				  r = attr(cursor, *args, **kwargs)
+				  tryNum = 999
+			  except Exception as e:
+				  if tryNum == 0:
+					self.obj.ping()
+				  self.obj.wmm.log('DatabaseWrapper exception (%s) %s %i' % (name, str(e), tryNum))
+			  finally:
+				  tryNum += 1
+				  if cursor != None and cursor.description != None:
+					  cursor.close()
+				  self.lock.release()
+
 			return r
 
 		if(type(attr) == types.FunctionType or type(attr) == types.MethodType):

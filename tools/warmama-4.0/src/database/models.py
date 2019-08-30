@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # WMM imports
 # import wmlib
+import re
 
 ##########################
 
@@ -431,35 +432,50 @@ class table_Awards (TableBase):
 	def __init__ (self):
 		TableBase.__init__(self)
 		table_Awards.table = self
-		
-		
+	
+	def GetCleanAwardName(self, name):
+		award_name = name
+		m = re.match(r"^(\^\d+)?(.+)(\s+\(\d+\))", name)
+		if m is not None:
+			award_name = m.group(2)
+		else :
+			m = re.match(r"^(\^\d+)?(.+)", name)
+			if m is not None:
+				award_name = m.group(2)
+		return award_name
+
 	# this returns id for given weapname
 	# if its not in the table, create it
 	# and return the new ID
 	def GetCertainID (self, cursor, name):
-		q = "LOCK TABLES %s WRITE" % self.tablename
-		cursor.execute ( q )
-		
-		q = "SELECT id FROM %s WHERE name=%%s LIMIT 1" % self.tablename
-		
-		cursor.execute ( q, (name) )
+		clean_name = self.GetCleanAwardName(name)
+
+		selectq = "SELECT id FROM %s WHERE name=%%s LIMIT 1" % self.tablename
+
+		cursor.execute ( selectq, (clean_name) )
 		if ( cursor.rowcount > 0 ) :
 			r = cursor.fetchone()
 		else :
-			# not in the table, we have to add this one
-			q = "INSERT INTO %s (name) VALUES(%%s)" % self.tablename
-			cursor.execute ( q, (name) )
-			cursor.execute ( "SELECT LAST_INSERT_ID()")
-			r = cursor.fetchone()
+			q = "LOCK TABLES %s WRITE" % self.tablename
+			cursor.execute ( q )
 		
-		q = "UNLOCK TABLES"
-		cursor.execute ( q )
-		
+			cursor.execute ( selectq, (clean_name) )
+			if ( cursor.rowcount > 0 ) :
+				r = cursor.fetchone()
+			else :
+				# not in the table, we have to add this one
+				q = "INSERT INTO %s (name) VALUES(%%s)" % self.tablename
+				cursor.execute ( q, (clean_name) )
+				cursor.execute ( "SELECT LAST_INSERT_ID()")
+				r = cursor.fetchone()
+			
+			q = "UNLOCK TABLES"
+			cursor.execute ( q )
+
 		if ( r != None ) :
 			return r[0]
 		
 		return 0
-	
 
 # TODO: internal fields for name of gamaward
 # and the required amount of them to achieve

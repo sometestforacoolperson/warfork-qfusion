@@ -742,7 +742,8 @@ class Warmama(object):
 			#### STEP 1
 			
 			# we are on 1st step, start the login process
-			cl = session.login.ClientLogin( self, login, pw )
+			handle = self.dbHandler.SaveUserLogin( 0, login, 0, 0, None, None )
+			cl = session.login.ClientLogin( self, login, pw, handle )
 			self.log("Generated login handle %d" % cl.GetHandle() )
 			
 			if(_CL_JSON):

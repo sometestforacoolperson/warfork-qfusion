@@ -2,30 +2,33 @@ project(qfusion)
 
 cmake_minimum_required(VERSION 2.8.12)
 
+message(STATUS "CMAKE_SYSTEM: " ${CMAKE_SYSTEM})
+message(STATUS "CMAKE_SYSTEM_NAME: " ${CMAKE_SYSTEM_NAME})
+message(STATUS "CMAKE_SYSTEM_VERSION: " ${CMAKE_SYSTEM_VERSION})
+message(STATUS "CMAKE_SYSTEM_PROCESSOR: " ${CMAKE_SYSTEM_PROCESSOR})
+
 set(CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY}/cmake)
 include(QfusionUtils)
 
-set(QFUSION_GAME Warsow)
-
 if (QFUSION_GAME)
-	if (${QFUSION_GAME} MATCHES "Warsow")
-		set(QFUSION_GAME_DIR basewsw)
-		set(QFUSION_CLIENT_NAME warsow)
-		set(QFUSION_SERVER_NAME wsw_server)
-		set(QFUSION_TVSERVER_NAME wswtv_server)
-		set(QFUSION_APPLICATION_VERSION_HEADER \"version.warsow.h\")
-		set(QFUSION_MAC_ICON ../../icons/warsow.icns)
-		set(QFUSION_MAC_INFO_PLIST ../mac/Warsow-Info.plist)
-	endif()
-	if (${QFUSION_GAME} MATCHES "Mental")
-		set(QFUSION_GAME_DIR base)
-		set(QFUSION_CLIENT_NAME mental)
-		set(QFUSION_SERVER_NAME mental_server)
-		set(QFUSION_TVSERVER_NAME mentaltv_server)
-		set(QFUSION_APPLICATION_VERSION_HEADER \"version.mental.h\")
-		set(QFUSION_MAC_ICON ../../icons/qfusion.icns)
-		set(QFUSION_MAC_INFO_PLIST ../mac/Mental-Info.plist)
-	endif()
+    if (${QFUSION_GAME} MATCHES "Warfork")
+        set(QFUSION_GAME_DIR basewf)
+        set(QFUSION_CLIENT_NAME warfork)
+        set(QFUSION_SERVER_NAME wf_server)
+        set(QFUSION_TVSERVER_NAME wftv_server)
+        set(QFUSION_APPLICATION_VERSION_HEADER \"version.warfork.h\")
+        set(QFUSION_MAC_ICON ../../icons/warfork.icns)
+        set(QFUSION_MAC_INFO_PLIST ../mac/Warfork-Info.plist)
+    endif()
+    if (${QFUSION_GAME} MATCHES "Mental")
+        set(QFUSION_GAME_DIR base)
+        set(QFUSION_CLIENT_NAME mental)
+        set(QFUSION_SERVER_NAME mental_server)
+        set(QFUSION_TVSERVER_NAME mentaltv_server)
+        set(QFUSION_APPLICATION_VERSION_HEADER \"version.mental.h\")
+        set(QFUSION_MAC_ICON ../../icons/qfusion.icns)
+        set(QFUSION_MAC_INFO_PLIST ../mac/Mental-Info.plist)
+    endif()
 endif()
 
 # You can override this var with commandline option -DQFUSION_GAME_DIR=name
@@ -49,11 +52,21 @@ if (NOT QFUSION_TVSERVER_NAME)
 endif()
 
 if (QFUSION_APPLICATION_VERSION_HEADER)
-	add_definitions(-DAPPLICATION_VERSION_HEADER=${QFUSION_APPLICATION_VERSION_HEADER})
+    add_definitions(-DAPPLICATION_VERSION_HEADER=${QFUSION_APPLICATION_VERSION_HEADER})
 endif()
 
 option(USE_SDL2 "Build using SDL2" OFF)
 option(GAME_MODULES_ONLY "Only build game modules" OFF)
+
+# We build angelscript and libRocket from source
+
+set(ANGELSCRIPT_DIR ${CMAKE_HOME_DIRECTORY}/../third-party/angelscript/sdk/angelscript)
+set(ANGELSCRIPT_INCLUDE_DIR ${ANGELSCRIPT_DIR}/include/)
+add_subdirectory(${ANGELSCRIPT_DIR}/projects/cmake ${ANGELSCRIPT_DIR}/lib/)
+
+set(LIBROCKET_DIR ${CMAKE_HOME_DIRECTORY}/../third-party/libRocket)
+set(LIBROCKET_INCLUDE_DIR ${LIBROCKET_DIR}/Include)
+set(LIBROCKET_SOURCE_DIR ${LIBROCKET_DIR}/Source)
 
 # Windows specific settings
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -64,38 +77,37 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     endif()
 
     set(CMAKE_INCLUDE_PATH
-        "../libsrcs/libogg"
-        "../libsrcs/libvorbis"
-        "../libsrcs/libtheora"
-        "../libsrcs/libcurl/include"
-        "../libsrcs/angelscript/sdk/angelscript"
-        "../libsrcs/zlib"
-        "../libsrcs/libfreetype"
-        "../libsrcs/libpng"
-        "../libsrcs/libjpeg"
-        "../libsrcs/libRocket/libRocket/Include"
-        "../libsrcs/SDL2/include"
+        "../libsrcs/src/libogg"
+        "../libsrcs/src/libvorbis"
+        "../libsrcs/src/libtheora"
+        "../libsrcs/src/libcurl/include"
+        "../libsrcs/src/zlib"
+        "../libsrcs/src/libfreetype"
+        "../libsrcs/src/libpng"
+        "../libsrcs/src/libjpeg"
+        "../libsrcs/src/SDL2/include"
+        "../libsrcs/src/OpenAL-MOB/include/AL"
     )
 
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DCURL_STATICLIB -DWIN32 -D_WINDOWS)
 
     if (MSVC)
-        set(CMAKE_LIBRARY_PATH "win32/${QFUSION_WINDOWS_ARCH}/lib/debug")
+        set(CMAKE_LIBRARY_PATH "../libsrcs/lib/win32/${QFUSION_WINDOWS_ARCH}/debug")
     else()
-        set(CMAKE_LIBRARY_PATH "win32/${QFUSION_WINDOWS_ARCH}/lib/mingw")
+        set(CMAKE_LIBRARY_PATH "../libsrcs/lib/win32/${QFUSION_WINDOWS_ARCH}/mingw")
     endif()
 
     if (MSVC)
         add_release_link_flags("/LTCG")
-        
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /W4 /Ob1 /GL /Ot")
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /W4")
-        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT /W4 /Ob1 /GL /Ot")
-        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd /W4")
-        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT /W4")
-        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MT /W4")
-        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MT /W4")
-        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MT /W4")	
+
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD /W4 /Ob1 /GL /Ot")
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd /W4")
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MD /W4 /Ob1 /GL /Ot")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MDd /W4")
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MD /W4")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MD /W4")
+        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MD /W4")
+        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MD /W4")	
     endif()
 endif()
 
@@ -107,7 +119,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(CMAKE_XCODE_ATTRIBUTE_GCC_C_LANGUAGE_STANDARD "gnu99")     # Use GNU99 standart for compiling C files
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11") # Use C++11 standart for compiling C++ files
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")          # Use modern libc++ instead of libstdc++
-    set(CMAKE_FRAMEWORK_PATH "mac/Frameworks")
+    set(CMAKE_FRAMEWORK_PATH "../libsrcs/lib/mac/Frameworks")
     set(CMAKE_MACOSX_RPATH 1)
     set(JPEG_NAMES libjpeg) # libjpeg.framework should be renamed to jpeg.framework to remove this hack
     set(USE_SDL2 1)
@@ -137,7 +149,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
     if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
         set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
     else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++0x")
+        set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
     endif()
 
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
@@ -188,6 +200,7 @@ if (NOT GAME_MODULES_ONLY)
     find_package(Freetype REQUIRED)
     find_package(JPEG REQUIRED)
     find_package(PNG REQUIRED)
+    find_package(OpenAL)
 
     # We need SDL only on non-Windows platforms or when with SDL2-backend
     if (USE_SDL2 OR (${CMAKE_SYSTEM_NAME} MATCHES "Linux"))
@@ -201,48 +214,28 @@ if (NOT GAME_MODULES_ONLY)
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
-    # On Linux we build angelscript from source
-    set(ANGELSCRIPT_DIR ${CMAKE_HOME_DIRECTORY}/../libsrcs/angelscript/sdk/angelscript)
-    if (MINGW)
-        set(ANGELSCRIPT_PROJECT_DIR ${ANGELSCRIPT_DIR}/projects/mingw)
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+        STRING(TOLOWER "win32_${QFUSION_WINDOWS_ARCH}.tar.gz" TAR_GZ_NAME)
     else()
-        set(ANGELSCRIPT_PROJECT_DIR ${ANGELSCRIPT_DIR}/projects/gnuc)
+        STRING(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}.tar.gz" TAR_GZ_NAME)
     endif()
-    set(ANGELSCRIPT_INCLUDE_DIR ${ANGELSCRIPT_DIR}/include/)
-    set(ANGELSCRIPT_LIBRARY ${ANGELSCRIPT_DIR}/lib/libangelscript.a)
-
-    set(ANGELSCRIPT angelscript)
-    add_custom_target(angelscript CXX=${CMAKE_CXX_COMPILER} AR=${CMAKE_AR} RANLIB=${CMAKE_RANLIB} CFLAGS=${CMAKE_C_FLAGS} CXXFLAGS=${CMAKE_CXX_FLAGS} make -C ${ANGELSCRIPT_PROJECT_DIR})
-else()
-    find_package(Angelscript REQUIRED)
+    if (NOT QFUSION_TAR_GZ_OUTPUT_DIRECTORY)
+        set(TAR_GZ_DIST "${QFUSION_CLIENT_NAME}_${TAR_GZ_NAME}")
+    else()
+        set(TAR_GZ_DIST "${QFUSION_TAR_GZ_OUTPUT_DIRECTORY}/${QFUSION_CLIENT_NAME}_${TAR_GZ_NAME}")
+    endif()
+    add_custom_target(tar_gz COMMAND ${CMAKE_COMMAND} -E tar "cfvz" ${TAR_GZ_DIST} "${CMAKE_HOME_DIRECTORY}/build/")
+    add_dependencies(tar_gz ${QFUSION_CLIENT_NAME} game ${QFUSION_SERVER_NAME} ${QFUSION_TVSERVER_NAME})
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
-	if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-		STRING(TOLOWER "win32_${QFUSION_WINDOWS_ARCH}.tar.gz" TAR_GZ_NAME)
-	else()
-		STRING(TOLOWER "${CMAKE_SYSTEM_NAME}_${CMAKE_SYSTEM_PROCESSOR}.tar.gz" TAR_GZ_NAME)
-	endif()
-	if (NOT QFUSION_TAR_GZ_OUTPUT_DIRECTORY)
-		set(TAR_GZ_DIST "${QFUSION_CLIENT_NAME}_${TAR_GZ_NAME}")
-	else()
-		set(TAR_GZ_DIST "${QFUSION_TAR_GZ_OUTPUT_DIRECTORY}/${QFUSION_CLIENT_NAME}_${TAR_GZ_NAME}")
-	endif()
-	add_custom_target(tar_gz COMMAND ${CMAKE_COMMAND} -E tar "cfvz" ${TAR_GZ_DIST} "${CMAKE_HOME_DIRECTORY}/build/")
-	add_dependencies(tar_gz ${QFUSION_CLIENT_NAME} game ${QFUSION_SERVER_NAME} ${QFUSION_TVSERVER_NAME})
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    set(CMAKE_EXECUTABLE_SUFFIX "_${QFUSION_WINDOWS_ARCH}${CMAKE_EXECUTABLE_SUFFIX}")
+    set(CMAKE_SHARED_LIBRARY_PREFIX "")
+    set(CMAKE_SHARED_LIBRARY_SUFFIX "_${QFUSION_WINDOWS_ARCH}${CMAKE_SHARED_LIBRARY_SUFFIX}")
 endif()
-
-# We build libRocket from source
-set(LIBROCKET_DIR ${CMAKE_HOME_DIRECTORY}/../libsrcs/libRocket/libRocket)
-set(LIBROCKET_INCLUDE_DIR ${LIBROCKET_DIR}/Include)
-set(LIBROCKET_SOURCE_DIR ${LIBROCKET_DIR}/Source)
 
 if (NOT GAME_MODULES_ONLY)
     if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-        set(CMAKE_EXECUTABLE_SUFFIX "_${QFUSION_WINDOWS_ARCH}${CMAKE_EXECUTABLE_SUFFIX}")
-        set(CMAKE_SHARED_LIBRARY_PREFIX "")
-        set(CMAKE_SHARED_LIBRARY_SUFFIX "_${QFUSION_WINDOWS_ARCH}${CMAKE_SHARED_LIBRARY_SUFFIX}")
-
         find_windows_release_libs(ZLIB_LIBRARY)
         find_windows_release_libs(JPEG_LIBRARIES)
         find_windows_release_libs(PNG_LIBRARIES)

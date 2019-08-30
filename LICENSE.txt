@@ -1,0 +1,28 @@
+Warfork (https://www.forbidden.gg) assets are licensed under the Creative Commons — CC0 1.0 Universal License. You can view a complete list of assets in warfork_assets_cc0.txt. 
+To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+Warsow (https://github.com/Warsow) assets* are licensed under the Creative Commons Attribution-ShareAlike 4.0 International License.
+To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
+
+* Applicable to any asset not listed in warfork_assets_cc0.txt.
+
+Warfork is powered by qfusion* (https://github.com/Qfusion/qfusion) licensed under the GPLv2 License. Qfusion is an id Tech 2 derived game engine.
+To view a copy of this license, visit https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html or send a letter to 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+* Applicable to any gametypes included.
+
+Warfork uses the following libraries:
+
+OpenAL-MOB https://github.com/Jawbone/OpenAL-MOB (lgpl)
+SDL2 http://www.libsdl.org/ (zlib)
+libcurl https://curl.haxx.se/libcurl/ (custom MIT)
+libfreetype https://www.freetype.org/ (gpl)
+libjpeg http://libjpeg.sourceforge.net/ (Custom BSD-like)
+libogg https://xiph.org/ogg/ (bsd)
+libpng http://www.libpng.org/pub/png/libpng.html (zlib)
+libtheora https://www.theora.org/downloads/ (bsd)
+libvorbis https://xiph.org/vorbis/ (bsd)
+openssl https://www.openssl.org/ (apache2)  
+zlib https://www.zlib.net/ (zlib)
+angelscript: https://www.angelcode.com/angelscript/ (zlib)
+librocket: https://github.com/libRocket/libRocket (mit)

@@ -76,7 +76,7 @@ which marks the userlogin element that the client has a handle to.
 
 class ClientLogin(threading.Thread):
 	
-	def __init__(self, mm, login, pw):
+	def __init__(self, mm, login, pw, handle):
 		threading.Thread.__init__(self)
 		
 		self.mm = mm
@@ -84,7 +84,7 @@ class ClientLogin(threading.Thread):
 		self.pw = pw
 		
 		# TODO: add digest
-		self.handle = mm.dbHandler.SaveUserLogin(0, login, 0, 0, None, None)
+		self.handle = handle
 		
 		self.start()
 		
@@ -109,9 +109,10 @@ class ClientLogin(threading.Thread):
 			# TODO: dont write the password or anything for real!
 			# print("**** CLIENTLOGIN CALLING %s %s" % ( config.getauth_url, data ) )
 			# self.mm.log("**** CLIENTLOGIN CALLING %s %s" % ( config.getauth_url, data ) )
-			
-			req = urllib2.urlopen( config.getauth_url, data )
-			response = req.read()
+
+			opener = urllib2.build_opener()
+			opener.addheaders = [('User-agent', 'Warmama/1.0')]
+			response = opener.open(config.getauth_url, data)
 			
 			# TODO: response will be MM_DATA_MISSING | MM_AUTH_SENT | MM_AUTH_SENDING_FAILED
 			# print( "**** CLIENTLOGIN RESPONSE: %s" % response )

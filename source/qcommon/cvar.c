@@ -296,9 +296,7 @@ static cvar_t *Cvar_Set2( const char *var_name, const char *value, bool force )
 				{
 					if( !strcmp( var->name, "fs_game" ) )
 					{
-						char *new_dir = ZoneCopyString( value );
-						FS_SetGameDirectory( new_dir, false );
-						Mem_ZoneFree( new_dir );
+						FS_SetGameDirectory( value, false );
 						return var;
 					}
 					Mem_ZoneFree( var->string ); // free the old value string

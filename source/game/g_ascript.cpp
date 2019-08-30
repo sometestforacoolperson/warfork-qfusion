@@ -1663,6 +1663,7 @@ static void objectGameClient_InventorySetCount( int index, int newcount, gclient
 		{
 			self->ps.stats[STAT_WEAPON] = self->ps.stats[STAT_PENDING_WEAPON] = WEAP_NONE;
 			self->ps.weaponState = WEAPON_STATE_READY;
+			self->ps.stats[STAT_WEAPON_TIME] = 0;
 		}
 	}
 
@@ -1702,6 +1703,7 @@ static void objectGameClient_InventoryClear( gclient_t *self )
 
 	self->ps.stats[STAT_WEAPON] = self->ps.stats[STAT_PENDING_WEAPON] = WEAP_NONE;
 	self->ps.weaponState = WEAPON_STATE_READY;
+	self->ps.stats[STAT_WEAPON_TIME] = 0;
 }
 
 static bool objectGameClient_CanSelectWeapon( int index, gclient_t *self )
@@ -2747,14 +2749,9 @@ static gsitem_t *asFunc_GS_FindItemByClassname( asstring_t *name )
 	return ( !name || !name->len ) ? NULL : GS_FindItemByClassname( name->buffer );
 }
 
-static void asFunc_G_Match_RemoveProjectiles( edict_t *owner )
-{
-	G_Match_RemoveProjectiles( owner );
-}
-
 static void asFunc_G_Match_RemoveAllProjectiles( void )
 {
-	G_Match_RemoveProjectiles( NULL );
+	G_Match_RemoveAllProjectiles();
 }
 
 static void asFunc_G_ResetLevel( void )
@@ -3058,13 +3055,7 @@ static void asFunc_RegisterCallvote( asstring_t *asname, asstring_t *asusage, as
 		ashelp ? ashelp->buffer : NULL );
 }
 
-static asstring_t *asFunc_GetConfigString( int index )
-{
-	const char *cs = trap_GetConfigString( index );
-	return angelExport->asStringFactoryBuffer( (char *)cs, cs ? strlen( cs ) : 0 );
-}
-
-static void asFunc_SetConfigString( int index, asstring_t *str )
+static void asFunc_ConfigString( int index, asstring_t *str )
 {
 	if( !str || !str->buffer )
 		return;
@@ -3323,7 +3314,6 @@ static const asglobfuncs_t asGlobFuncs[] =
 	{ "array<Entity @> @G_FindByClassname( const String &in )", asFUNCTION(asFunc_G_FindByClassname), NULL },
 
 	// misc management utils
-	{ "void G_RemoveProjectiles( Entity @ )", asFUNCTION(asFunc_G_Match_RemoveProjectiles), NULL },
 	{ "void G_RemoveAllProjectiles()", asFUNCTION(asFunc_G_Match_RemoveAllProjectiles), NULL },
 	{ "void G_ResetLevel()", asFUNCTION(asFunc_G_ResetLevel), NULL },
 	{ "void G_RemoveDeadBodies()", asFUNCTION(asFunc_G_Match_FreeBodyQueue), NULL },
@@ -3377,8 +3367,7 @@ static const asglobfuncs_t asGlobFuncs[] =
 	{ "int G_SoundIndex( const String &in, bool pure )", asFUNCTION(asFunc_SoundIndexExt), NULL },
 	{ "void G_RegisterCommand( const String &in )", asFUNCTION(asFunc_RegisterCommand), NULL },
 	{ "void G_RegisterCallvote( const String &in, const String &in, const String &in, const String &in )", asFUNCTION(asFunc_RegisterCallvote), NULL },
-	{ "const String @G_ConfigString( int index )", asFUNCTION(asFunc_GetConfigString), NULL },
-	{ "void G_ConfigString( int index, const String &in )", asFUNCTION(asFunc_SetConfigString), NULL },
+	{ "void G_ConfigString( int index, const String &in )", asFUNCTION(asFunc_ConfigString), NULL },
 
 	// projectile firing
 	{ "void G_FireInstaShot( const Vec3 &in origin, const Vec3 &in angles, int range, int damage, int knockback, int stun, Entity @owner )", asFUNCTION(asFunc_FireInstaShot), NULL },

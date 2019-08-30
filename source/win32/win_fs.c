@@ -29,10 +29,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # define CSIDL_APPDATA					0x001A
 #endif
 
+#ifndef CSIDL_PERSONAL
+# define CSIDL_PERSONAL					0x0005        // My Documents
+#endif
+
+#define USE_MY_DOCUMENTS
+
 static char *findbase = NULL;
 static char *findpath = NULL;
 static size_t findpath_size = 0;
-static int findhandle = -1;
+static intptr_t findhandle = -1;
 
 /*
 * CompareAttributes
@@ -65,13 +71,32 @@ static bool CompareAttributes( unsigned found, unsigned musthave, unsigned canth
 }
 
 /*
+* _Sys_Utf8FileNameToWide
+*/
+static void _Sys_Utf8FileNameToWide(const char *utf8name, wchar_t *wname, size_t wchars)
+{
+	MultiByteToWideChar( CP_UTF8, 0, utf8name, -1, wname, wchars );
+	wname[wchars-1] = '\0';
+}
+
+/*
+* _Sys_WideFileNameToUtf8
+*/
+static void _Sys_WideFileNameToUtf8(const wchar_t *wname, char *utf8name, size_t utf8chars)
+{
+	WideCharToMultiByte( CP_UTF8, 0, wname, -1, utf8name, utf8chars, NULL, NULL );
+	utf8name[utf8chars-1] = '\0';
+}
+
+/*
 * Sys_FS_FindFirst
 */
 const char *Sys_FS_FindFirst( const char *path, unsigned musthave, unsigned canthave )
 {
 	size_t size;
-	struct _finddata_t findinfo;
-	const char *finame;
+	struct _wfinddata_t findinfo;
+	char finame[MAX_PATH];
+	WCHAR wpath[MAX_PATH];
 
 	assert( path );
 	assert( findhandle == -1 );
@@ -84,12 +109,14 @@ const char *Sys_FS_FindFirst( const char *path, unsigned musthave, unsigned cant
 	Q_strncpyz( findbase, path, ( strlen( path ) + 1 ) );
 	COM_StripFilename( findbase );
 
-	findhandle = _findfirst( path, &findinfo );
+	_Sys_Utf8FileNameToWide( path, wpath, sizeof( wpath )/sizeof( wpath[0] ) );
+
+	findhandle = _wfindfirst( wpath, &findinfo );
 
 	if( findhandle == -1 )
 		return NULL;
 
-	finame = findinfo.name;
+	_Sys_WideFileNameToUtf8( findinfo.name, finame, sizeof( finame ) );
 
 	if( strcmp( finame, "." ) && strcmp( finame, ".." ) &&
 		CompareAttributes( findinfo.attrib, musthave, canthave ) )
@@ -118,8 +145,8 @@ const char *Sys_FS_FindFirst( const char *path, unsigned musthave, unsigned cant
 const char *Sys_FS_FindNext( unsigned musthave, unsigned canthave )
 {
 	size_t size;
-	struct _finddata_t findinfo;
-	const char *finame;
+	struct _wfinddata_t findinfo;
+	char finame[MAX_PATH];
 
 	assert( findhandle != -1 );
 	assert( findbase );
@@ -127,9 +154,9 @@ const char *Sys_FS_FindNext( unsigned musthave, unsigned canthave )
 	if( findhandle == -1 )
 		return NULL;
 
-	while( _findnext( findhandle, &findinfo ) != -1 )
+	while( _wfindnext( findhandle, &findinfo ) != -1 )
 	{
-		finame = findinfo.name;
+		_Sys_WideFileNameToUtf8( findinfo.name, finame, sizeof( finame ) );
 
 		if( strcmp( finame, "." ) && strcmp( finame, ".." ) &&
 			CompareAttributes( findinfo.attrib, musthave, canthave ) )
@@ -182,6 +209,12 @@ void Sys_FS_FindClose( void )
 */
 const char *Sys_FS_GetHomeDirectory( void )
 {
+#ifdef USE_MY_DOCUMENTS
+	int csidl = CSIDL_PERSONAL;
+#else
+	int csidl = CSIDL_APPDATA;
+#endif
+
 	static char home[MAX_PATH] = { '\0' };
 	if( home[0] != '\0' )
 		return home;
@@ -194,16 +227,22 @@ const char *Sys_FS_GetHomeDirectory( void )
 
 	SHGetFolderPath = GetProcAddress( shFolderDll, "SHGetFolderPathA" );
 	if( SHGetFolderPath )
-		SHGetFolderPath( NULL, CSIDL_APPDATA, 0, 0, home );
+		SHGetFolderPath( NULL, csidl, 0, 0, home );
 
 	FreeLibrary( shFolderDll );
 #else
-	SHGetFolderPath( 0, CSIDL_APPDATA, 0, 0, home );
+	SHGetFolderPath( 0, csidl, 0, 0, home );
 #endif
 
 	if ( home[0] == '\0' )
 		return NULL;
+
+#ifdef USE_MY_DOCUMENTS
+	Q_strncpyz( home, va( "%s/My Games/%s %d.%d", COM_SanitizeFilePath( home ), APPLICATION, APP_VERSION_MAJOR, APP_VERSION_MINOR ), sizeof( home ) );
+#else
 	Q_strncpyz( home, va( "%s/%s %d.%d", COM_SanitizeFilePath( home ), APPLICATION, APP_VERSION_MAJOR, APP_VERSION_MINOR ), sizeof( home ) );
+#endif
+
 	return home;
 }
 

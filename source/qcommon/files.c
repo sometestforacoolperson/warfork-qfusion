@@ -2203,9 +2203,9 @@ bool _FS_CopyFile( const char *src, const char *dst, bool base, bool absolute )
 	}
 
 	if( absolute )
-		result = FS_FOpenAbsoluteFile( dst, &dstnum, FS_WRITE );
+		result = FS_FOpenAbsoluteFile( dst, &dstnum, FS_WRITE ) == -1;
 	else
-		result = _FS_FOpenFile( dst, &dstnum, FS_WRITE, base );
+		result = _FS_FOpenFile( dst, &dstnum, FS_WRITE, base ) == -1;
 	if( result == -1 )
 	{
 		FS_FCloseFile( srcnum );

@@ -226,7 +226,8 @@ typedef struct cg_subtitles_s
 	struct cg_subtitles_s *next;
 } cg_subtitle_t;
 
-static cg_subtitle_t *cg_subs_headnode = NULL;
+cg_subtitle_t *cg_subs_headnode = NULL;
+cg_subtitle_t *currentsub;
 
 static cg_subtitle_t *CG_Democam_FindCurrentSubtitle( void )
 {
