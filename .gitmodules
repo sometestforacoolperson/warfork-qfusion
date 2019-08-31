@@ -10,4 +10,4 @@
 	url = https://github.com/Qfusion/angelscript
 [submodule "libsrcs"]
 	path = libsrcs
-	url = https://github.com/Qfusion/libsrcs
+	url = https://github.com/Qfusion/qfusion-libsrcs
