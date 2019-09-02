@@ -11,10 +11,10 @@ Il gioco è un "fork" di Warsow. Warfork rimpiazza il trademark di Warsow con il
 5. [b]Arena Duello:[/b] Fragga il maggior numero di avversari in combattimenti 1-contro-1. Il tuo arsenale viene completamente rifornito prima di ogni round. Il vincitore del round viene sfidato dal prossimo giocatore della coda.
 6. [b]Deathmatch:[/b] L'obiettivo di una partita Deathmatch è quello di fraggare più giocatori possibili prima che il tempo o il limite di frag venga raggiunto.
 7. [b]Duello:[/b] Il Duello è una modalità di gioco 1 contro 1. Un match di base dura 10 minuti, se c'è un pareggio verranno aggiunti 120 secondi di tempo supplementare. Il giocatore che fragga più volte l'avversario vince il match.
-8. [b]Corsa:[/b] I giocatori tentano di completare un percorso nel più breve tempo possibile attraverso mappe altamente complesse sfruttando bunny hopping, strafe jumping, salti circolari, controllo aereo, combo con le armi, e altre mosse.
+8. [b]Gara:[/b] I giocatori tentano di completare un percorso nel più breve tempo possibile attraverso mappe altamente complesse sfruttando bunny hopping, strafe jumping, salti circolari, controllo aereo, combo con le armi, e altre mosse.
 9. [b]Disinnesca la Bomba:[/b] Ci sono due squadre che devono difendere o attaccare un punto bomba. Per vincere un round, una squadra può fraggare tutti gli avversari, disinnescare la bomba, o assicurarsi che esploda.
 10. [b]Cattura la Bandiera:[/b] Ci sono due squadre che devono difendere o catturare la bandiera avversaria nel limite di tempo prestabilito.
-11. [b]Cattura la Bandiera: Tattiche[/b] Una versione di "Cattura la Bandiera" basata su classi, simile a Team Fortress. Ogni giocatore può essere un Soldato, un Medico, un Esploratore o un Ingegnere.
+11. [b]Cattura la Bandiera: Tattiche:[/b] Una versione di "Cattura la Bandiera" basata su classi, simile a Team Fortress. Ogni giocatore può essere un Soldato, un Medico, un Esploratore o un Ingegnere.
 
 [u]Materiale Legale[/u]
 
