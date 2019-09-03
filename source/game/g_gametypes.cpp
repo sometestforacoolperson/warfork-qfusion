@@ -530,7 +530,7 @@ bool G_Match_CheckExtendPlayTime( void )
 					G_AnnouncerSound( NULL, trap_SoundIndex( S_ANNOUNCER_OVERTIME_OVERTIME ), GS_MAX_TEAMS, true, NULL );
 
 				G_PrintMsg( NULL, "Match tied. Timelimit extended by %i minutes!\n", g_match_extendedtime->integer );
-				G_CenterPrintFormatMsg( NULL, "%s MINUTE OVERTIME\n", va( "%i", g_match_extendedtime->integer ), NULL );
+				G_CenterPrintFormatMsg( NULL, "%s MINUTES OVERTIME\n", va( "%i", g_match_extendedtime->integer ), NULL );
 				gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)( ( fabs( g_match_extendedtime->value ) * 60 ) * 1000 );
 			}
 			else
