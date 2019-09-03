@@ -536,7 +536,7 @@ static const char *CG_MatchMessageString( matchmessage_t mm )
 
 	case MATCHMESSAGE_SPECTATOR_MODES:
 		return "'ESC' for in-game menu or 'ENTER' for in-game chat.\n"
-			"Mouse buttons for switching spectator modes.\n"
+			"Use the mouse buttons for switching spectator modes.\n"
 			"This message can be hidden by disabling 'help' in player setup menu.";
 
 	case MATCHMESSAGE_GET_READY:
