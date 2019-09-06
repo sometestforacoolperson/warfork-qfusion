@@ -1,27 +1,27 @@
 :: :: Changes from 2019.08.17 to 2019.09.06
 
 General:
-- Updated placeholder sounds. Most of the sounds were converted from stereo into mono to make them work correctly in 3D space. Also their volumes were adjusted and normalized in order to avoid clipping and make them more balanced to each other. Some sounds were reworked and swapped to make more the sense. And at last but not at least hitsounds are now variable depending on the damage.
+- Updated placeholder sounds. Most of the sounds were converted from stereo into mono to make them work correctly in 3D space. Also their volumes were adjusted and normalized in order to avoid clipping and make them more balanced to each other. Some sounds were reworked and swapped to make more the sense. And last but not least, hitsounds are now variable depending on the damage.
 - Updated localizations, overall translated text has been increased for 50% by our volunteers from Transifex.
 - Updated and fixed HUDs.
 - New Zoom effect.
 
 Engine:
-- Don't force team models for local player in-game & while watching demos
-- Change rocket explosion & projectile lights' color to orange
-- Allowed "crouch" animation being shown to others while player model is in the air
-- Set minimum "cl_pps" to 40 to prevent possible warping
-- Disabling weapon animation doesn't remove its fire animation now
-- Set win_nowinkeys 1 by default
-- Increased max Zoom FOV value to 75
-- Fixed model shading issues
+- Don't force team models for local player in-game & while watching demos.
+- Change rocket explosion & projectile lights' color to orange.
+- Allowed "crouch" animation being shown to others while player model is in the air.
+- Set minimum "cl_pps" to 40 to prevent possible warping.
+- Disabling weapon animation doesn't remove its fire animation now.
+- Set win_nowinkeys 1 by default.
+- Increased max Zoom FOV value to 75.
+- Fixed model shading issues.
 
 UI:
-- Added language selector in Options - Player - Misc (overall 25 languages are supported including English)
-- Updated UI, bunch of options and tabs have been renamed
-- Added 1000 FPS option
-- Fixed FPS being limited by default "cl_maxfps" in UI
-- Added "Zoom sensitivity", "Show awards", "Show critical hit effect" options
-- Moved console button from the top of the Home screen to the bottom left
-- Fixed preview info in the Demo menu
-- Updated Droid Sans font to fix drawing of some letters (especially Vietnamese)
+- Added language selector in Options - Player - Misc (overall 25 languages are supported including English).
+- Updated UI, bunch of options and tabs have been renamed.
+- Added 1000 FPS option.
+- Fixed FPS being limited by default "cl_maxfps" in UI.
+- Added "Zoom sensitivity", "Show awards", "Show critical hit effect" options.
+- Moved console button from the top of the Home screen to the bottom left.
+- Fixed preview info in the Demo menu.
+- Updated Droid Sans font to fix drawing of some letters (especially Vietnamese).
