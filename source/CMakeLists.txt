@@ -10,6 +10,7 @@ message(STATUS "CMAKE_SYSTEM_PROCESSOR: " ${CMAKE_SYSTEM_PROCESSOR})
 set(CMAKE_MODULE_PATH ${CMAKE_HOME_DIRECTORY}/cmake)
 include(QfusionUtils)
 
+set(QFUSION_GAME Warfork)						 
 if (QFUSION_GAME)
     if (${QFUSION_GAME} MATCHES "Warfork")
         set(QFUSION_GAME_DIR basewf)
