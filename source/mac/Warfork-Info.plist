@@ -5,9 +5,9 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>warsow.icns</string>
+	<string>warfork.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.picmip.Warsow</string>
+	<string>org.picmip.Warfork</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
@@ -18,16 +18,16 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>org.picmip.Warsow</string>
+			<string>org.picmip.Warfork</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>warsow</string>
+				<string>warfork</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Warsow.gg</string>
+	<string>forbidden.gg</string>
 </dict>
 </plist>
