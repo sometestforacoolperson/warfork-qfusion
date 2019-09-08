@@ -29,11 +29,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	DEFAULT_BASEGAME				"basewf"
 
 #ifndef APP_VERSION_MAJOR
-#define APP_VERSION_MAJOR				2
+#define APP_VERSION_MAJOR				1
 #endif
 
 #ifndef APP_VERSION_MINOR
-#define APP_VERSION_MINOR				1
+#define APP_VERSION_MINOR				0
 #endif
 
 #ifndef APP_VERSION_UPDATE
@@ -45,15 +45,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifdef PUBLIC_BUILD
-#define APP_PROTOCOL_VERSION			22
+#define APP_PROTOCOL_VERSION			1
 #else
-#define APP_PROTOCOL_VERSION			2200
+#define APP_PROTOCOL_VERSION			1000
 #endif
 
 #ifdef PUBLIC_BUILD
-#define APP_DEMO_PROTOCOL_VERSION		20
+#define APP_DEMO_PROTOCOL_VERSION		1
 #else
-#define APP_DEMO_PROTOCOL_VERSION		20
+#define APP_DEMO_PROTOCOL_VERSION		1
 #endif
 
 #ifndef APP_URL
