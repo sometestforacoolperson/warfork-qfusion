@@ -45,15 +45,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifdef PUBLIC_BUILD
-#define APP_PROTOCOL_VERSION			1
+#define APP_PROTOCOL_VERSION			22
 #else
-#define APP_PROTOCOL_VERSION			1000
+#define APP_PROTOCOL_VERSION			2200
 #endif
 
 #ifdef PUBLIC_BUILD
-#define APP_DEMO_PROTOCOL_VERSION		1
+#define APP_DEMO_PROTOCOL_VERSION		20
 #else
-#define APP_DEMO_PROTOCOL_VERSION		1
+#define APP_DEMO_PROTOCOL_VERSION		20
 #endif
 
 #ifndef APP_URL
