@@ -289,7 +289,7 @@ static void IN_DeactivateMouse( void )
 		return;
 	}
 
-	if( rawinput_initialized > 0 )
+	if( rawinput_initialized )
 		IN_RawInput_DeRegister();
 
 	if( restore_spi )
@@ -620,6 +620,8 @@ bool IN_RawInput_Init( void )
 */
 static void IN_RawInput_Shutdown( void )
 {
+	rawinput_initialized = false;
+
 	if( rawmicecount < 1 )
 		return;
 
@@ -764,20 +766,26 @@ static void IN_StartupMouse( void )
 
 	if( !rawinput_initialized )
 	{
-		cv = Cvar_Get( "in_dinput", "0", CVAR_ARCHIVE );
+		cv = Cvar_Get( "in_dinput", "1", CVAR_ARCHIVE );
 		if( cv->integer )
 			dinput_initialized = IN_InitDInput();
 	}
 
-	if( rawinput_initialized )
-		Com_Printf( "Raw input initialized with %i mice\n", rawmicecount );
-	else if( dinput_initialized )
-		Com_Printf( "DirectInput initialized\n" );
+	if (rawinput_initialized)
+	{
+		Com_Printf("Raw input initialized with %i mice\n", rawmicecount);
+	}
+	else if (dinput_initialized)
+	{
+		Com_Printf("DirectInput initialized\n");
+	}
 	else
-		Com_Printf( "DirectInput not initialized, using standard input\n" );
+	{
+		mouseparmsvalid = SystemParametersInfo(SPI_GETMOUSE, 0, originalmouseparms, 0);
+		Com_Printf("DirectInput not initialized, using standard input\n");
+	}
 
 	mouseinitialized = true;
-	mouseparmsvalid = SystemParametersInfo( SPI_GETMOUSE, 0, originalmouseparms, 0 );
 	mouse_buttons = 8;
 	mouse_wheel_type = MWHEEL_UNKNOWN;
 }
