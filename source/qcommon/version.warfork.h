@@ -29,11 +29,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	DEFAULT_BASEGAME				"basewf"
 
 #ifndef APP_VERSION_MAJOR
-#define APP_VERSION_MAJOR				1
+#define APP_VERSION_MAJOR				2
 #endif
 
 #ifndef APP_VERSION_MINOR
-#define APP_VERSION_MINOR				0
+#define APP_VERSION_MINOR				1
 #endif
 
 #ifndef APP_VERSION_UPDATE
