@@ -1,12 +1,14 @@
-:: :: Changes from 2019.08.17 to 2019.09.06
+:: :: Changes from 2019.08.17 to 2019.09.10
 
 General:
 - Updated placeholder sounds. Most of the sounds were converted from stereo into mono to make them work correctly in 3D space. Also their volumes were adjusted and normalized in order to avoid clipping and make them more balanced to each other. Some sounds were reworked and swapped to make more the sense. And last but not least, hitsounds are now variable depending on the damage.
+- It is now possible to switch to OpenAL sound module on Windows, as it gets preinstalled by Steam on the game installation.
 - Updated localizations, overall translated text has been increased for 50% by our volunteers from Transifex.
 - Updated and fixed HUDs.
 - New Zoom effect.
 
 Engine:
+- Fixed an issue with messing system mouse sensitivity/accel on Windows. Please check that you have "in_dinput" cvar set to 1 via console or config.cfg.
 - Don't force team models for local player in-game & while watching demos.
 - Change rocket explosion & projectile lights' color to orange.
 - Allowed "crouch" animation being shown to others while player model is in the air.
@@ -21,7 +23,7 @@ UI:
 - Updated UI, bunch of options and tabs have been renamed.
 - Added 1000 FPS option.
 - Fixed FPS being limited by default "cl_maxfps" in UI.
-- Added "Zoom sensitivity", "Show awards", "Show critical hit effect" options.
+- Added "Sound module", "Zoom sensitivity", "Show awards", "Show zoom effect, "Show critical hit effect" options.
 - Moved console button from the top of the Home screen to the bottom left.
 - Fixed preview info in the Demo menu.
 - Updated Droid Sans font to fix drawing of some letters (especially Vietnamese).
