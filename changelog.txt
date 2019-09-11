@@ -17,6 +17,8 @@ Engine:
 - Set win_nowinkeys 1 by default.
 - Increased max Zoom FOV value to 75.
 - Fixed model shading issues.
+- Added blue dynamic light for Grenade projectile.
+- Added LG marks when it hits the wall.
 
 UI:
 - Added language selector in Options - Player - Misc (overall 25 languages are supported including English).
