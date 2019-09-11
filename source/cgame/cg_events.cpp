@@ -112,6 +112,7 @@ static void _LaserImpact( trace_t *trace, vec3_t dir )
 
 			trap_S_StartFixedSound( CG_MediaSfx( cgs.media.sfxLasergunHit[rand()%3] ), trace->endpos, CHAN_AUTO,
 				cg_volume_effects->value, ATTN_STATIC );
+			CG_SpawnDecal( trace->endpos, trace->plane.normal, random() * 360, 14, 1, 1, 1, 1, 8, 1, false, CG_MediaShader( cgs.media.shaderBulletMark ) );
 		}
 #undef TRAILTIME
 	}
