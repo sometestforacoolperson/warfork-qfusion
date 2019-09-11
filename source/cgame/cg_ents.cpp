@@ -1931,6 +1931,7 @@ void CG_AddEntities( void )
 			CG_EntityLoopSound( state, ATTN_STATIC );
 			CG_ProjectileTrail( cent );
 			canLight = true;
+			CG_AddLightToScene(cent->ent.origin, 250, 0.2f, 0.2f, 1.0f);
 			break;
 		case ET_PLASMA:
 			CG_AddGenericEnt( cent );
