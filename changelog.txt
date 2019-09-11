@@ -1,4 +1,4 @@
-:: :: Changes from 2019.08.17 to 2019.09.10
+:: :: Changes from 2019.08.17 to 2019.09.11
 
 General:
 - Updated placeholder sounds. Most of the sounds were converted from stereo into mono to make them work correctly in 3D space. Also their volumes were adjusted and normalized in order to avoid clipping and make them more balanced to each other. Some sounds were reworked and swapped to make more the sense. And last but not least, hitsounds are now variable depending on the damage.
@@ -25,7 +25,7 @@ UI:
 - Updated UI, bunch of options and tabs have been renamed.
 - Added 1000 FPS option.
 - Fixed FPS being limited by default "cl_maxfps" in UI.
-- Added "Sound module", "Zoom sensitivity", "Show awards", "Show zoom effect, "Show critical hit effect" options.
+- Added "Sound module", "Zoom sensitivity", "Frag message location", "Show awards", "Show zoom effect, "Show critical hit effect" options.
 - Moved console button from the top of the Home screen to the bottom left.
 - Fixed preview info in the Demo menu.
 - Updated Droid Sans font to fix drawing of some letters (especially Vietnamese).
