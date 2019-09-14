@@ -1081,6 +1081,7 @@ static void PM_CheckJump( void )
 	}
 
 	// remove wj count
+	pm->playerState->pmove.pm_time = 250 >> 3; //skimming time
 	pm->playerState->pmove.pm_flags &= ~PMF_JUMPPAD_TIME;
 	PM_ClearDash();
 	PM_ClearWallJump();
