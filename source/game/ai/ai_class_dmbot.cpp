@@ -277,7 +277,7 @@ void BOT_DMclass_SpecialMove( edict_t *self, vec3_t lookdir, vec3_t pathdir, use
 	}
 	else 
 #endif
-	if( bunnyhop && ( (nextMoveType &LINK_JUMP) || level.gametype.spawnableItemsMask == 0 ) )
+	if( bunnyhop )
 	{
 		if( self->groundentity )
 			ucmd->upmove = 1;
