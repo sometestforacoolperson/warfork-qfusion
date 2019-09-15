@@ -585,9 +585,9 @@ gs_weapon_definition_t gs_weaponDefs[] =
 			0,                              // v_spread
 
 			//ammo
-			50,                             // weapon pickup amount
-			100,							// pickup amount
-			150,							// max amount
+			60,                             // weapon pickup amount
+			120,							// pickup amount
+			180,							// max amount
 			20								// low ammo threshold
 		},
 
