@@ -49,6 +49,7 @@ int playerbox_gib_viewheight = 8;
 #define PM_AIRCONTROL_BOUNCE_DELAY 200
 #define PM_OVERBOUNCE		1.01f
 #define PM_FORWARD_ACCEL_TIMEDELAY 0 // delay before the forward acceleration kicks in
+#define PM_SKIM_TIME 250
 
 //===============================================================
 
@@ -1081,7 +1082,7 @@ static void PM_CheckJump( void )
 	}
 
 	// remove wj count
-	pm->playerState->pmove.pm_time = 250 >> 3; //skimming time
+	pm->playerState->pmove.pm_time = PM_SKIM_TIME >> 3; //skimming time adjusted for msec size
 	pm->playerState->pmove.pm_flags &= ~PMF_JUMPPAD_TIME;
 	PM_ClearDash();
 	PM_ClearWallJump();
