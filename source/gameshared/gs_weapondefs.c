@@ -661,7 +661,7 @@ gs_weapon_definition_t gs_weaponDefs[] =
 			//ammo
 			5,                              // weapon pickup amount
 			10,								// pickup amount
-			10,								// max amount
+			15,								// max amount
 			3								// low ammo threshold
 		},
 
