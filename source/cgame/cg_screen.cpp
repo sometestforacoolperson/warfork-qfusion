@@ -55,6 +55,8 @@ cvar_t *cg_crosshair_strong_color;
 
 cvar_t *cg_crosshair_damage_color;
 
+cvar_t *cg_showCrosshairDamage;
+
 cvar_t *cg_clientHUD;
 cvar_t *cg_specHUD;
 cvar_t *cg_debugHUD;
@@ -165,7 +167,8 @@ static void CG_CheckDamageCrosshair( void )
 
 void CG_ScreenCrosshairDamageUpdate( void )
 {
-	cg_crosshair_damage_color->modified = true;
+	if( cg_showCrosshairDamage->integer )
+		cg_crosshair_damage_color->modified = true;
 }
 
 //=============================================================================
@@ -307,6 +310,8 @@ void CG_ScreenInit( void )
 	cg_crosshair_strong_size =  trap_Cvar_Get( "cg_crosshair_strong_size", "24", CVAR_ARCHIVE );
 	cg_crosshair_strong_color = trap_Cvar_Get( "cg_crosshair_strong_color", "255 255 255", CVAR_ARCHIVE );
 	cg_crosshair_strong_color->modified = true;
+
+	cg_showCrosshairDamage = trap_Cvar_Get( "cg_showCrosshairDamage", "1", CVAR_ARCHIVE );
 
 	cg_clientHUD =		trap_Cvar_Get( "cg_clientHUD", "", CVAR_ARCHIVE );
 	cg_specHUD =		trap_Cvar_Get( "cg_specHUD", "", CVAR_ARCHIVE );
