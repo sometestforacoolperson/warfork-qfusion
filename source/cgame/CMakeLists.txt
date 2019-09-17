@@ -9,6 +9,8 @@ file(GLOB CGAME_HEADES
 file(GLOB CGAME_SOURCES
     "*.cpp"
     "../gameshared/*.c"
+   	"../qalgo/rng.cpp"
+
 )
 
 add_library(cgame SHARED ${CGAME_SOURCES} ${CGAME_HEADES})

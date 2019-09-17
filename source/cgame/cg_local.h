@@ -772,6 +772,10 @@ void CG_DrawNet( int x, int y, int w, int h, int align, vec4_t color );
 
 void CG_GameMenu_f( void );
 
+void CG_InitDamageNumbers();
+void CG_AddDamageNumber( entity_state_t * ent );
+void CG_DrawDamageNumbers();
+
 /**
  * Sends current quick menu string to the UI.
  */
