@@ -1593,6 +1593,10 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 	case EV_VSAY:
 		CG_StartVoiceTokenEffect( ent->ownerNum, EV_VSAY, parm );
 		break;
+        
+    case EV_DAMAGE:
+		CG_AddDamageNumber( ent );
+		break;            
 	}
 }
 
