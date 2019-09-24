@@ -147,7 +147,8 @@ void SV_InitMaster( void )
 {
 	SV_ResolveMaster();
 
-	svc.nextHeartbeat = Sys_Milliseconds() + HEARTBEAT_SECONDS * 1000; // wait a while before sending first heartbeat
+		svc.nextHeartbeat = Sys_Milliseconds();
+
 }
 
 /*
