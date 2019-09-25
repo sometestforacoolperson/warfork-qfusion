@@ -2,12 +2,3 @@
 	path = basewf
 	url = https://github.com/TeamForbiddenLLC/warfork-assets
 	branch = master
-[submodule "third-party/libRocket"]
-	path = third-party/libRocket
-	url = https://github.com/Qfusion/libRocket
-[submodule "third-party/angelscript"]
-	path = third-party/angelscript
-	url = https://github.com/Qfusion/angelscript
-[submodule "libsrcs"]
-	path = libsrcs
-	url = https://github.com/Qfusion/qfusion-libsrcs
