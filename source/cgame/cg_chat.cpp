@@ -307,7 +307,7 @@ void CG_FlashChatHighlight( const unsigned int fromIndex, const char *text )
 	// this is probably shitty for some nicks
 	bool hadNick = strstr( msgLower, nameLower ) != NULL;
 	if ( hadNick ) {
-		trap_VID_FlashWindow();
+		trap_VID_FlashWindow(1000);
 		cg.chat.lastHighlightTime = cg.realTime;
 	}
 } 
