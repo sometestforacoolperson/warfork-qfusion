@@ -2093,10 +2093,12 @@ static void G_CallVotes_CheckState( void )
 			continue;
 
 		// ignore inactive players unless they have voted
-		if( client->level.last_activity &&
-			client->level.last_activity + (g_inactivity_maxtime->value * 1000) < level.time &&
-			clientVoted[PLAYERNUM( ent )] == VOTED_NOTHING )
-			continue;
+		if( g_inactivity_maxtime->value > 0 ) {
+			if( client->level.last_activity &&
+				client->level.last_activity + ( g_inactivity_maxtime->value * 1000 ) < level.time &&
+				clientVoted[PLAYERNUM( ent )] == VOTED_NOTHING ) {
+				continue;
+			}
 
 		if( callvoteState.vote.callvote->need_auth && sv_mm_enable->integer ) {
 			if( client->mm_session <= 0 ) {
