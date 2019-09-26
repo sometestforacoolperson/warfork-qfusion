@@ -523,6 +523,7 @@ typedef struct
 	unsigned int lastActiveChangeTime;
 	float activeFrac;
 	cg_gamemessage_t messages[GAMECHAT_STACK_SIZE];
+    int64_t lastHighlightTime;
 } cg_gamechat_t;
 
 #define MAX_HELPMESSAGE_CHARS 4096
@@ -1228,5 +1229,10 @@ void CG_AddMovement( vec3_t movement );
  * @param keysSize output string buffer size
  */
 void CG_GetBoundKeysString( const char *cmd, char *keys, size_t keysSize );
+
+/**
+ * Checks a chat message for local player nick and flashes window on a match
+ */
+void CG_FlashChatHighlight( const unsigned int from, const char *text ); 
 
 //=================================================
