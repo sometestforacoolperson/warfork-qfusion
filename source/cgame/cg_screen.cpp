@@ -35,6 +35,12 @@ end of unit intermissions
 #include "cg_local.h"
 #include "../qalgo/rng.h"
 
+template <typename T, size_t N>
+constexpr size_t ARRAY_COUNT( const T ( &arr )[N] )
+{
+    return N;
+}
+
 vrect_t	scr_vrect;
 
 cvar_t *cg_viewSize;
