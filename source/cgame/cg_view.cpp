@@ -119,6 +119,7 @@ static void CG_AddLocalSounds( void )
 				{
 					struct sfx_s *sound = trap_S_RegisterSound( va( S_ANNOUNCER_COUNTDOWN_COUNT_1_to_3_SET_1_to_2, 1 + remainingSeconds, 1 ) );
 					CG_AddAnnouncerEvent( sound, false );
+                	CG_CenterPrint( va( "%i", remainingSeconds + 1 ) );
 				}
 
 				lastSecond = remainingSeconds;
@@ -176,13 +177,12 @@ static void CG_AddLocalSounds( void )
 static void CG_FlashGameWindow( void )
 {
 	static int oldState = -1;
-	int newState;
 	bool flash = false;
 	static int oldAlphaScore, oldBetaScore;
 	static bool scoresSet = false;
 
 	// notify player of important match states
-	newState = GS_MatchState();
+	int newState = GS_MatchState();
 	if( oldState != newState )
 	{
 		switch( newState )
