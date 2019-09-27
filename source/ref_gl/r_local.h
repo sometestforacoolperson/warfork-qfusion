@@ -77,7 +77,6 @@ typedef struct superLightStyle_s
 #include "r_backend.h"
 #include "r_shadow.h"
 #include "r_model.h"
-#include "r_jobs.h"
 #include "r_trace.h"
 #include "r_program.h"
 
