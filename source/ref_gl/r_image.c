@@ -2181,8 +2181,8 @@ void R_ScreenShot( const char *filename, int x, int y, int width, int height, in
 		if( WriteJPG( filename, &imginfo, quality ) && !silent )
 			Com_Printf( "Wrote %s\n", filename );
 
-	} else {
-		if( WriteTGA( filename, &imginfo, 100 ) && !silent )
+	} else {  
+		if( WriteTGA( filename, &imginfo ) && !silent )
 			Com_Printf( "Wrote %s\n", filename );
 	}
 }

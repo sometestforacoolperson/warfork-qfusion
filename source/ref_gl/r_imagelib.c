@@ -727,7 +727,7 @@ r_imginfo_t LoadTGA( const char *name, uint8_t *(*allocbuf)( void *, size_t, con
 /*
 * WriteTGA
 */
-bool WriteTGA( const char *name, r_imginfo_t *info, int quality )
+bool WriteTGA( const char *name, r_imginfo_t *info )
 {
 	int file, i, c, temp;
 	int width, height, samples;
