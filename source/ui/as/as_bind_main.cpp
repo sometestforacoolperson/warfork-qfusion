@@ -27,7 +27,7 @@ void BindAPI( ASInterface *as )
 	PrebindDownloadInfo( as );
 	PrebindGame( as );
 	PrebindMatchMaker( as );
- 	PrebindConsole( as );
+	PrebindConsole( as );
 
 	// now bind the class functions
 	BindURL( as );
@@ -44,8 +44,7 @@ void BindAPI( ASInterface *as )
 	BindDownloadInfo( as );
 	BindGame( as );
 	BindMatchMaker( as );
-   	BindConsole( as );
-
+	BindConsole( as );
 }
 
 // This needs to be called after globals are instantiated
@@ -57,8 +56,7 @@ void BindGlobals( ASInterface *as )
 	BindGameGlobal( as );
 	BindMatchMakerGlobal( as );
 	BindIrcGlobal( as );
-   	BindConsoleGlobal( as );
-
+	BindConsoleGlobal( as );
 }
 
 // update function for bound api
