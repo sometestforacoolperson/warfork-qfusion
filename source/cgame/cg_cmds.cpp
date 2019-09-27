@@ -60,9 +60,9 @@ static void CG_SC_ChatPrint( void )
 
     // check highlight of player nick here instead of local print because its used for things like stats
 	// dont highlight for server messages
-	if ( name ) {
-		CG_FlashChatHighlight( who - 1, text );
-	}
+ if( name && !cgs.demoPlaying ) {
+        CG_FlashChatHighlight( who - 1, text );
+}
     
 	if( cg_chatBeep->integer )
 		trap_S_StartGlobalSound( CG_MediaSfx( cgs.media.sfxChat ), CHAN_AUTO, 1.0f );
