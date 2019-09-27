@@ -62,7 +62,7 @@ static void Console_Error( Console *console, const asstring_t &s )
 {
 	char msg[MAX_PRINTMSG];
 	Q_snprintfz( msg, sizeof( msg ), S_COLOR_RED "ERROR: %s\n", s.buffer );
-	trap::Print( msg )
+	trap::Print( msg );
 }
 
 static void Console_Warn( Console *console, const asstring_t &s )
