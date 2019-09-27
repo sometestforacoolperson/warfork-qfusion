@@ -966,6 +966,10 @@ void CG_InitDamageNumbers() {
 }
 
 void CG_AddDamageNumber( entity_state_t * ent ) {
+
+if( !cg_damageNumbers->integer )
+		return;
+        
 	DamageNumber * dn = &damage_numbers[ damage_numbers_head ];
 	VectorCopy( ent->origin, dn->origin );
 	dn->t = cg.time;
