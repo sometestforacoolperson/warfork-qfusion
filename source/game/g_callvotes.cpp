@@ -2099,6 +2099,8 @@ static void G_CallVotes_CheckState( void )
 				clientVoted[PLAYERNUM( ent )] == VOTED_NOTHING ) {
 				continue;
 			}
+       }
+
 
 		if( callvoteState.vote.callvote->need_auth && sv_mm_enable->integer ) {
 			if( client->mm_session <= 0 ) {
