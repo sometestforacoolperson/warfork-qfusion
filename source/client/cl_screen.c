@@ -744,7 +744,7 @@ void SCR_UpdateScreen( void )
 	}
 
 	cinematic = cls.state == CA_CINEMATIC ? true : false;
-	forcevsync = cinematic;
+	forcevsync = cinematic || ( cls.state == CA_DISCONNECTED && scr_con_current );
 	forceclear = cinematic;
 
 	for( i = 0; i < numframes; i++ )
