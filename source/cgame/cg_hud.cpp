@@ -2208,7 +2208,9 @@ static bool CG_LFuncFontSize( struct cg_layoutnode_s *commandnode, struct cg_lay
 	struct cg_layoutnode_s *charnode = argumentnode;
 	const char *fontsize = CG_GetStringArg( &charnode );
 
-	if( !Q_stricmp( fontsize, "con_fontsystemsmall" ) )
+	if( !Q_stricmp( fontsize, "con_fontsystemtiny" ) )
+		layout_cursor_font_size = cgs.fontSystemTinySize;
+ 	else if( !Q_stricmp( fontsize, "con_fontsystemsmall" ) )
 		layout_cursor_font_size = cgs.fontSystemSmallSize;
 	else if( !Q_stricmp( fontsize, "con_fontsystemmedium" ) )
 		layout_cursor_font_size = cgs.fontSystemMediumSize;

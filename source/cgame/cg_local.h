@@ -441,10 +441,12 @@ typedef struct
 	// fonts
 	char fontSystemFamily[MAX_QPATH];
 	char fontSystemMonoFamily[MAX_QPATH];
+    int fontSystemTinySize;
 	int fontSystemSmallSize;
 	int fontSystemMediumSize;
 	int fontSystemBigSize;
 
+    struct qfontface_s *fontSystemTiny;
 	struct qfontface_s *fontSystemSmall;
 	struct qfontface_s *fontSystemMedium;
 	struct qfontface_s *fontSystemBig;

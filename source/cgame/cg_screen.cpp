@@ -1022,7 +1022,7 @@ void CG_DrawDamageNumbers() {
 
 		char buf[ 16 ];
 		Q_snprintfz( buf, sizeof( buf ), "%g", dn.damage / 2.0f );
-		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemBig, color );
+		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemTiny, color );
 	}
 }
 
