@@ -1022,7 +1022,31 @@ void CG_DrawDamageNumbers() {
 
 		char buf[ 16 ];
 		Q_snprintfz( buf, sizeof( buf ), "%g", dn.damage / 2.0f );
-		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemTiny, color );
+
+        if( !cg_damageNumbersSize->integer )
+		return;
+        
+      	if ( cg_damageNumbersSize->integer == 1 ) // tiny
+			{
+            trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemTiny, color );
+			}
+      	else if ( cg_damageNumbersSize->integer == 2 ) // small
+			{
+			trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemSmall, color );
+			}
+      	else if ( cg_damageNumbersSize->integer == 3 ) // medium
+			{
+		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemMedium, color );
+			}
+      	else if ( cg_damageNumbersSize->integer == 4 ) // large
+			{
+			trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemBig, color );
+			}
+       	else
+			{
+			trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemSmall, color );
+			}
+        
 	}
 }
 
