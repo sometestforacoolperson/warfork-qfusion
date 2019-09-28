@@ -1015,7 +1015,59 @@ void CG_DrawDamageNumbers() {
 		coords[ 0 ] += dn.drift * frac * 8;
 
 		vec4_t color;
+
+        if ( cg_damageNumbersColor->integer == 0 ) // white
+			{
 		Vector4Copy( colorWhite, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 1 ) // black
+			{
+		Vector4Copy( colorBlack, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 2 ) // red
+			{
+		Vector4Copy( colorRed, color );
+			}            
+      	else if ( cg_damageNumbersColor->integer == 3 ) // green
+			{
+		Vector4Copy( colorGreen, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 4 ) // blue
+			{
+		Vector4Copy( colorBlue, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 5 ) // yellow
+			{
+		Vector4Copy( colorYellow, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 6 ) // orange
+			{
+		Vector4Copy( colorOrange, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 7 ) // magenta
+			{
+		Vector4Copy( colorMagenta, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 8 ) // cyan
+			{
+		Vector4Copy( colorCyan, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 9 ) // ltgrey
+			{
+		Vector4Copy( colorLtGrey, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 10 ) // mdgrey
+			{
+		Vector4Copy( colorMdGrey, color );
+			}
+      	else if ( cg_damageNumbersColor->integer == 11 ) // dkgrey
+			{
+		Vector4Copy( colorDkGrey, color );
+			}            
+       	else
+			{
+		Vector4Copy( colorWhite, color ); // white
+			}
 
 		float alpha = 1 - max( 0, frac - 0.75f ) / 0.25f;
 		color[ 3 ] *= alpha;
