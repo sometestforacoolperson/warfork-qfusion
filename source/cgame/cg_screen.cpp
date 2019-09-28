@@ -974,8 +974,6 @@ if( !cg_damageNumbers->integer )
 	VectorCopy( ent->origin, dn->origin );
 	dn->t = cg.time;
 	dn->damage = ent->damage;
-	if( dn->damage > 10 )
-		dn->damage -= dn->damage % 2;
 
 	float distance_jitter = 4;
 	dn->origin[ 0 ] += random_float( &damage_numbers_rng ) * distance_jitter * 2 - distance_jitter;
@@ -1073,30 +1071,39 @@ void CG_DrawDamageNumbers() {
 		color[ 3 ] *= alpha;
 
 		char buf[ 16 ];
-		Q_snprintfz( buf, sizeof( buf ), "%g", dn.damage / 2.0f );
-
+		Q_snprintfz( buf, sizeof( buf ), "%d", dn.damage );
+        
+       	int shadowOffset = 1 * cgs.vidHeight / 600;
+       	if( !shadowOffset )
+		shadowOffset = 1;
+        
         if( !cg_damageNumbersSize->integer )
 		return;
         
       	if ( cg_damageNumbersSize->integer == 1 ) // tiny
-			{
-            trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemTiny, color );
+			{            
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemTiny, colorBlack );
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemTiny, color );   
 			}
       	else if ( cg_damageNumbersSize->integer == 2 ) // small
 			{
-			trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemSmall, color );
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, colorBlack );
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, color );      
 			}
       	else if ( cg_damageNumbersSize->integer == 3 ) // medium
 			{
-		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemMedium, color );
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemMedium, colorBlack );
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemMedium, color );   
 			}
       	else if ( cg_damageNumbersSize->integer == 4 ) // large
 			{
-			trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemBig, color );
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemBig, colorBlack );
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemBig, color );   
 			}
        	else
 			{
-			trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_MIDDLE, buf, cgs.fontSystemSmall, color );
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, colorBlack );
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, color );   
 			}
         
 	}
