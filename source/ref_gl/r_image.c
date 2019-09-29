@@ -431,19 +431,12 @@ static int R_ReadImageFromDisk( int ctx, char *pathname, size_t pathname_size,
 	extension = ri.FS_FirstExtension( pathname, IMAGE_EXTENSIONS, NUM_IMAGE_EXTENSIONS - 1 ); // last is KTX
 	if( extension )
 	{
-		r_imginfo_t imginfo;
+
 		loaderCbInfo_t cbinfo = { ctx, side };
 
 		COM_ReplaceExtension( pathname, extension, pathname_size );
 
-		if( !Q_stricmp( extension, ".jpg" ) )
-			imginfo = LoadJPG( pathname, _R_AllocImageBufferCb, (void *)&cbinfo );
-		else if( !Q_stricmp( extension, ".tga" ) )
-			imginfo = LoadTGA( pathname, _R_AllocImageBufferCb, (void *)&cbinfo );
-		else if( !Q_stricmp( extension, ".png" ) )
-			imginfo = LoadPNG( pathname, _R_AllocImageBufferCb, (void *)&cbinfo );
-		else
-			return 0;
+		r_imginfo_t imginfo = LoadImage( pathname, _R_AllocImageBufferCb, (void *)&cbinfo );
 
 		if( imginfo.samples >= 3 )
 		{
@@ -2732,8 +2725,6 @@ void R_InitImages( void )
 	if( r_imagesPool )
 		return;
 
-	R_Imagelib_Init();
-
 	r_imagesPool = R_AllocPool( r_mempool, "Images" );
 	r_imagesLock = ri.Mutex_Create();
 
@@ -2879,7 +2870,6 @@ void R_ShutdownImages( void )
 	r_imagePathBuf = r_imagePathBuf2 = NULL;
 	r_sizeof_imagePathBuf = r_sizeof_imagePathBuf2 = 0;
 
-	R_Imagelib_Shutdown();
 }
 
 // ============================================================================
