@@ -1013,7 +1013,8 @@ void CG_DrawDamageNumbers() {
 		coords[ 0 ] += dn.drift * frac * 8;
 
 		vec4_t color;
-
+		vec4_t coloroutline;
+        
         if ( cg_damageNumbersColor->integer == 0 ) // white
 			{
 		Vector4Copy( colorWhite, color );
@@ -1067,8 +1068,11 @@ void CG_DrawDamageNumbers() {
 		Vector4Copy( colorWhite, color ); // white
 			}
 
+        Vector4Copy( colorBlack, coloroutline );
+                
 		float alpha = 1 - max( 0, frac - 0.75f ) / 0.25f;
-		color[ 3 ] *= alpha;
+		color[ 3 ] *= alpha;  
+		coloroutline[ 3 ] *= alpha;
 
 		char buf[ 16 ];
 		Q_snprintfz( buf, sizeof( buf ), "%d", dn.damage );
@@ -1082,27 +1086,27 @@ void CG_DrawDamageNumbers() {
         
       	if ( cg_damageNumbersSize->integer == 1 ) // tiny
 			{            
-  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemTiny, colorBlack );
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemTiny, coloroutline );
   		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemTiny, color );   
 			}
       	else if ( cg_damageNumbersSize->integer == 2 ) // small
 			{
-  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, colorBlack );
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, coloroutline );
   		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, color );      
 			}
       	else if ( cg_damageNumbersSize->integer == 3 ) // medium
 			{
-  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemMedium, colorBlack );
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemMedium, coloroutline );
   		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemMedium, color );   
 			}
       	else if ( cg_damageNumbersSize->integer == 4 ) // large
 			{
-  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemBig, colorBlack );
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemBig, coloroutline );
   		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemBig, color );   
 			}
        	else
 			{
-  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, colorBlack );
+  		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, coloroutline );
   		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, color );   
 			}
         

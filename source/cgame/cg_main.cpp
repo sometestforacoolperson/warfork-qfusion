@@ -790,7 +790,7 @@ static void CG_RegisterVariables( void )
 	cg_showObituaries =	trap_Cvar_Get( "cg_showObituaries", va( "%i", CG_OBITUARY_HUD|CG_OBITUARY_CENTER ), CVAR_ARCHIVE );
     cg_damageNumbers = trap_Cvar_Get( "cg_damageNumbers", "1", CVAR_ARCHIVE );
     cg_damageNumbersSize = trap_Cvar_Get( "cg_damageNumbersSize", "2", CVAR_ARCHIVE );
-    cg_damageNumbersColor = trap_Cvar_Get( "cg_damageNumbersColor", "6", CVAR_ARCHIVE );
+    cg_damageNumbersColor = trap_Cvar_Get( "cg_damageNumbersColor", "5", CVAR_ARCHIVE );
 	cg_autoaction_demo =	trap_Cvar_Get( "cg_autoaction_demo", "0", CVAR_ARCHIVE );
 	cg_autoaction_screenshot =  trap_Cvar_Get( "cg_autoaction_screenshot", "0", CVAR_ARCHIVE );
 	cg_autoaction_stats =	trap_Cvar_Get( "cg_autoaction_stats", "0", CVAR_ARCHIVE );

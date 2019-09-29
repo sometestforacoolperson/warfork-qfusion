@@ -552,7 +552,9 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
 	{
 		if( client )
 			targ->flags |= FL_NO_KNOCKBACK;
+           
 		G_Killed( targ, inflictor, attacker, HEALTH_TO_INT( take ), point, mod );
+      
 	}
 	else 
 	{
