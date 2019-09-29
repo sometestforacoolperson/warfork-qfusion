@@ -2170,14 +2170,10 @@ void R_ScreenShot( const char *filename, int x, int y, int width, int height,
 			flipx, flipy, flipdiagonal ); 
 	}
 
-	if( !Q_stricmp( extension, ".jpg" ) ) {
-		if( WriteJPG( filename, &imginfo, quality ) && !silent )
-			Com_Printf( "Wrote %s\n", filename );
-
-	} else {  
-		if( WritePNG( filename, &imginfo ) && !silent )
-			Com_Printf( "Wrote %s\n", filename );
+	if( WritePNG( filename, &imginfo ) && !silent ) {
+		Com_Printf( "Wrote %s\n", filename );
 	}
+    
 }
 
 //=======================================================
