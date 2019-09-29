@@ -44,12 +44,8 @@ r_imginfo_t LoadImage( const char * filename, uint8_t * ( *allocbuf )( void *, s
     
 }
 
-bool WriteTGA( const char * filename, r_imginfo_t * img, int quality ) {
-	return stbi_write_tga( filename, img->width, img->height, img->samples, img->pixels ) != 0;
-}
-
-bool WriteJPG( const char * filename, r_imginfo_t * img, int quality ) {
-	return stbi_write_jpg( filename, img->width, img->height, img->samples, img->pixels, quality ) != 0;
+bool WritePNG( const char * filename, r_imginfo_t * img ) {
+return stbi_write_png( filename, img->width, img->height, img->samples, img->pixels, 0 ) != 0;
 }
 
 /*

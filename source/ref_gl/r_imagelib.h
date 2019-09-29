@@ -40,7 +40,6 @@ typedef struct
 
 r_imginfo_t LoadImage( const char * filename, uint8_t *( *allocbuf )( void *, size_t, const char *, int ), void *uptr );
 
-bool WriteTGA( const char * filename, r_imginfo_t *info, int quality );
-bool WriteJPG( const char * filename, r_imginfo_t *info, int quality );
+bool WritePNG( const char * filename, r_imginfo_t *info );
 
 void DecompressETC1( const uint8_t *in, int width, int height, uint8_t *out, bool bgr );

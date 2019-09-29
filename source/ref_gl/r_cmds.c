@@ -42,36 +42,16 @@ static struct tm *R_Localtime( const time_t time, struct tm* _tm )
 */
 void R_TakeScreenShot( const char *path, const char *name, const char *fmtString, int x, int y, int w, int h, bool silent, bool media )
 {
-	const char *extension;
+	const char *extension = ".png";
 	size_t path_size = strlen( path ) + 1;
 	char *checkname = NULL;
 	size_t checkname_size = 0;
-	int quality;
+
 	
 	if( !R_IsRenderingToScreen() )
 		return;
 	
-/*
-* R_TakeScreenShot Temporary
-* Force local TGA. Remove this later. Steam is handling screenshots anyway.
-*/
 
-	extension = ".tga";
-	quality = 100;
-        
-
-/* 
-*Original R_TakeScreenShot
-	
-	if( r_screenshot_jpeg->integer ) {
-		extension = ".jpg";
-		quality = r_screenshot_jpeg_quality->integer;
-	}
-	else {
-		extension = ".tga";
-		quality = 100;
-	}
-*/
 
 	
 	if( name && name[0] && Q_stricmp(name, "*") )
@@ -118,11 +98,7 @@ void R_TakeScreenShot( const char *path, const char *name, const char *fmtString
 				Q_strncpyz( lastFmtString, fmtString, sizeof( lastFmtString ) );
 				r_screenshot_fmtstr->modified = false;
 			}
-			if( r_screenshot_jpeg->modified )
-			{
-				lastIndex = 0;
-				r_screenshot_jpeg->modified = false;
-			}
+	
 		}
 		else
 		{
@@ -150,9 +126,7 @@ void R_TakeScreenShot( const char *path, const char *name, const char *fmtString
 		lastIndex++;
 	}
 	
-	R_ScreenShot( checkname, 
-				 x, y, w, h, quality,
-				 false, false, false, silent );
+R_ScreenShot( checkname, x, y, w, h, false, true, false, silent );
 	
 	if( media ) {
 		ri.FS_AddFileToMedia( checkname );
@@ -270,7 +244,7 @@ void R_TakeEnvShot( const char *path, const char *name, unsigned maxPixels )
 		Q_snprintfz( checkname, checkname_size, "%s%s_%s", path, name, cubemapShots[i].suf );
 		COM_DefaultExtension( checkname, ".tga", checkname_size );
 		
-		R_ScreenShot( checkname, 0, 0, size, size, 100,
+		R_ScreenShot( checkname, 0, 0, size, size,
 					 ( cubemapShots[i].flags & IT_FLIPX ) ? true : false, 
 					 ( cubemapShots[i].flags & IT_FLIPY ) ? true : false, 
 					 ( cubemapShots[i].flags & IT_FLIPDIAGONAL ) ? true : false,
