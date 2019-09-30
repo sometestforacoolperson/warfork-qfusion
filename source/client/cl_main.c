@@ -2075,7 +2075,7 @@ static void CL_InitLocal( void )
 	cl_stereo =		Cvar_Get( "cl_stereo", "0", CVAR_ARCHIVE );
 
 	cl_maxfps =		Cvar_Get( "cl_maxfps", "250", CVAR_ARCHIVE );
-	cl_sleep =		Cvar_Get( "cl_sleep", "1", CVAR_ARCHIVE );
+	cl_sleep =		Cvar_Get( "cl_sleep", "0", CVAR_ARCHIVE );
 	cl_pps =		Cvar_Get( "cl_pps", "40", CVAR_ARCHIVE );
 	cl_compresspackets =	Cvar_Get( "cl_compresspackets", "1", CVAR_ARCHIVE );
 
