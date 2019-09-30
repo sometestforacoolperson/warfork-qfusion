@@ -2097,26 +2097,22 @@ SCREEN SHOTS
 /*
 * R_ScreenShot
 */
-void R_ScreenShot( const char *filename, int x, int y, int width, int height, 
-	bool flipx, bool flipy, bool flipdiagonal, bool silent )
-{
+void R_ScreenShot( const char *filename, int x, int y, int width, int height,
+				   bool flipx, bool flipy, bool flipdiagonal, bool silent ) {
 	size_t size, buf_size;
 	uint8_t *buffer, *flipped, *rgb, *rgba;
 	r_imginfo_t imginfo;
 	const char *extension;
 
-	if( !R_IsRenderingToScreen() )
-		return;
-
 	extension = COM_FileExtension( filename );
-	if( !extension )
-	{
+	if( !extension ) {
 		Com_Printf( "R_ScreenShot: Invalid filename\n" );
 		return;
 	}
 
 	size = width * height * 3;
-	buf_size = width * height * 4;
+	// add extra space incase we need to flip the screenshot
+	buf_size = width * height * 4 + size;
 	if( buf_size > r_screenShotBufferSize ) {
 		if( r_screenShotBuffer ) {
 			R_Free( r_screenShotBuffer );
@@ -2128,8 +2124,7 @@ void R_ScreenShot( const char *filename, int x, int y, int width, int height,
 	buffer = r_screenShotBuffer;
 	if( flipx || flipy || flipdiagonal ) {
 		flipped = buffer + size;
-	}
-	else {
+	} else {
 		flipped = NULL;
 	}
 
@@ -2137,43 +2132,25 @@ void R_ScreenShot( const char *filename, int x, int y, int width, int height,
 	imginfo.height = height;
 	imginfo.samples = 3;
 	imginfo.pixels = flipped ? flipped : buffer;
-	imginfo.comp = Q_stricmp( extension, ".jpg" ) ? IMGCOMP_BGR : IMGCOMP_RGB;
 
 	qglReadPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer );
 
 	rgb = rgba = buffer;
-	if( imginfo.comp == IMGCOMP_BGR )
-	{
-		while( ( size_t )( rgb - buffer ) < size )
-		{
-			int b = rgba[0]; // the first 3 pixels of rgb and rgba are aliased
-			rgb[0] = rgba[2];
-			rgb[1] = rgba[1];
-			rgb[2] = b;
-			rgb += 3;
-			rgba += 4;
-		}
-	}
-	else
-	{
-		while( ( size_t )( rgb - buffer ) < size )
-		{
-			*( rgb++ ) = *( rgba++ );
-			*( rgb++ ) = *( rgba++ );
-			*( rgb++ ) = *( rgba++ );
-			rgba++;
-		}
+	while( ( size_t )( rgb - buffer ) < size ) {
+		*( rgb++ ) = *( rgba++ );
+		*( rgb++ ) = *( rgba++ );
+		*( rgb++ ) = *( rgba++ );
+		rgba++;
 	}
 
 	if( flipped ) {
-		R_FlipTexture( buffer, flipped, width, height, 3, 
-			flipx, flipy, flipdiagonal ); 
+		R_FlipTexture( buffer, flipped, width, height, 3,
+					   flipx, flipy, flipdiagonal );
 	}
 
 	if( WritePNG( filename, &imginfo ) && !silent ) {
 		Com_Printf( "Wrote %s\n", filename );
 	}
-    
 }
 
 //=======================================================
