@@ -1065,7 +1065,7 @@ void CG_DrawDamageNumbers() {
 			}            
        	else
 			{
-		Vector4Copy( colorWhite, color ); // white
+		Vector4Copy( colorYellow, color ); // white
 			}
 
         Vector4Copy( colorBlack, coloroutline );
