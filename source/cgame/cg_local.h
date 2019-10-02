@@ -883,6 +883,7 @@ extern cvar_t *cg_showObituaries;
 extern cvar_t *cg_damageNumbers;
 extern cvar_t *cg_damageNumbersSize;
 extern cvar_t *cg_damageNumbersColor;
+extern cvar_t *cg_damageNumbersDistance;
 extern cvar_t *cg_volume_hitsound;    // hit sound volume
 extern cvar_t *cg_autoaction_demo;
 extern cvar_t *cg_autoaction_screenshot;

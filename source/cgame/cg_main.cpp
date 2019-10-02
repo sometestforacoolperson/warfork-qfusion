@@ -106,6 +106,7 @@ cvar_t *cg_showObituaries;
 cvar_t *cg_damageNumbers;
 cvar_t *cg_damageNumbersSize;
 cvar_t *cg_damageNumbersColor;
+cvar_t *cg_damageNumbersDistance;
 cvar_t *cg_particles;
 cvar_t *cg_showhelp;
 cvar_t *cg_showClamp;
@@ -789,8 +790,9 @@ static void CG_RegisterVariables( void )
 	cg_drawEntityBoxes =	trap_Cvar_Get( "cg_drawEntityBoxes", "0", CVAR_DEVELOPER );
 	cg_showObituaries =	trap_Cvar_Get( "cg_showObituaries", va( "%i", CG_OBITUARY_HUD|CG_OBITUARY_CENTER ), CVAR_ARCHIVE );
     cg_damageNumbers = trap_Cvar_Get( "cg_damageNumbers", "1", CVAR_ARCHIVE );
-    cg_damageNumbersSize = trap_Cvar_Get( "cg_damageNumbersSize", "2", CVAR_ARCHIVE );
+    cg_damageNumbersSize = trap_Cvar_Get( "cg_damageNumbersSize", "1", CVAR_ARCHIVE );
     cg_damageNumbersColor = trap_Cvar_Get( "cg_damageNumbersColor", "5", CVAR_ARCHIVE );
+    cg_damageNumbersDistance = trap_Cvar_Get( "cg_damageNumbersDistance", "48", CVAR_ARCHIVE );
 	cg_autoaction_demo =	trap_Cvar_Get( "cg_autoaction_demo", "0", CVAR_ARCHIVE );
 	cg_autoaction_screenshot =  trap_Cvar_Get( "cg_autoaction_screenshot", "0", CVAR_ARCHIVE );
 	cg_autoaction_stats =	trap_Cvar_Get( "cg_autoaction_stats", "0", CVAR_ARCHIVE );

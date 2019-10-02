@@ -970,15 +970,22 @@ void CG_AddDamageNumber( entity_state_t * ent ) {
 if( !cg_damageNumbers->integer )
 		return;
         
+if( !cg_damageNumbersDistance->integer )
+		return;        
+
+    if( cg_damageNumbersDistance->integer < 1 || cg_damageNumbersDistance->integer > 200 ) {
+	cg_damageNumbersDistance->integer = 48;
+    }
+            
 	DamageNumber * dn = &damage_numbers[ damage_numbers_head ];
 	VectorCopy( ent->origin, dn->origin );
 	dn->t = cg.time;
 	dn->damage = ent->damage;
-
+            
 	float distance_jitter = 4;
 	dn->origin[ 0 ] += random_float( &damage_numbers_rng ) * distance_jitter * 2 - distance_jitter;
 	dn->origin[ 1 ] += random_float( &damage_numbers_rng ) * distance_jitter * 2 - distance_jitter;
-	dn->origin[ 2 ] += 48;
+	dn->origin[ 2 ] += cg_damageNumbersDistance->integer;
 	dn->drift = random_float( &damage_numbers_rng ) * 2 - 1;
 
     damage_numbers_head = ( damage_numbers_head + 1 ) % ARRAY_COUNT( damage_numbers );
