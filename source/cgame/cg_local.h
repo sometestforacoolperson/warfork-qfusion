@@ -203,7 +203,7 @@ typedef struct
 	cgs_media_handle_t *sfxLasergunStrongQuadHum;
 	cgs_media_handle_t *sfxLasergunStrongStop;
 	cgs_media_handle_t *sfxLasergunHit[3];
-	
+
 	cgs_media_handle_t *sfxElectroboltHit;
 
 	cgs_media_handle_t *sfxQuadFireSound;
@@ -884,6 +884,7 @@ extern cvar_t *cg_damageNumbers;
 extern cvar_t *cg_damageNumbersSize;
 extern cvar_t *cg_damageNumbersColor;
 extern cvar_t *cg_damageNumbersDistance;
+extern cvar_t *cg_damageNumbersOffset;
 extern cvar_t *cg_volume_hitsound;    // hit sound volume
 extern cvar_t *cg_autoaction_demo;
 extern cvar_t *cg_autoaction_screenshot;
@@ -1239,6 +1240,6 @@ void CG_GetBoundKeysString( const char *cmd, char *keys, size_t keysSize );
 /**
  * Checks a chat message for local player nick and flashes window on a match
  */
-void CG_FlashChatHighlight( const unsigned int from, const char *text ); 
+void CG_FlashChatHighlight( const unsigned int from, const char *text );
 
 //=================================================

@@ -120,7 +120,7 @@ int scr_erase_center;
 
 /*
 * CG_CenterPrint
-* 
+*
 * Called for important messages that should stay in the center of the screen
 * for a few moments
 */
@@ -160,7 +160,7 @@ static void CG_DrawCenterString( void )
 static void CG_CheckDamageCrosshair( void )
 {
 	scr_damagetime_off -= cg.frameTime;
-	if( scr_damagetime_off <= 0 ) 
+	if( scr_damagetime_off <= 0 )
 	{
 		if ( ! cg_crosshair_damage_color->modified )
 			return;
@@ -219,7 +219,7 @@ void CG_ShowQuickMenu( int state )
 
 /*
 * CG_CalcVrect
-* 
+*
 * Sets scr_vrect, the coordinates of the rendered window
 */
 void CG_CalcVrect( void )
@@ -255,7 +255,7 @@ void CG_CalcVrect( void )
 
 /*
 * CG_SizeUp_f
-* 
+*
 * Keybinding command
 */
 static void CG_SizeUp_f( void )
@@ -265,7 +265,7 @@ static void CG_SizeUp_f( void )
 
 /*
 * CG_SizeDown_f
-* 
+*
 * Keybinding command
 */
 static void CG_SizeDown_f( void )
@@ -497,7 +497,7 @@ void CG_DrawCrosshair( int x, int y, int align )
 
 	if( cg_crosshair_color->modified || cg_crosshair_damage_color->modified )
 	{
-		if ( cg_crosshair_damage_color->modified ) 
+		if ( cg_crosshair_damage_color->modified )
 		{
 			if ( scr_damagetime_off <= 0 )
 				scr_damagetime_off = 0.3;
@@ -537,7 +537,7 @@ void CG_DrawCrosshair( int x, int y, int align )
 
 	if( cg_crosshair_strong_color->modified || cg_crosshair_damage_color->modified )
 	{
-		if ( cg_crosshair_damage_color->modified ) 
+		if ( cg_crosshair_damage_color->modified )
 		{
 			rgbcolor = COM_ReadColorRGBString( cg_crosshair_damage_color->string );
 		} else {
@@ -642,7 +642,7 @@ void CG_DrawClock( int x, int y, int align, struct qfontface_s *font, vec4_t col
 		// count downwards when having a duration
 		if( duration && ( cg_showTimer->integer != 3 ) )
 		{
-			if( duration + startTime < curtime ) 
+			if( duration + startTime < curtime )
 				duration = curtime - startTime; // avoid negative results
 
 			clocktime = startTime + duration - curtime;
@@ -928,7 +928,7 @@ void CG_DrawTeamMates( void )
 		coords[1] -= pic_size / 2;
 		clamp( coords[0], 0, cgs.vidWidth - pic_size );
 		clamp( coords[1], 0, cgs.vidHeight - pic_size );
-		
+
 		CG_TeamColor( cg.predictedPlayerState.stats[STAT_TEAM], color );
 
 		if( cent->current.effects & EF_CARRIER )
@@ -969,19 +969,19 @@ void CG_AddDamageNumber( entity_state_t * ent ) {
 
 if( !cg_damageNumbers->integer )
 		return;
-        
+
 if( !cg_damageNumbersDistance->integer )
-		return;        
+		return;
 
     if( cg_damageNumbersDistance->integer < 1 || cg_damageNumbersDistance->integer > 200 ) {
 	cg_damageNumbersDistance->integer = 48;
     }
-            
+
 	DamageNumber * dn = &damage_numbers[ damage_numbers_head ];
 	VectorCopy( ent->origin, dn->origin );
 	dn->t = cg.time;
 	dn->damage = ent->damage;
-            
+
 	float distance_jitter = 4;
 	dn->origin[ 0 ] += random_float( &damage_numbers_rng ) * distance_jitter * 2 - distance_jitter;
 	dn->origin[ 1 ] += random_float( &damage_numbers_rng ) * distance_jitter * 2 - distance_jitter;
@@ -1021,7 +1021,7 @@ void CG_DrawDamageNumbers() {
 
 		vec4_t color;
 		vec4_t coloroutline;
-        
+
         if ( cg_damageNumbersColor->integer == 0 ) // white
 			{
 		Vector4Copy( colorWhite, color );
@@ -1033,7 +1033,7 @@ void CG_DrawDamageNumbers() {
       	else if ( cg_damageNumbersColor->integer == 2 ) // red
 			{
 		Vector4Copy( colorRed, color );
-			}            
+			}
       	else if ( cg_damageNumbersColor->integer == 3 ) // green
 			{
 		Vector4Copy( colorGreen, color );
@@ -1069,54 +1069,61 @@ void CG_DrawDamageNumbers() {
       	else if ( cg_damageNumbersColor->integer == 11 ) // dkgrey
 			{
 		Vector4Copy( colorDkGrey, color );
-			}            
+			}
        	else
 			{
 		Vector4Copy( colorYellow, color ); // white
 			}
 
         Vector4Copy( colorBlack, coloroutline );
-                
+
 		float alpha = 1 - max( 0, frac - 0.75f ) / 0.25f;
-		color[ 3 ] *= alpha;  
+		color[ 3 ] *= alpha;
 		coloroutline[ 3 ] *= alpha;
 
 		char buf[ 16 ];
 		Q_snprintfz( buf, sizeof( buf ), "%d", dn.damage );
-        
-       	int shadowOffset = 1 * cgs.vidHeight / 600;
+
+        if( !cg_damageNumbersOffset )
+		return;
+
+    if( cg_damageNumbersOffset->integer < 1 || cg_damageNumbersOffset->integer > 5 ) {
+	cg_damageNumbersOffset->integer = 1;
+    }
+
+       	int shadowOffset = cg_damageNumbersOffset->integer * cgs.vidHeight / 600;
        	if( !shadowOffset )
 		shadowOffset = 1;
-        
+
         if( !cg_damageNumbersSize->integer )
 		return;
-        
+
       	if ( cg_damageNumbersSize->integer == 1 ) // tiny
-			{            
+			{
   		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemTiny, coloroutline );
-  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemTiny, color );   
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemTiny, color );
 			}
       	else if ( cg_damageNumbersSize->integer == 2 ) // small
 			{
   		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, coloroutline );
-  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, color );      
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, color );
 			}
       	else if ( cg_damageNumbersSize->integer == 3 ) // medium
 			{
   		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemMedium, coloroutline );
-  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemMedium, color );   
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemMedium, color );
 			}
       	else if ( cg_damageNumbersSize->integer == 4 ) // large
 			{
   		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemBig, coloroutline );
-  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemBig, color );   
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemBig, color );
 			}
        	else
 			{
   		trap_SCR_DrawString( coords[0] + shadowOffset, coords[1] + shadowOffset, ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, coloroutline );
-  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, color );   
+  		trap_SCR_DrawString( coords[0], coords[1], ALIGN_CENTER_TOP, buf, cgs.fontSystemSmall, color );
 			}
-        
+
 	}
 }
 
@@ -1355,13 +1362,13 @@ static void CG_InGameMenu( void )
 	if( GS_MatchState() <= MATCH_STATE_WARMUP && realteam != TEAM_SPECTATOR )
 		is_ready = ( ( cg.predictedPlayerState.stats[STAT_LAYOUTS] & STAT_LAYOUT_READY ) != 0 );
 
-	Q_snprintfz( menuparms, sizeof( menuparms ), 
-		"menu_open game" 
-			" is_teambased %i" 
-			" team %i" 
-			" queue %i" 
-			" needs_ready %i" 
-			" is_ready %i" 
+	Q_snprintfz( menuparms, sizeof( menuparms ),
+		"menu_open game"
+			" is_teambased %i"
+			" team %i"
+			" queue %i"
+			" needs_ready %i"
+			" is_ready %i"
 			" gametype \"%s\""
 			" has_gametypemenu %i"
 			" team_spec %i"
@@ -1433,7 +1440,7 @@ void CG_DrawLoading( void )
 	if( cgs.precacheCount && cgs.precacheTotal )
 	{
 		struct shader_s *shader = trap_R_RegisterPic( UI_SHADER_LOADINGBAR );
-		int width = 480 * scale; 
+		int width = 480 * scale;
 		int height = 32 * scale;
 		float percent = ( ( float )cgs.precacheCount / ( float )cgs.precacheTotal );
 		int barWidth = ( width - height ) * bound( 0.0f, percent, 1.0f );
@@ -1472,7 +1479,7 @@ bool CG_LoadingItemName( const char *str )
 
 /*
 * CG_TileClearRect
-* 
+*
 * This repeats tile graphic to fill the screen around a sized down
 * refresh window.
 */
@@ -1488,7 +1495,7 @@ static void CG_TileClearRect( int x, int y, int w, int h, struct shader_s *shade
 
 /*
 * CG_TileClear
-* 
+*
 * Clear any parts of the tiled background that were drawn on last frame
 */
 void CG_TileClear( void )
