@@ -16,7 +16,7 @@ General:
 - Fix callvote cooldown on votes that never started.
 - The intro video will no longer attempt to play upon launching the game the first time.
 - Added maps wfca2, wfctf5, wfdm20, wfdm3, wfdm8. Updated wftutorial1 (map description) and wfamphi1's ceiling.
-- The console will now display a maximum of 3000 lines instead of 500, which allows commands such as "cvarlist" to be executed read fully.
+- The console will now display a maximum of 3000 lines instead of 500, which allows commands such as "cvarlist" to be executed and read fully.
 
 Engine:
 - Fixed an issue with messing system mouse sensitivity/accel on Windows. Please check that you have "in_dinput" cvar set to 1 via console or config.cfg.
