@@ -555,24 +555,28 @@ static void G_Fire_SunflowerPattern( edict_t *self, vec3_t start, vec3_t dir, in
 		{
 			if( game.edicts[trace.ent].takedamage )
 			{
-				G_Damage( &game.edicts[trace.ent], self, self, dir, dir, trace.endpos, damage, kick, stun, dflags, MOD_RIOTGUN_W );
+				G_Damage( &game.edicts[trace.ent], self, self, dir, dir, trace.endpos, damage, kick, stun, dflags, mod );
                 if( !GS_IsTeamDamage( &game.edicts[trace.ent].s, &self->s ) && trace.ent <= MAX_CLIENTS ) {
 				hits[trace.ent]++;
 			}
 			}
  
- for( int i = 1; i <= MAX_CLIENTS; i++ ) {
-		if( hits[i] == 0 )
-			continue;
-		edict_t * target = &game.edicts[i];
-		edict_t * damage = G_SpawnEvent( EV_DAMAGE, 0, target->s.origin );
-		damage->r.svflags |= SVF_ONLYOWNER;
-		damage->s.ownerNum = ENTNUM( self );
-		damage->s.damage = HEALTH_TO_INT( hits[i] * damage );
-	}
+
     
 		}   
 	} 
+    
+     for( int i = 1; i <= MAX_CLIENTS; i++ ) {
+		if( hits[i] == 0 )
+			continue;
+		edict_t * target = &game.edicts[i];
+		edict_t * ev = G_SpawnEvent( EV_DAMAGE, 0, target->s.origin );
+		ev->r.svflags |= SVF_ONLYOWNER;
+		ev->s.ownerNum = ENTNUM( self );
+		ev->s.damage = HEALTH_TO_INT( hits[i] * damage );
+	}
+    
+    
 }
 
 #if 0
