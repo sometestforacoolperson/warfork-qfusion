@@ -6,7 +6,7 @@ https://creativecommons.org/publicdomain/zero/1.0/legalcode
 https://creativecommons.org/licenses/by-sa/3.0/us/
 https://creativecommons.org/licenses/by-sa/3.0/us/legalcode
 
-Warsow (https://github.com/Warsow) assets* are licensed under the Creative Commons Attribution-ShareAlike 3.0 International License.
+Warsow (https://github.com/Warsow) assets* are licensed under the Creative Commons Attribution-ShareAlike 4.0 International License.
 To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 
 * Applicable to any asset not listed in warfork_assets.txt.
