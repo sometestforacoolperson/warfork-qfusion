@@ -109,11 +109,7 @@ static void S_SoundList_f( void )
 		{
 			size = sc->length*sc->width*sc->channels;
 			total += size;
-			if( sc->loopstart < sc->length )
-				Com_Printf( "L" );
-			else
-				Com_Printf( " " );
-			Com_Printf( "(%2db) %6i : %s\n", sc->width*8, size, sfx->name );
+					Com_Printf( " (%2db) %6i : %s\n", sc->width * 8, size, sfx->name );
 		}
 		else
 		{
