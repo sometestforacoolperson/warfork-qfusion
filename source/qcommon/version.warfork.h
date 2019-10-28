@@ -97,11 +97,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #ifdef PUBLIC_BUILD
-#define APP_MATCHMAKER_URL				"https://mm.forbidden.gg:1338"
-#define APP_MATCHMAKER_WEB_URL			"https://www.forbidden.gg/wmm/"
+#define APP_MATCHMAKER_URL              "https://forbidden.gg:1337"
+#define APP_MATCHMAKER_WEB_URL          "https://forbidden.gg/wmm/"
 #else
-#define APP_MATCHMAKER_URL				"http://mm-dev.forbidden.gg:1337"
-#define APP_MATCHMAKER_WEB_URL			"http://www-dev.forbidden.gg/wmm/"
+#define APP_MATCHMAKER_URL              "http://forbidden.gg:1337"
+#define APP_MATCHMAKER_WEB_URL          "http://forbidden.gg/wmm/"
 #endif
 
 #ifndef APP_UI_BASEPATH
