@@ -18,15 +18,13 @@ file(GLOB SND_QF_SOURCES
     "../gameshared/q_*.c"
 )
 
-if (USE_SDL2 OR (${CMAKE_SYSTEM_NAME} MATCHES "Linux"))
+if (USE_SDL2 OR (UNIX AND NOT APPLE))
     file(GLOB SND_QF_PLATFORM_SOURCES
         "../sdl/sdl_snd.c"
     )
 
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	set(SND_QF_PLATFORM_LIBRARIES ${SDL2_LIBRARY} "m")
-    else()
-	set(SND_QF_PLATFORM_LIBRARIES ${SDL2_LIBRARY})
+    if (UNIX AND NOT APPLE)
+	set(SND_QF_PLATFORM_LIBRARIES ${SDL2_LIBRARY} m)
     endif()
 else()
     file(GLOB SND_QF_PLATFORM_SOURCES

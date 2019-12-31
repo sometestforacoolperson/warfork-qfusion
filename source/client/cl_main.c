@@ -2682,8 +2682,13 @@ void CL_Frame( int realmsec, int gamemsec )
 		sleep = sleep || (cls.state == CA_CINEMATIC || cls.state == CA_DISCONNECTED);
 		sleep = sleep || !VID_AppIsActive(); // FIXME: not sure about listen server here..
 
+#ifndef __OpenBSD__
 		if( sleep && minMsec - extraMsec > 1 )
 			Sys_Sleep( 1 );
+#else
+		if( sleep && minMsec - extraMsec > 10 )
+			Sys_Sleep( 10 );
+#endif
 		return;
 	}
 

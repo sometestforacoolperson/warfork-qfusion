@@ -36,23 +36,21 @@ if (USE_SDL2)
 
 	set(REF_GL_PLATFORM_LIBRARIES ${SDL2_LIBRARY})
 else()
-	if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	if (WIN32)
 		file(GLOB REF_GL_PLATFORM_SOURCES
 			"../win32/win_glw.c"
 			"../win32/win_qgl.c"
 			)
 
 		set(REF_GL_PLATFORM_LIBRARIES "")
-	endif()
-
-	if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	elseif (NOT APPLE)
 		file(GLOB REF_GL_PLATFORM_SOURCES
 			"../unix/unix_glw.c"
 			"../unix/unix_qgl.c"
 			"../unix/unix_xpm.c"
 			)
 
-		set(REF_GL_PLATFORM_LIBRARIES "X11" "Xext" "Xinerama" "Xrandr" "Xxf86vm" "m")
+		set(REF_GL_PLATFORM_LIBRARIES X11 Xext Xinerama Xrandr Xxf86vm m)
 	endif()
 endif()
 
