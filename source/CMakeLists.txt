@@ -30,16 +30,6 @@ endif()
 option(USE_SDL2 "Build using SDL2" OFF)
 option(GAME_MODULES_ONLY "Only build game modules" OFF)
 
-# We build angelscript and libRocket from source
-
-set(ANGELSCRIPT_DIR ${CMAKE_HOME_DIRECTORY}/../third-party/angelscript/sdk/angelscript)
-set(ANGELSCRIPT_INCLUDE_DIR ${ANGELSCRIPT_DIR}/include/)
-add_subdirectory(${ANGELSCRIPT_DIR}/projects/cmake ${ANGELSCRIPT_DIR}/lib/)
-
-set(LIBROCKET_DIR ${CMAKE_HOME_DIRECTORY}/../third-party/libRocket)
-set(LIBROCKET_INCLUDE_DIR ${LIBROCKET_DIR}/Include)
-set(LIBROCKET_SOURCE_DIR ${LIBROCKET_DIR}/Source)
-
 # Windows specific settings
 if (WIN32)
     set(QFUSION_WINDOWS_ARCH "x86")
@@ -175,6 +165,16 @@ if (NOT GAME_MODULES_ONLY)
         add_definitions(-DUSE_SDL2)
     endif()
 endif()
+
+# We build angelscript and libRocket from source
+
+set(ANGELSCRIPT_DIR ${CMAKE_HOME_DIRECTORY}/../third-party/angelscript/sdk/angelscript)
+set(ANGELSCRIPT_INCLUDE_DIR ${ANGELSCRIPT_DIR}/include/)
+add_subdirectory(${ANGELSCRIPT_DIR}/projects/cmake ${ANGELSCRIPT_DIR}/lib/)
+
+set(LIBROCKET_DIR ${CMAKE_HOME_DIRECTORY}/../third-party/libRocket)
+set(LIBROCKET_INCLUDE_DIR ${LIBROCKET_DIR}/Include)
+set(LIBROCKET_SOURCE_DIR ${LIBROCKET_DIR}/Source)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
     if (WIN32)
