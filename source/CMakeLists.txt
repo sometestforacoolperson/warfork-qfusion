@@ -160,6 +160,10 @@ if (NOT GAME_MODULES_ONLY)
     find_package(ZLIB REQUIRED)
     find_package(Freetype REQUIRED)
     find_package(OpenAL)
+    if (NOT WIN32)
+        find_package(X11 REQUIRED)
+        find_package(OpenGL REQUIRED)
+    endif()
 
     # We need SDL only on non-Windows platforms or when with SDL2-backend
     if (USE_SDL2 OR (UNIX AND NOT APPLE))
