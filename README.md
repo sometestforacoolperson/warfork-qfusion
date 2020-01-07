@@ -2,4 +2,4 @@
 
 Powered by Qfusion (https://github.com/qfusion)
 
-`Those who make peaceful revolution impossible will make violent revolution inevitable.`
+`Note: Commits in this branch are not reviewed by Team Forbidden LLC and are graciously provided by community member https://github.com/goleo108 (Discord: goleo#8678). We accept no liability whatsoever for any loss or damage howsoever arising.`
