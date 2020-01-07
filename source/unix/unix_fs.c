@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../qcommon/sys_fs.h"
 
-#define __USE_BSD
-
 #include <dirent.h>
 
 #ifdef __linux__
@@ -37,8 +35,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../android/android_sys.h"
 #endif
 
-// Mac OS X and FreeBSD don't know the readdir64 and dirent64
-#if ( defined (__FreeBSD__) || defined (__ANDROID__) || !defined(_LARGEFILE64_SOURCE) )
+// I am sure readdir64 and dirent64 are Linux-specific.
+#if ( !defined (__linux__) || !defined(_LARGEFILE64_SOURCE) )
 #define readdir64 readdir
 #define dirent64 dirent
 #endif
@@ -496,7 +494,7 @@ void *Sys_FS_MMapFile( int fileno, size_t size, size_t offset, void **mapping, s
 
 	*mapping = (void *)1;
 	*mapping_offset = offsetpad;
-	return data + offsetpad;
+	return (char *)data + offsetpad;
 }
 
 /*

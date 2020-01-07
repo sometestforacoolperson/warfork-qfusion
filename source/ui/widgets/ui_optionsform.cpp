@@ -153,11 +153,6 @@ void OptionsForm::ProcessEvent( Rocket::Core::Event &ev )
 // predicate for foreachChildren
 namespace {
 
-	// std::bind2nd( std::mem_fun(&Rocket::Core::Element::HasAttribute), "cvar" ) fails on me?
-	bool has_attr_cvar( Rocket::Core::Element *elem ) {
-		return elem->HasAttribute( "cvar" );
-	}
-
 	bool is_realtime_control( Rocket::Core::Element *elem ) {
 		return ( elem->GetAttribute<int>( "realtime", 0 ) != 0 );
 	}

@@ -371,9 +371,9 @@ static void R_FillVertexBuffer ## intype ## outtype( intype *in, size_t size, \
 	} \
 }
 
-R_FillVertexBuffer_f(float, float, );
-R_FillVertexBuffer_f(float, GLhalfARB, _mesa_float_to_half);
-R_FillVertexBuffer_f(int, int, );
+R_FillVertexBuffer_f(float, float, )
+R_FillVertexBuffer_f(float, GLhalfARB, _mesa_float_to_half)
+R_FillVertexBuffer_f(int, int, )
 #define R_FillVertexBuffer_float_or_half(gl_type,in,size,stride,numVerts,out) \
 	do {\
 		if( gl_type == GL_HALF_FLOAT ) { \
