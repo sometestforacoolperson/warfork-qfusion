@@ -120,6 +120,10 @@ else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-pragmas")
         add_common_link_flags("-static -static-libgcc -static-libstdc++")
     endif()
+
+    if (UNIX)
+        set(USE_SDL2 1)
+    endif()
 endif()
 
 # Linux-only specific settings
@@ -149,19 +153,15 @@ if (NOT GAME_MODULES_ONLY)
     find_package(CURL REQUIRED)
     find_package(ZLIB REQUIRED)
     find_package(Freetype REQUIRED)
-    find_package(OpenAL)
+    find_package(OpenAL REQUIRED)
     if (NOT WIN32)
         find_package(X11 REQUIRED)
         find_package(OpenGL REQUIRED)
     endif()
 
     # We need SDL only on non-Windows platforms or when with SDL2-backend
-    if (USE_SDL2 OR (UNIX AND NOT APPLE))
-        set(USE_SDL2 1)
-        find_package(SDL2 REQUIRED)
-    endif()
-
     if (USE_SDL2)
+        find_package(SDL2 REQUIRED)
         add_definitions(-DUSE_SDL2)
     endif()
 endif()
