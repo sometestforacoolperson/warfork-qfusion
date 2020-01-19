@@ -1,5 +1,10 @@
 # ___WARFORK___ 
 
+[![Build Status][travis-badge]][travis-url]
+
 Powered by Qfusion (https://github.com/qfusion)
 
-`Note: Commits in this branch are not reviewed by Team Forbidden LLC and are graciously provided by community member https://github.com/goleo108 (Discord: goleo#8678). We accept no liability whatsoever for any loss or damage howsoever arising.`
+`Those who make peaceful revolution impossible will make violent revolution inevitable.`
+
+[travis-badge]: https://travis-ci.org/TeamForbiddenLLC/warfork-qfusion.svg?branch=master
+[travis-url]: https://travis-ci.org/TeamForbiddenLLC/warfork-qfusion
