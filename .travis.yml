@@ -42,6 +42,7 @@ matrix:
             - g++-4.9
             - cmake
             - build-essential
+            - libsdl2-dev
             - libopenal-dev
             - libvorbis-dev
             - libtheora-dev
