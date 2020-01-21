@@ -243,8 +243,7 @@ static bool S_Init( void *hwnd, int maxEntities, bool verbose )
 
 	qalDopplerFactor( s_doppler->value );
 	qalDopplerVelocity( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
-	if( qalSpeedOfSound ) // opelAL 1.1 only. alDopplerVelocity being deprecated
-		qalSpeedOfSound( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
+	qalSpeedOfSound( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
 
 	s_doppler->modified = false;
 
@@ -370,8 +369,7 @@ static void S_Update( void )
 	if( s_sound_velocity->modified )
 	{
 		qalDopplerVelocity( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
-		if( qalSpeedOfSound )
-			qalSpeedOfSound( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
+		qalSpeedOfSound( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
 		s_sound_velocity->modified = false;
 	}
 }
