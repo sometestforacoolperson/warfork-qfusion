@@ -26,35 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "snd_decoder.h"
 #include <vorbis/vorbisfile.h>
 
-#ifdef VORBISLIB_RUNTIME
-
-void *vorbisLibrary = NULL;
-
-int ( *qov_clear )( OggVorbis_File *vf );
-int ( *qov_open_callbacks )( void *datasource, OggVorbis_File *vf, const char *initial, long ibytes, ov_callbacks callbacks );
-ogg_int64_t ( *qov_pcm_total )( OggVorbis_File *vf, int i );
-vorbis_info *( *qov_info )( OggVorbis_File *vf, int link );
-long ( *qov_read )( OggVorbis_File *vf, char *buffer, int length, int bigendianp, int word, int sgned, int *bitstream );
-long ( *qov_streams )( OggVorbis_File *vf );
-long ( *qov_seekable )( OggVorbis_File *vf );
-int ( *qov_pcm_seek )( OggVorbis_File *vf, ogg_int64_t pos );
-
-dllfunc_t oggvorbisfuncs[] =
-{
-	{ "ov_clear", ( void ** )&qov_clear },
-	{ "ov_open_callbacks", ( void ** )&qov_open_callbacks },
-	{ "ov_pcm_total", ( void ** )&qov_pcm_total },
-	{ "ov_info", ( void ** )&qov_info },
-	{ "ov_read", ( void ** )&qov_read },
-	{ "ov_streams", ( void ** )&qov_streams },
-	{ "ov_seekable", ( void ** )&qov_seekable },
-	{ "ov_pcm_seek", ( void ** )&qov_pcm_seek },
-
-	{ NULL, NULL }
-};
-
-#else // VORBISLIB_RUNTIME
-
 #define qov_clear ov_clear
 #define qov_open_callbacks ov_open_callbacks
 #define qov_pcm_total ov_pcm_total
@@ -63,39 +34,6 @@ dllfunc_t oggvorbisfuncs[] =
 #define qov_streams ov_streams
 #define qov_seekable ov_seekable
 #define qov_pcm_seek ov_pcm_seek
-
-#endif // VORBISLIB_RUNTIME
-
-/*
-* SNDOGG_Shutdown
-*/
-void SNDOGG_Shutdown( bool verbose )
-{
-#ifdef VORBISLIB_RUNTIME
-	if( vorbisLibrary )
-		trap_UnloadLibrary( &vorbisLibrary );
-#endif
-}
-
-/*
-* SNDOGG_Init
-*/
-bool SNDOGG_Init( bool verbose )
-{
-#ifdef VORBISLIB_RUNTIME
-	if( vorbisLibrary )
-		SNDOGG_Shutdown( verbose );
-
-	vorbisLibrary = trap_LoadLibrary( LIBVORBISFILE_LIBNAME, oggvorbisfuncs );
-	if( !vorbisLibrary )
-	{
-		if( verbose )
-			Com_Printf( "Couldn't load %s\n", LIBVORBISFILE_LIBNAME );
-		return false;
-	}
-#endif
-	return true;
-}
 
 //=============================================================================
 

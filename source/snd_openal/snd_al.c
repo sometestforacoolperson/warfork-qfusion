@@ -154,7 +154,7 @@ static bool S_Init( void *hwnd, int maxEntities, bool verbose )
 		return false;
 	}
 
-	s_openAL_device = trap_Cvar_Get( "s_openAL_device", ALDEVICE_DEFAULT ? ALDEVICE_DEFAULT : defaultDevice, CVAR_ARCHIVE|CVAR_LATCH_SOUND );
+	s_openAL_device = trap_Cvar_Get( "s_openAL_device", defaultDevice, CVAR_ARCHIVE|CVAR_LATCH_SOUND );
 
 	devices = ( char * )qalcGetString( NULL, ALC_DEVICE_SPECIFIER );
 	for( numDevices = 0; *devices; devices += strlen( devices ) + 1, numDevices++ )
@@ -180,7 +180,7 @@ static bool S_Init( void *hwnd, int maxEntities, bool verbose )
 	{
 		Com_Printf( "'s_openAL_device': incorrect device name, reseting to default\n" );
 
-		trap_Cvar_ForceSet( "s_openAL_device", ALDEVICE_DEFAULT ? ALDEVICE_DEFAULT : defaultDevice );
+		trap_Cvar_ForceSet( "s_openAL_device", defaultDevice );
 
 		devices = ( char * )qalcGetString( NULL, ALC_DEVICE_SPECIFIER );
 		for( numDevices = 0; *devices; devices += strlen( devices ) + 1, numDevices++ )
@@ -243,8 +243,7 @@ static bool S_Init( void *hwnd, int maxEntities, bool verbose )
 
 	qalDopplerFactor( s_doppler->value );
 	qalDopplerVelocity( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
-	if( qalSpeedOfSound ) // opelAL 1.1 only. alDopplerVelocity being deprecated
-		qalSpeedOfSound( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
+	qalSpeedOfSound( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
 
 	s_doppler->modified = false;
 
@@ -370,8 +369,7 @@ static void S_Update( void )
 	if( s_sound_velocity->modified )
 	{
 		qalDopplerVelocity( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
-		if( qalSpeedOfSound )
-			qalSpeedOfSound( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
+		qalSpeedOfSound( s_sound_velocity->value > 0.0f ? s_sound_velocity->value : 0.0f );
 		s_sound_velocity->modified = false;
 	}
 }

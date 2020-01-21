@@ -168,9 +168,6 @@ typedef void ALCvoid;
 #define ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER     0x311
 #define ALC_CAPTURE_SAMPLES                      0x312
 
-
-#if !defined(ALC_NO_PROTOTYPES)
-
 /*
  * Context Management
  */
@@ -236,31 +233,6 @@ ALC_API void            ALC_APIENTRY alcCaptureStart( ALCdevice *device );
 ALC_API void            ALC_APIENTRY alcCaptureStop( ALCdevice *device );
 
 ALC_API void            ALC_APIENTRY alcCaptureSamples( ALCdevice *device, ALCvoid *buffer, ALCsizei samples );
-
-#else /* ALC_NO_PROTOTYPES */
-
-typedef ALCcontext *   (ALC_APIENTRY *LPALCCREATECONTEXT) (ALCdevice *device, const ALCint *attrlist);
-typedef ALCboolean     (ALC_APIENTRY *LPALCMAKECONTEXTCURRENT)( ALCcontext *context );
-typedef void           (ALC_APIENTRY *LPALCPROCESSCONTEXT)( ALCcontext *context );
-typedef void           (ALC_APIENTRY *LPALCSUSPENDCONTEXT)( ALCcontext *context );
-typedef void           (ALC_APIENTRY *LPALCDESTROYCONTEXT)( ALCcontext *context );
-typedef ALCcontext *   (ALC_APIENTRY *LPALCGETCURRENTCONTEXT)( ALCvoid );
-typedef ALCdevice *    (ALC_APIENTRY *LPALCGETCONTEXTSDEVICE)( ALCcontext *context );
-typedef ALCdevice *    (ALC_APIENTRY *LPALCOPENDEVICE)( const ALCchar *devicename );
-typedef ALCboolean     (ALC_APIENTRY *LPALCCLOSEDEVICE)( ALCdevice *device );
-typedef ALCenum        (ALC_APIENTRY *LPALCGETERROR)( ALCdevice *device );
-typedef ALCboolean     (ALC_APIENTRY *LPALCISEXTENSIONPRESENT)( ALCdevice *device, const ALCchar *extname );
-typedef void *         (ALC_APIENTRY *LPALCGETPROCADDRESS)(ALCdevice *device, const ALCchar *funcname );
-typedef ALCenum        (ALC_APIENTRY *LPALCGETENUMVALUE)(ALCdevice *device, const ALCchar *enumname );
-typedef const ALCchar* (ALC_APIENTRY *LPALCGETSTRING)( ALCdevice *device, ALCenum param );
-typedef void           (ALC_APIENTRY *LPALCGETINTEGERV)( ALCdevice *device, ALCenum param, ALCsizei size, ALCint *dest );
-typedef ALCdevice *    (ALC_APIENTRY *LPALCCAPTUREOPENDEVICE)( const ALCchar *devicename, ALCuint frequency, ALCenum format, ALCsizei buffersize );
-typedef ALCboolean     (ALC_APIENTRY *LPALCCAPTURECLOSEDEVICE)( ALCdevice *device );
-typedef void           (ALC_APIENTRY *LPALCCAPTURESTART)( ALCdevice *device );
-typedef void           (ALC_APIENTRY *LPALCCAPTURESTOP)( ALCdevice *device );
-typedef void           (ALC_APIENTRY *LPALCCAPTURESAMPLES)( ALCdevice *device, ALCvoid *buffer, ALCsizei samples );
-
-#endif /* ALC_NO_PROTOTYPES */
 
 #if TARGET_OS_MAC
  #pragma export off

@@ -92,6 +92,3 @@ bool decoder_ogg_reset( snd_stream_t *stream );
 bool decoder_ogg_eof( snd_stream_t *stream );
 int decoder_ogg_tell( snd_stream_t *stream );
 int decoder_ogg_seek( snd_stream_t *stream, int offset, int whence );
-
-bool SNDOGG_Init( bool verbose );
-void SNDOGG_Shutdown( bool verbose );

@@ -113,19 +113,6 @@ bool SF_Init( void *hwnd, int maxEntities, bool verbose )
 	
 	s_num_ent_spats = 0;
 
-#ifdef OPENAL_RUNTIME
-	if( !QAL_Init( ALDRIVER, verbose ) )
-	{
-#ifdef ALDRIVER_ALT
-		if( !QAL_Init( ALDRIVER_ALT, verbose ) )
-#endif
-		{
-			Com_Printf( "Failed to load OpenAL library: %s\n", ALDRIVER );
-			return false;
-		}
-	}
-#endif
-
 	s_volume = trap_Cvar_Get( "s_volume", "0.8", CVAR_ARCHIVE );
     s_musicvolume = trap_Cvar_Get( "s_musicvolume", "0.05", CVAR_ARCHIVE );
 	s_doppler = trap_Cvar_Get( "s_doppler", "1.0", CVAR_ARCHIVE );
@@ -205,8 +192,6 @@ void SF_Shutdown( bool verbose )
 	trap_Cmd_RemoveCommand( "pausemusic" );
 	trap_Cmd_RemoveCommand( "soundlist" );
 	trap_Cmd_RemoveCommand( "s_devices" );
-
-	QAL_Shutdown();
 
 	S_MemFreePool( &soundpool );
 }

@@ -65,11 +65,8 @@ bool S_InitDecoders( bool verbose )
 	decoders = NULL;
 
 	decoder_register( &wav_decoder );
-	if( SNDOGG_Init( verbose ) )
-	{
-		decoder_register( &ogg_decoder );
-		decoder_register( &ogv_decoder );
-	}
+	decoder_register( &ogg_decoder );
+	decoder_register( &ogv_decoder );
 
 	return true;
 }
@@ -77,7 +74,6 @@ bool S_InitDecoders( bool verbose )
 void S_ShutdownDecoders( bool verbose )
 {
 	decoders = NULL;
-	SNDOGG_Shutdown( verbose );
 }
 
 void *S_LoadSound( const char *filename, snd_info_t *info )

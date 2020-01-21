@@ -490,7 +490,6 @@ void Dictionary::Clear()
 	// Clear things up
 	for (ep = table; n_full > 0; ++ep) {
 		
-		ROCKET_ASSERT(i < n);
 		++i;
 
 		if (!ep->key.Empty()) {
