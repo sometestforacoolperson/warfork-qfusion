@@ -135,64 +135,6 @@ static int crypto_num_mutexes = 0;
 
 ///////////////////////
 // Symbols
-static void *curlLibrary = NULL;
-#ifdef USE_OPENSSL
-static void *cryptoLibrary = NULL;
-#endif
-
-#ifdef LIBCURL_RUNTIME
-
-static CURLFORMcode (*qcurl_formadd)(struct curl_httppost **, struct curl_httppost **, ...);
-static CURLcode (*qcurl_easy_setopt)(CURL *, CURLoption, ...);
-static CURL *(*qcurl_easy_init)(void);
-static char *(*qcurl_easy_escape)(CURL *, const char *, int );
-static char *(*qcurl_easy_unescape)(CURL *, const char *, int , int *);
-static void (*qcurl_free)(void *);
-static CURLM *(*qcurl_multi_init)(void);
-static CURLMcode (*qcurl_multi_cleanup)(CURLM *);
-static CURLMcode (*qcurl_multi_perform)(CURLM *, int *);
-static CURLMcode (*qcurl_multi_add_handle)(CURLM *, CURL *);
-static CURLMcode (*qcurl_multi_remove_handle)(CURLM *, CURL *);
-static struct curl_slist *(*qcurl_slist_append)(struct curl_slist *, const char *);
-static void (*qcurl_slist_free_all)(struct curl_slist *);
-static void (*qcurl_formfree)(struct curl_httppost *);
-static void (*qcurl_easy_cleanup)(CURL *);
-static CURLcode (*qcurl_easy_getinfo)(CURL *, CURLINFO , ...);
-static const char *(*qcurl_easy_strerror)(CURLcode);
-static CURLMsg *(*qcurl_multi_info_read)(CURLM *, int *);
-static CURLcode (*qcurl_easy_pause)(CURL *, int );
-static CURLcode (*qcurl_global_init)(long flags);
-static void (*qcurl_global_cleanup)(void);
-
-static dllfunc_t libcurlfuncs[] =
-{
-	{ "curl_formadd", ( void ** )&qcurl_formadd },
-	{ "curl_easy_setopt", ( void ** )&qcurl_easy_setopt },
-	{ "curl_easy_init", ( void ** )&qcurl_easy_init },
-	{ "curl_easy_escape", ( void ** )&qcurl_easy_escape },
-	{ "curl_easy_unescape", ( void ** )&qcurl_easy_unescape },
-	{ "curl_free", ( void ** )&qcurl_free },
-	{ "curl_multi_init", ( void ** )&qcurl_multi_init },
-	{ "curl_multi_cleanup", ( void ** )&qcurl_multi_cleanup },
-	{ "curl_multi_perform", ( void ** )&qcurl_multi_perform },
-	{ "curl_multi_add_handle", ( void ** )&qcurl_multi_add_handle },
-	{ "curl_multi_remove_handle", ( void ** )&qcurl_multi_remove_handle },
-	{ "curl_slist_append", ( void ** )&qcurl_slist_append },
-	{ "curl_slist_free_all", ( void ** )&qcurl_slist_free_all },
-	{ "curl_formfree", ( void ** )&qcurl_formfree },
-	{ "curl_easy_cleanup", ( void ** )&qcurl_easy_cleanup },
-	{ "curl_easy_getinfo", ( void ** )&qcurl_easy_getinfo },
-	{ "curl_easy_strerror", ( void ** )&qcurl_easy_strerror },
-	{ "curl_multi_info_read", ( void ** )&qcurl_multi_info_read },
-	{ "curl_easy_pause", ( void ** )&qcurl_easy_pause },
-	{ "curl_global_init", ( void ** )&qcurl_global_init },
-	{ "curl_global_cleanup", ( void ** )&qcurl_global_cleanup },
-
-	{ NULL, NULL }
-};
-
-#else
-
 #define qcurl_formadd curl_formadd
 #define qcurl_easy_setopt curl_easy_setopt
 #define qcurl_easy_init curl_easy_init
@@ -215,71 +157,12 @@ static dllfunc_t libcurlfuncs[] =
 #define qcurl_global_init curl_global_init
 #define qcurl_global_cleanup curl_global_cleanup
 
-#endif
-
 #ifdef USE_OPENSSL
-
-#ifdef LIBCRYPTO_RUNTIME
-
-static int ( *qCRYPTO_num_locks )( void );
-static void ( *qCRYPTO_set_locking_callback )( void ( *func )( int mode, int type, const char *file, int line ) );
-static dllfunc_t libcryptofuncs[] =
-{
-	{ "CRYPTO_num_locks", ( void ** )&qCRYPTO_num_locks },
-	{ "CRYPTO_set_locking_callback", ( void ** )&qCRYPTO_set_locking_callback },
-	{ NULL, NULL }
-};
-
-#else
 
 #define qCRYPTO_num_locks CRYPTO_num_locks
 #define qCRYPTO_set_locking_callback CRYPTO_set_locking_callback
 
 #endif
-
-#endif
-
-/*
-* wswcurl_unloadlib
-*/
-static void wswcurl_unloadlib( void )
-{
-#ifdef USE_OPENSSL
-#ifdef LIBCRYPTO_RUNTIME
-	if( cryptoLibrary )
-		Com_UnloadLibrary( &cryptoLibrary );
-#endif
-	cryptoLibrary = NULL;
-#endif
-
-#ifdef LIBCURL_RUNTIME
-	if( curlLibrary )
-		Com_UnloadLibrary( &curlLibrary );
-#endif
-	curlLibrary = NULL;
-}
-
-/*
-* wswcurl_loadlib
-*/
-static void wswcurl_loadlib( void )
-{
-	wswcurl_unloadlib();
-
-#ifdef LIBCURL_RUNTIME
-	curlLibrary = Com_LoadSysLibrary( LIBCURL_LIBNAME, libcurlfuncs );
-#else
-	curlLibrary = (void *)1;
-#endif
-
-#ifdef USE_OPENSSL
-#ifdef LIBCRYPTO_RUNTIME
-	cryptoLibrary = Com_LoadSysLibrary( LIBCRYPTO_LIBNAME, libcryptofuncs );
-#else
-	cryptoLibrary = (void *)1;
-#endif
-#endif
-}
 
 int wswcurl_formadd(wswcurl_req *req, const char *field, const char *value, ...)
 {
@@ -514,29 +397,21 @@ void wswcurl_init( void )
 	http_proxy = Cvar_Get( "http_proxy", "", CVAR_ARCHIVE );
 	http_proxyuserpwd = Cvar_Get( "http_proxyuserpwd", "", CVAR_ARCHIVE );
 
-	wswcurl_loadlib();
+	qcurl_global_init( CURL_GLOBAL_ALL );
 
-	if( curlLibrary ) {
-		qcurl_global_init( CURL_GLOBAL_ALL );
-
-		curldummy = qcurl_easy_init();
-		curlmulti = qcurl_multi_init();
-	}
-
+	curldummy = qcurl_easy_init();
+	curlmulti = qcurl_multi_init();
 	curldummy_mutex = QMutex_Create();
 
 	http_requests_mutex = QMutex_Create();
 
 #ifdef USE_OPENSSL
-	if( cryptoLibrary )
-	{
-		int mutex_num;
-		crypto_num_mutexes = qCRYPTO_num_locks();
-		crypto_mutexes = WMALLOC( crypto_num_mutexes * sizeof( *crypto_mutexes ) );
-		for( mutex_num = 0; mutex_num < crypto_num_mutexes; mutex_num++ )
-			crypto_mutexes[mutex_num] = QMutex_Create();
-		qCRYPTO_set_locking_callback( wswcurl_crypto_lockcallback );
-	}
+	int mutex_num;
+	crypto_num_mutexes = qCRYPTO_num_locks();
+	crypto_mutexes = WMALLOC( crypto_num_mutexes * sizeof( *crypto_mutexes ) );
+	for( mutex_num = 0; mutex_num < crypto_num_mutexes; mutex_num++ )
+		crypto_mutexes[mutex_num] = QMutex_Create();
+	qCRYPTO_set_locking_callback( wswcurl_crypto_lockcallback );
 #endif
 }
 
@@ -564,26 +439,17 @@ void wswcurl_cleanup( void )
 	QMutex_Destroy( &http_requests_mutex );
 
 #ifdef USE_OPENSSL
-	if( cryptoLibrary )
+	qCRYPTO_set_locking_callback( NULL );
+	if( crypto_num_mutexes && crypto_mutexes )
 	{
-		qCRYPTO_set_locking_callback( NULL );
-		if( crypto_num_mutexes && crypto_mutexes )
-		{
-			int mutex_num;
-			for( mutex_num = 0; mutex_num < crypto_num_mutexes; mutex_num++ )
-				QMutex_Destroy( &crypto_mutexes[mutex_num] );
-			WFREE( crypto_mutexes );
-			crypto_mutexes = NULL;
-		}
-		crypto_num_mutexes = 0;
+		int mutex_num;
+		for( mutex_num = 0; mutex_num < crypto_num_mutexes; mutex_num++ )
+			QMutex_Destroy( &crypto_mutexes[mutex_num] );
+		WFREE( crypto_mutexes );
+		crypto_mutexes = NULL;
 	}
+	crypto_num_mutexes = 0;
 #endif
-
-	if( curlLibrary ) {
-		qcurl_global_cleanup();
-	}
-
-	wswcurl_unloadlib();
 
 	Mem_FreePool( &wswcurl_mempool );
 }
@@ -704,11 +570,6 @@ wswcurl_req *wswcurl_create( const char *iface, const char *furl, ... )
 	va_list arg;
 	const char *proxy = http_proxy->string;
 	const char *proxy_userpwd = http_proxyuserpwd->string;
-
-	if( !curlLibrary ) {
-		Com_Printf( "!!! WARNING: external library is missing (libcurl).\n" );
-		return NULL;
-	}
 
 	// Prepare url formatting with variable arguments
 	va_start( arg, furl );

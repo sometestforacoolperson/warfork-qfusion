@@ -382,9 +382,6 @@ typedef void ALvoid;
 #define AL_EXPONENT_DISTANCE                      0xD005
 #define AL_EXPONENT_DISTANCE_CLAMPED              0xD006
 
-
-#if !defined(AL_NO_PROTOTYPES)
-
 /*
  * Renderer State management
  */
@@ -660,84 +657,6 @@ AL_API void AL_APIENTRY alDopplerVelocity( ALfloat value );
 AL_API void AL_APIENTRY alSpeedOfSound( ALfloat value );
 
 AL_API void AL_APIENTRY alDistanceModel( ALenum distanceModel );
-
-#else /* AL_NO_PROTOTYPES */
-
-typedef void           (AL_APIENTRY *LPALENABLE)( ALenum capability );
-typedef void           (AL_APIENTRY *LPALDISABLE)( ALenum capability ); 
-typedef ALboolean      (AL_APIENTRY *LPALISENABLED)( ALenum capability ); 
-typedef const ALchar*  (AL_APIENTRY *LPALGETSTRING)( ALenum param );
-typedef void           (AL_APIENTRY *LPALGETBOOLEANV)( ALenum param, ALboolean* data );
-typedef void           (AL_APIENTRY *LPALGETINTEGERV)( ALenum param, ALint* data );
-typedef void           (AL_APIENTRY *LPALGETFLOATV)( ALenum param, ALfloat* data );
-typedef void           (AL_APIENTRY *LPALGETDOUBLEV)( ALenum param, ALdouble* data );
-typedef ALboolean      (AL_APIENTRY *LPALGETBOOLEAN)( ALenum param );
-typedef ALint          (AL_APIENTRY *LPALGETINTEGER)( ALenum param );
-typedef ALfloat        (AL_APIENTRY *LPALGETFLOAT)( ALenum param );
-typedef ALdouble       (AL_APIENTRY *LPALGETDOUBLE)( ALenum param );
-typedef ALenum         (AL_APIENTRY *LPALGETERROR)( void );
-typedef ALboolean      (AL_APIENTRY *LPALISEXTENSIONPRESENT)(const ALchar* extname );
-typedef void*          (AL_APIENTRY *LPALGETPROCADDRESS)( const ALchar* fname );
-typedef ALenum         (AL_APIENTRY *LPALGETENUMVALUE)( const ALchar* ename );
-typedef void           (AL_APIENTRY *LPALLISTENERF)( ALenum param, ALfloat value );
-typedef void           (AL_APIENTRY *LPALLISTENER3F)( ALenum param, ALfloat value1, ALfloat value2, ALfloat value3 );
-typedef void           (AL_APIENTRY *LPALLISTENERFV)( ALenum param, const ALfloat* values );
-typedef void           (AL_APIENTRY *LPALLISTENERI)( ALenum param, ALint value );
-typedef void           (AL_APIENTRY *LPALLISTENER3I)( ALenum param, ALint value1, ALint value2, ALint value3 );
-typedef void           (AL_APIENTRY *LPALLISTENERIV)( ALenum param, const ALint* values );
-typedef void           (AL_APIENTRY *LPALGETLISTENERF)( ALenum param, ALfloat* value );
-typedef void           (AL_APIENTRY *LPALGETLISTENER3F)( ALenum param, ALfloat *value1, ALfloat *value2, ALfloat *value3 );
-typedef void           (AL_APIENTRY *LPALGETLISTENERFV)( ALenum param, ALfloat* values );
-typedef void           (AL_APIENTRY *LPALGETLISTENERI)( ALenum param, ALint* value );
-typedef void           (AL_APIENTRY *LPALGETLISTENER3I)( ALenum param, ALint *value1, ALint *value2, ALint *value3 );
-typedef void           (AL_APIENTRY *LPALGETLISTENERIV)( ALenum param, ALint* values );
-typedef void           (AL_APIENTRY *LPALGENSOURCES)( ALsizei n, ALuint* sources ); 
-typedef void           (AL_APIENTRY *LPALDELETESOURCES)( ALsizei n, const ALuint* sources );
-typedef ALboolean      (AL_APIENTRY *LPALISSOURCE)( ALuint sid ); 
-typedef void           (AL_APIENTRY *LPALSOURCEF)( ALuint sid, ALenum param, ALfloat value); 
-typedef void           (AL_APIENTRY *LPALSOURCE3F)( ALuint sid, ALenum param, ALfloat value1, ALfloat value2, ALfloat value3 );
-typedef void           (AL_APIENTRY *LPALSOURCEFV)( ALuint sid, ALenum param, const ALfloat* values );
-typedef void           (AL_APIENTRY *LPALSOURCEI)( ALuint sid, ALenum param, ALint value); 
-typedef void           (AL_APIENTRY *LPALSOURCE3I)( ALuint sid, ALenum param, ALint value1, ALint value2, ALint value3 );
-typedef void           (AL_APIENTRY *LPALSOURCEIV)( ALuint sid, ALenum param, const ALint* values );
-typedef void           (AL_APIENTRY *LPALGETSOURCEF)( ALuint sid, ALenum param, ALfloat* value );
-typedef void           (AL_APIENTRY *LPALGETSOURCE3F)( ALuint sid, ALenum param, ALfloat* value1, ALfloat* value2, ALfloat* value3);
-typedef void           (AL_APIENTRY *LPALGETSOURCEFV)( ALuint sid, ALenum param, ALfloat* values );
-typedef void           (AL_APIENTRY *LPALGETSOURCEI)( ALuint sid, ALenum param, ALint* value );
-typedef void           (AL_APIENTRY *LPALGETSOURCE3I)( ALuint sid, ALenum param, ALint* value1, ALint* value2, ALint* value3);
-typedef void           (AL_APIENTRY *LPALGETSOURCEIV)( ALuint sid, ALenum param, ALint* values );
-typedef void           (AL_APIENTRY *LPALSOURCEPLAYV)( ALsizei ns, const ALuint *sids );
-typedef void           (AL_APIENTRY *LPALSOURCESTOPV)( ALsizei ns, const ALuint *sids );
-typedef void           (AL_APIENTRY *LPALSOURCEREWINDV)( ALsizei ns, const ALuint *sids );
-typedef void           (AL_APIENTRY *LPALSOURCEPAUSEV)( ALsizei ns, const ALuint *sids );
-typedef void           (AL_APIENTRY *LPALSOURCEPLAY)( ALuint sid );
-typedef void           (AL_APIENTRY *LPALSOURCESTOP)( ALuint sid );
-typedef void           (AL_APIENTRY *LPALSOURCEREWIND)( ALuint sid );
-typedef void           (AL_APIENTRY *LPALSOURCEPAUSE)( ALuint sid );
-typedef void           (AL_APIENTRY *LPALSOURCEQUEUEBUFFERS)(ALuint sid, ALsizei numEntries, const ALuint *bids );
-typedef void           (AL_APIENTRY *LPALSOURCEUNQUEUEBUFFERS)(ALuint sid, ALsizei numEntries, ALuint *bids );
-typedef void           (AL_APIENTRY *LPALGENBUFFERS)( ALsizei n, ALuint* buffers );
-typedef void           (AL_APIENTRY *LPALDELETEBUFFERS)( ALsizei n, const ALuint* buffers );
-typedef ALboolean      (AL_APIENTRY *LPALISBUFFER)( ALuint bid );
-typedef void           (AL_APIENTRY *LPALBUFFERDATA)( ALuint bid, ALenum format, const ALvoid* data, ALsizei size, ALsizei freq );
-typedef void           (AL_APIENTRY *LPALBUFFERF)( ALuint bid, ALenum param, ALfloat value);
-typedef void           (AL_APIENTRY *LPALBUFFER3F)( ALuint bid, ALenum param, ALfloat value1, ALfloat value2, ALfloat value3 );
-typedef void           (AL_APIENTRY *LPALBUFFERFV)( ALuint bid, ALenum param, const ALfloat* values );
-typedef void           (AL_APIENTRY *LPALBUFFERI)( ALuint bid, ALenum param, ALint value);
-typedef void           (AL_APIENTRY *LPALBUFFER3I)( ALuint bid, ALenum param, ALint value1, ALint value2, ALint value3 );
-typedef void           (AL_APIENTRY *LPALBUFFERIV)( ALuint bid, ALenum param, const ALint* values );
-typedef void           (AL_APIENTRY *LPALGETBUFFERF)( ALuint bid, ALenum param, ALfloat* value );
-typedef void           (AL_APIENTRY *LPALGETBUFFER3F)( ALuint bid, ALenum param, ALfloat* value1, ALfloat* value2, ALfloat* value3);
-typedef void           (AL_APIENTRY *LPALGETBUFFERFV)( ALuint bid, ALenum param, ALfloat* values );
-typedef void           (AL_APIENTRY *LPALGETBUFFERI)( ALuint bid, ALenum param, ALint* value );
-typedef void           (AL_APIENTRY *LPALGETBUFFER3I)( ALuint bid, ALenum param, ALint* value1, ALint* value2, ALint* value3);
-typedef void           (AL_APIENTRY *LPALGETBUFFERIV)( ALuint bid, ALenum param, ALint* values );
-typedef void           (AL_APIENTRY *LPALDOPPLERFACTOR)( ALfloat value );
-typedef void           (AL_APIENTRY *LPALDOPPLERVELOCITY)( ALfloat value );
-typedef void           (AL_APIENTRY *LPALSPEEDOFSOUND)( ALfloat value );
-typedef void           (AL_APIENTRY *LPALDISTANCEMODEL)( ALenum distanceModel );
-
-#endif /* AL_NO_PROTOTYPES */
 
 #if TARGET_OS_MAC
  #pragma export off

@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // snd_local.h -- private OpenAL sound functions
 
-//#define VORBISLIB_RUNTIME // enable this define for dynamic linked vorbis libraries
-
 // it's in qcommon.h too, but we don't include it for modules
 typedef struct { char *name; void **funcPointer; } dllfunc_t;
 
@@ -33,18 +31,6 @@ typedef struct { char *name; void **funcPointer; } dllfunc_t;
 #include "snd_syscalls.h"
 
 #include "qal.h"
-
-#ifdef _WIN32
-#define ALDRIVER "OpenAL32.dll"
-#define ALDEVICE_DEFAULT "Generic Software"
-#elif defined ( __MACOSX__ )
-#define ALDRIVER "/System/Library/Frameworks/OpenAL.framework/OpenAL"
-#define ALDEVICE_DEFAULT NULL
-#else
-#define ALDRIVER "libopenal.so.1"
-#define ALDRIVER_ALT "libopenal.so.0"
-#define ALDEVICE_DEFAULT NULL
-#endif
 
 extern struct mempool_s *soundpool;
 

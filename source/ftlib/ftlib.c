@@ -78,48 +78,6 @@ typedef struct
 	FT_UInt gindex;
 } qftglyph_t;
 
-static void *q_freetypeLibrary;
-
-#ifdef FREETYPELIB_RUNTIME
-
-static FT_Error (*q_FT_New_Size)( FT_Face face, FT_Size* size );
-static FT_Error (*q_FT_Activate_Size)( FT_Size size );
-static FT_Error (*q_FT_Set_Pixel_Sizes)( FT_Face face, FT_UInt pixel_width, FT_UInt pixel_height );
-static FT_Error (*q_FT_Done_Size)( FT_Size  size );
-static FT_UInt (*q_FT_Get_Char_Index)( FT_Face face, FT_ULong charcode );
-static FT_Error (*q_FT_Get_Kerning)( FT_Face face, FT_UInt left_glyph, FT_UInt right_glyph, FT_UInt kern_mode, FT_Vector *akerning );
-static FT_Error (*q_FT_Load_Glyph)( FT_Face face, FT_UInt glyph_index, FT_Int32 load_flags );
-static FT_Error (*q_FT_New_Memory_Face)( FT_Library library, const FT_Byte* file_base, FT_Long file_size, FT_Long face_index, FT_Face *aface );
-static FT_Error (*q_FT_Done_Face)( FT_Face face );
-static FT_Error (*q_FT_Init_FreeType)( FT_Library  *alibrary );
-static FT_Error (*q_FT_Done_FreeType)( FT_Library library );
-#ifdef FT_MULFIX_INLINED
-#define q_FT_MulFix FT_MulFix
-#else
-static FT_Long (*q_FT_MulFix)( FT_Long a, FT_Long b );
-#endif
-
-static dllfunc_t freetypefuncs[] =
-{
-	{ "FT_New_Size", ( void **)&q_FT_New_Size },
-	{ "FT_Activate_Size", ( void **)&q_FT_Activate_Size },
-	{ "FT_Set_Pixel_Sizes", ( void **)&q_FT_Set_Pixel_Sizes },
-	{ "FT_Done_Size", ( void **)&q_FT_Done_Size },
-	{ "FT_Get_Char_Index", ( void **)&q_FT_Get_Char_Index },
-	{ "FT_Get_Kerning", ( void **)&q_FT_Get_Kerning },
-	{ "FT_Load_Glyph", ( void **)&q_FT_Load_Glyph },
-	{ "FT_New_Memory_Face", ( void **)&q_FT_New_Memory_Face },
-	{ "FT_Done_Face", ( void **)&q_FT_Done_Face },
-	{ "FT_Init_FreeType", ( void **)&q_FT_Init_FreeType },
-	{ "FT_Done_FreeType", ( void **)&q_FT_Done_FreeType },
-#ifndef FT_MULFIX_INLINED
-	{ "FT_MulFix", ( void **)&q_FT_MulFix },
-#endif
-	{ NULL, NULL },
-};
-
-#else
-
 #define q_FT_New_Size FT_New_Size
 #define q_FT_Activate_Size FT_Activate_Size
 #define q_FT_Set_Pixel_Sizes FT_Set_Pixel_Sizes
@@ -132,34 +90,6 @@ static dllfunc_t freetypefuncs[] =
 #define q_FT_Init_FreeType FT_Init_FreeType
 #define q_FT_Done_FreeType FT_Done_FreeType
 #define q_FT_MulFix FT_MulFix
-
-#endif
-
-/*
-* QFT_UnloadFreetypeLibrary
-*/
-static void QFT_UnloadFreetypeLibrary( void )
-{
-#ifdef FREETYPELIB_RUNTIME
-	if( q_freetypeLibrary )
-		trap_UnloadLibrary( &q_freetypeLibrary );
-#endif
-	q_freetypeLibrary = NULL;
-}
-
-/*
-* QFT_LoadFreetypeLibrary
-*/
-static void QFT_LoadFreetypeLibrary( void )
-{
-	QFT_UnloadFreetypeLibrary();
-
-#ifdef FREETYPELIB_RUNTIME
-	q_freetypeLibrary = trap_LoadLibrary( LIBFREETYPE_LIBNAME, freetypefuncs );
-#else
-	q_freetypeLibrary = (void *)1;
-#endif
-}
 
 /*
 * QFT_AllocGlyphs
@@ -787,15 +717,8 @@ static void QFT_Init( bool verbose )
 {
 	int error;
 
-	QFT_LoadFreetypeLibrary();
-
-	if( q_freetypeLibrary ) {
-		assert( ftLibrary == NULL );
-		error = q_FT_Init_FreeType( &ftLibrary );
-	}
-	else {
-		error = 1;
-	}
+	assert( ftLibrary == NULL );
+	error = q_FT_Init_FreeType( &ftLibrary );
 
 	if( error != 0 ) {
 		ftLibrary = NULL;
@@ -824,8 +747,6 @@ static void QFT_Shutdown( void )
 		qftGlyphTempBitmap = NULL;
 		qftGlyphTempBitmapHeight = 0;
 	}
-
-	QFT_UnloadFreetypeLibrary();
 }
 
 // ============================================================================

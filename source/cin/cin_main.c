@@ -38,8 +38,6 @@ bool CIN_Init( bool verbose )
 {
 	cinPool = CIN_AllocPool( "Generic pool" );
 
-	Theora_LoadTheoraLibraries();
-
 	return true;
 }
 
@@ -48,8 +46,6 @@ bool CIN_Init( bool verbose )
 */
 void CIN_Shutdown( bool verbose )
 {
-	Theora_UnloadTheoraLibraries();
-
 	CIN_FreePool( &cinPool );
 }
 
