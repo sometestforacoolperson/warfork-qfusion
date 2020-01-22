@@ -142,6 +142,16 @@ typedef struct
 	game_state_t gameState;
 } gs_state_t;
 
+#ifdef CGS
+#define gs cg_gs
+#define GS_TouchPushTrigger CG_GS_TouchPushTrigger
+#define GS_WaterLevel CG_GS_WaterLevel
+#define GS_BBoxForEntityState CG_GS_BBoxForEntityState
+#define GS_FrameForTime CG_GS_FrameForTime
+#define GS_SetGametypeName CG_GS_SetGametypeName
+#define GS_Obituary CG_GS_Obituary
+#endif
+
 extern gs_state_t gs;
 
 #define GS_GamestatSetFlag( flag, b ) ( b ? ( gs.gameState.stats[GAMESTAT_FLAGS] |= flag ) : ( gs.gameState.stats[GAMESTAT_FLAGS] &= ~flag ) )

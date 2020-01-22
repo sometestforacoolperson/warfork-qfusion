@@ -18,9 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#ifdef TV_MODULE_HARD_LINKED
 #define TV_MODULE_IMPORT gi_imp_local
-#endif
 
 extern tv_module_import_t TV_MODULE_IMPORT;
 

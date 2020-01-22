@@ -74,10 +74,3 @@ tv_module_export_t *GetTVModuleAPI( tv_module_import_t *import )
 
 	return &globals;
 }
-
-#if defined ( HAVE_DLLMAIN ) && !defined ( TV_MODULE_HARD_LINKED )
-int WINAPI DLLMain( void *hinstDll, unsigned long dwReason, void *reserved )
-{
-	return 1;
-}
-#endif

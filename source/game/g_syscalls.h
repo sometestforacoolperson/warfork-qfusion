@@ -18,9 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#ifdef GAME_HARD_LINKED
 #define GAME_IMPORT gi_imp_local
-#endif
 
 extern game_import_t GAME_IMPORT;
 

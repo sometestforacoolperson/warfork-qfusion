@@ -4589,7 +4589,7 @@ static char *CG_LoadHUDFile( char *path )
 				token = COM_ParseExt2( ( const char ** )&rec_ptr[rec_lvl], false, false );
 				if( ( token ) && ( token[0] != '\0' ) )
 				{
-					if( developer->integer )
+					if( cdeveloper->integer )
 						CG_Printf( "HUD: INFO: Precaching image '%s'\n", token );
 					trap_R_RegisterPic( token );
 				}

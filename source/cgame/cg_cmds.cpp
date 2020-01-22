@@ -460,7 +460,7 @@ void CG_SC_AutoRecordAction( const char *action )
 			CG_SC_DumpPlayerStats( filename, trap_Cmd_Argv( 2 ) );
 		}
 	}
-	else if( developer->integer )
+	else if( cdeveloper->integer )
 	{
 		CG_Printf( "CG_SC_AutoRecordAction: Unknown action: %s\n", action );
 	}

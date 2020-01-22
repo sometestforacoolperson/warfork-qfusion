@@ -26,7 +26,6 @@ game_export_t *ge;
 EXTERN_API_FUNC void *GetGameAPI( void * );
 
 mempool_t *sv_gameprogspool;
-static void *module_handle;
 
 //======================================================================
 
@@ -419,7 +418,6 @@ void SV_ShutdownGameProgs( void )
 
 	ge->Shutdown();
 	Mem_FreePool( &sv_gameprogspool );
-	Com_UnloadGameLibrary( &module_handle );
 	ge = NULL;
 }
 
@@ -448,12 +446,7 @@ void SV_InitGameProgs( void )
 {
 	int apiversion;
 	game_import_t import;
-	void *( *builtinAPIfunc )(void *) = NULL;
 	char manifest[MAX_INFO_STRING];
-
-#ifdef GAME_HARD_LINKED
-	builtinAPIfunc = GetGameAPI;
-#endif
 
 	// unload anything we have now
 	if( ge )
@@ -561,12 +554,7 @@ void SV_InitGameProgs( void )
 	assert( sizeof( manifest ) >= MAX_INFO_STRING );
 	memset( manifest, 0, sizeof( manifest ) );
 
-	if( builtinAPIfunc ) {
-		ge = builtinAPIfunc( &import );
-	}
-	else {
-		ge = (game_export_t *)Com_LoadGameLibrary( "game", "GetGameAPI", &module_handle, &import, false, manifest );
-	}
+	ge = GetGameAPI( &import );
 	if( !ge )
 		Com_Error( ERR_DROP, "Failed to load game DLL" );
 
@@ -575,7 +563,6 @@ void SV_InitGameProgs( void )
 	apiversion = ge->API();
 	if( apiversion != GAME_API_VERSION )
 	{
-		Com_UnloadGameLibrary( &module_handle );
 		Mem_FreePool( &sv_gameprogspool );
 		ge = NULL;
 		Com_Error( ERR_DROP, "Game is version %i, not %i", apiversion, GAME_API_VERSION );

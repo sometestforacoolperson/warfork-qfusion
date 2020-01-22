@@ -21,4 +21,4 @@ LOCAL_SRC_FILES := \
   $(addprefix ai/,$(notdir $(wildcard $(LOCAL_PATH)/ai/*.cpp))) \
   $(notdir $(wildcard $(LOCAL_PATH)/*.cpp))
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
