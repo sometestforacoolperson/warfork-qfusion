@@ -36,8 +36,6 @@ cvar_t *cg_handicap;
 
 cvar_t *cg_addDecals;
 
-//cvar_t *cg_footSteps;
-
 cvar_t *cg_gun;
 
 cvar_t *cg_thirdPerson;
@@ -54,7 +52,7 @@ cvar_t *cg_debugPlayerModels;
 cvar_t *cg_debugWeaponModels;
 cvar_t *cg_gunbob;
 
-cvar_t *developer;
+cvar_t *cdeveloper;
 
 cvar_t *cg_handOffset;
 cvar_t *cg_gun_fov;
@@ -829,7 +827,7 @@ static void CG_RegisterVariables( void )
 	cg_chatFilterTV =	trap_Cvar_Get( "cg_chatFilterTV", "2", CVAR_ARCHIVE );
 
 	// developer cvars
-	developer =		trap_Cvar_Get( "developer", "0", CVAR_CHEAT );
+	cdeveloper =		trap_Cvar_Get( "developer", "0", CVAR_CHEAT );
 	cg_showClamp =		trap_Cvar_Get( "cg_showClamp", "0", CVAR_DEVELOPER );
 
 	//team models
@@ -1253,32 +1251,3 @@ void CG_Shutdown( void )
 	CG_UnregisterCGameCommands();
 	CG_FreeTemporaryBoneposesCache();
 }
-
-//======================================================================
-
-#ifndef CGAME_HARD_LINKED
-// this is only here so the functions in q_shared.c and q_math.c can link
-void Sys_Error( const char *format, ... )
-{
-	va_list	argptr;
-	char msg[3072];
-
-	va_start( argptr, format );
-	Q_vsnprintfz( msg, sizeof( msg ), format, argptr );
-	va_end( argptr );
-
-	trap_Error( msg );
-}
-
-void Com_Printf( const char *format, ... )
-{
-	va_list	argptr;
-	char msg[3072];
-
-	va_start( argptr, format );
-	Q_vsnprintfz( msg, sizeof( msg ), format, argptr );
-	va_end( argptr );
-
-	trap_Print( msg );
-}
-#endif

@@ -41,21 +41,6 @@ const char *Sys_Library_GetFullName( const char *name )
 }
 
 /*
-* Sys_Library_GetGameLibPath
-*/
-const char *Sys_Library_GetGameLibPath( const char *name, int64_t time, int randomizer )
-{
-	// no randomizer because only one instance can run at once
-	static char tempname[PATH_MAX];
-	Q_snprintfz( tempname, sizeof( tempname ), "%s/%s/tempmodules"
-#ifdef DEDICATED_ONLY
-		"_server"
-#endif
-		"/%s", FS_CacheDirectory(), FS_GameDirectory(), name );
-	return tempname;
-}
-
-/*
 * Sys_Library_Open
 */
 void *Sys_Library_Open( const char *name )

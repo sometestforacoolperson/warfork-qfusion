@@ -480,9 +480,6 @@ void TV_ReleaseModule( const char *game )
 	if( !iter->count )
 	{
 		iter->export->Shutdown();
-#ifndef TV_MODULE_HARD_LINKED
-		Com_UnloadGameLibrary( &iter->handle );
-#endif
 		Mem_Free( iter );
 
 		modules = NULL;
@@ -496,10 +493,6 @@ tv_module_t *TV_GetModule( const char *game )
 {
 	int apiversion;
 	tv_module_t *iter;
-	void *( *builtinAPIfunc )(void *) = NULL;
-#ifdef TV_MODULE_HARD_LINKED
-	builtinAPIfunc = GetTVModuleAPI;
-#endif
 
 	assert( game && strlen( game ) < MAX_CONFIGSTRING_CHARS );
 	assert( COM_ValidateRelativeFilename( game ) && !strchr( game, '/' ) );
@@ -585,13 +578,7 @@ tv_module_t *TV_GetModule( const char *game )
 	iter->import.LocateEntities = TV_Module_LocateEntities;
 	iter->import.LocateLocalEntities = TV_Module_LocateLocalEntities;
 
-	if( builtinAPIfunc ) {
-		iter->export = builtinAPIfunc( &iter->import );
-	}
-	else {
-		iter->export = (tv_module_export_t *)Com_LoadGameLibrary( "tv", "GetTVModuleAPI", &iter->handle, 
-			&iter->import, false, NULL );
-	}
+	GetTVModuleAPI( &iter->import );
 	if( !iter->export )
 	{
 		Mem_Free( iter );

@@ -18,4 +18,4 @@ LOCAL_SRC_FILES := \
   ../gameshared/q_shared.c \
   $(notdir $(wildcard $(LOCAL_PATH)/*.cpp))
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)

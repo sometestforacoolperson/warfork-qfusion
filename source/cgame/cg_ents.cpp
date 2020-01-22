@@ -28,7 +28,7 @@ static void CG_UpdateEntities( void );
 */
 static void CG_FixVolumeCvars( void )
 {
-	if( developer->integer )
+	if( cdeveloper->integer )
 		return;
 
 	if( cg_volume_players->value < 0.0f )
