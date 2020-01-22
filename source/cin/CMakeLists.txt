@@ -16,6 +16,6 @@ if (UNIX AND NOT APPLE)
         set(CIN_PLATFORM_LIBRARIES m)
 endif()
 
-add_library(cin SHARED ${CIN_SOURCES} ${CIN_HEADERS})
+add_library(cin STATIC ${CIN_SOURCES} ${CIN_HEADERS})
 target_link_libraries(cin PRIVATE ${OGG_LIBRARY} ${VORBIS_LIBRARIES} ${THEORA_LIBRARY} ${CIN_PLATFORM_LIBRARIES})
 qf_set_output_dir(cin libs)

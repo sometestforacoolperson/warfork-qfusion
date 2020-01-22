@@ -58,10 +58,3 @@ extern "C" STEAMDLL_EXPORT steamlib_export_t *GetSteamLibAPI( steamlib_import_t 
 
 	return &globals;
 }
-
-#if defined ( HAVE_DLLMAIN ) && !defined ( STEAMLIB_HARD_LINKED )
-int WINAPI DLLMain( void *hinstDll, unsigned long dwReason, void *reserved )
-{
-	return 1;
-}
-#endif

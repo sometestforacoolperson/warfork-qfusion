@@ -24,6 +24,6 @@ elseif (UNIX AND NOT APPLE)
         set(SND_OPENAL_PLATFORM_LIBRARIES m)
 endif()
 
-add_library(snd_openal SHARED ${SND_OPENAL_HEADERS} ${SND_OPENAL_SOURCES})
+add_library(snd_openal STATIC ${SND_OPENAL_HEADERS} ${SND_OPENAL_SOURCES})
 target_link_libraries(snd_openal PRIVATE ${OGG_LIBRARY} ${OPENAL_LIBRARY} ${VORBIS_LIBRARIES} ${SND_OPENAL_PLATFORM_LIBRARIES})
 qf_set_output_dir(snd_openal libs)

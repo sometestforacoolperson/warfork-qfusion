@@ -222,39 +222,3 @@ ui_export_t *GetUIAPI( ui_import_t *import )
 
 	return &globals;
 }
-
-#ifndef UI_HARD_LINKED
-#include <stdarg.h>
-
-// this is only here so the functions in q_shared.c and q_math.c can link
-void Sys_Error( const char *format, ... )
-{
-	va_list	argptr;
-	char msg[3072];
-
-	va_start( argptr, format );
-	Q_vsnprintfz( msg, sizeof( msg ), format, argptr );
-	va_end( argptr );
-
-	trap::Error( msg );
-}
-
-void Com_Printf( const char *format, ... )
-{
-	va_list	argptr;
-	char msg[3072];
-
-	va_start( argptr, format );
-	Q_vsnprintfz( msg, sizeof( msg ), format, argptr );
-	va_end( argptr );
-
-	trap::Print( msg );
-}
-#endif
-
-#if defined(HAVE_DLLMAIN) && !defined(UI_HARD_LINKED)
-int WINAPI DLLMain( void *hinstDll, unsigned long dwReason, void *reserved )
-{
-	return 1;
-}
-#endif

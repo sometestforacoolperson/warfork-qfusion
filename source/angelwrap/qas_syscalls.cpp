@@ -36,10 +36,3 @@ extern "C" QF_DLL_EXPORT angelwrap_export_t *GetAngelwrapAPI( angelwrap_import_t
 
 	return &globals;
 }
-
-#if defined ( HAVE_DLLMAIN ) && !defined ( ANGELWRAP_HARD_LINKED )
-int _stdcall DLLMain( void *hinstDll, unsigned long dwReason, void *reserved )
-{
-	return 1;
-}
-#endif

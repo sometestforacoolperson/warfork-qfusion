@@ -18,9 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#ifdef CIN_HARD_LINKED
 #define CIN_IMPORT cini_imp_local
-#endif
 
 extern cin_import_t CIN_IMPORT;
 

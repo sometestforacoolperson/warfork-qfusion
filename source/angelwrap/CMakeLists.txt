@@ -19,6 +19,6 @@ if (UNIX AND NOT APPLE)
 	set(ANGELWRAP_PLATFORM_LIBRARIES pthread)
 endif()
 
-add_library(angelwrap SHARED ${angelwrap_SOURCES} ${angelwrap_HEADERS})
+add_library(angelwrap STATIC ${angelwrap_SOURCES} ${angelwrap_HEADERS})
 target_link_libraries(angelwrap PRIVATE angelscript ${ANGELWRAP_PLATFORM_LIBRARIES})
 qf_set_output_dir(angelwrap libs)

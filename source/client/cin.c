@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cin.h"
 
 static cin_export_t *cin_export;
-static void *cin_libhandle = NULL;
 static mempool_t *cin_mempool;
 
 /*
@@ -87,10 +86,7 @@ static void CL_CinModule_MemEmptyPool( mempool_t *pool, const char *filename, in
 void CIN_LoadLibrary( bool verbose )
 {
 	static cin_import_t import;
-	dllfunc_t funcs[2];
 	void *( *GetCinematicsAPI )(void *);
-
-	assert( !cin_libhandle );
 
 	import.Print = &CL_CinModule_Print;
 	import.Error = &CL_CinModule_Error;
@@ -137,62 +133,44 @@ void CIN_LoadLibrary( bool verbose )
 	import.Mem_FreePool = &CL_CinModule_MemFreePool;
 	import.Mem_EmptyPool = &CL_CinModule_MemEmptyPool;
 
-	// load dynamic library
-	cin_export = NULL;
 	if( verbose ) {
 		Com_Printf( "Loading CIN module...\n" );
 	}
 
-	funcs[0].name = "GetCinematicsAPI";
-	funcs[0].funcPointer = ( void ** ) &GetCinematicsAPI;
-	funcs[1].name = NULL;
-	cin_libhandle = Com_LoadLibrary( LIB_DIRECTORY "/" LIB_PREFIX "cin" LIB_SUFFIX, funcs );
+	int api_version;
 
-	if( cin_libhandle )
+	cin_export = GetCinematicsAPI( &import );
+	cin_mempool = Mem_AllocPool( NULL, "CIN Module" );
+
+	api_version = cin_export->API();
+
+	if( api_version == CIN_API_VERSION )
 	{
-		// load succeeded
-		int api_version;
-
-		cin_export = GetCinematicsAPI( &import );
-		cin_mempool = Mem_AllocPool( NULL, "CIN Module" );
-
-		api_version = cin_export->API();
-
-		if( api_version == CIN_API_VERSION )
+		if( cin_export->Init( verbose ) )
 		{
-			if( cin_export->Init( verbose ) )
-			{
-				if( verbose ) {
-					Com_Printf( "...Success.\n" );
-				}
-			}
-			else
-			{
-				// initialization failed
-				Mem_FreePool( &cin_mempool );
-				if( verbose ) {
-					Com_Printf( "...Initialization failed.\n" );
-				}
-				CIN_UnloadLibrary( verbose );
+			if( verbose ) {
+				Com_Printf( "...Success.\n" );
 			}
 		}
 		else
 		{
-			// wrong version
+			// initialization failed
 			Mem_FreePool( &cin_mempool );
 			if( verbose ) {
-				Com_Printf( "...Wrong version: %i, not %i.\n", api_version, CIN_API_VERSION );
+				Com_Printf( "...Initialization failed.\n" );
 			}
 			CIN_UnloadLibrary( verbose );
 		}
 	}
 	else
 	{
+		// wrong version
+		Mem_FreePool( &cin_mempool );
 		if( verbose ) {
-			Com_Printf( "...Not found.\n" );
+			Com_Printf( "...Wrong version: %i, not %i.\n", api_version, CIN_API_VERSION );
 		}
+		CIN_UnloadLibrary( verbose );
 	}
-
 	Mem_DebugCheckSentinelsGlobal();
 }
 
@@ -205,16 +183,6 @@ void CIN_UnloadLibrary( bool verbose )
 		cin_export->Shutdown( verbose );
 		cin_export = NULL;
 	}
-
-	if( !cin_libhandle ) {
-		return;
-	}
-
-	assert( cin_libhandle != NULL );
-
-	Com_UnloadLibrary( &cin_libhandle );
-
-	assert( !cin_libhandle );
 
 	if( verbose ) {
 		Com_Printf( "CIN module unloaded.\n" );

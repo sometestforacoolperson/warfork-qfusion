@@ -18,4 +18,4 @@ LOCAL_SRC_FILES := \
   ../qcommon/patch.c \
   $(notdir $(wildcard $(LOCAL_PATH)/*.c))
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)

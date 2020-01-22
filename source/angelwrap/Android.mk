@@ -14,4 +14,4 @@ LOCAL_SRC_FILES := \
   $(notdir $(wildcard $(LOCAL_PATH)/*.c)) \
   $(notdir $(wildcard $(LOCAL_PATH)/*.cpp))
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)

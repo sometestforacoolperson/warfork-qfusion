@@ -59,44 +59,14 @@ static void Com_ScriptModule_MemEmptyPool( mempool_t *pool, const char *filename
 	_Mem_EmptyPool( pool, MEMPOOL_ANGELSCRIPT, 0, filename, fileline );
 }
 
-
-static void *script_library = NULL;
-
-/*
-* Com_UnloadScriptLibrary
-*/
-static void Com_UnloadScriptLibrary( void )
-{
-	Com_UnloadLibrary( &script_library );
-}
-
 /*
 * Com_LoadScriptLibrary
 */
 static void *Com_LoadScriptLibrary( const char *basename, void *parms )
 {
-	size_t file_size;
-	char *file;
 	void *( *GetAngelwrapAPI )(void *);
-	dllfunc_t funcs[2];
 
-	if( script_library )
-		Com_Error( ERR_FATAL, "Com_LoadScriptLibrary without Com_UnloadScriptLibrary" );
-
-	file_size = strlen( LIB_DIRECTORY "/" LIB_PREFIX ) + strlen( basename ) + strlen( LIB_SUFFIX ) + 1;
-	file = ( char* )Mem_TempMalloc( file_size );
-	Q_snprintfz( file, file_size, LIB_DIRECTORY "/" LIB_PREFIX "%s" LIB_SUFFIX, basename );
-
-	funcs[0].name = "GetAngelwrapAPI";
-	funcs[0].funcPointer = ( void ** )&GetAngelwrapAPI;
-	funcs[1].name = NULL;
-	script_library = Com_LoadLibrary( file, funcs );
-
-	Mem_TempFree( file );
-
-	if( script_library )
-		return GetAngelwrapAPI( parms );
-	return NULL;
+	return GetAngelwrapAPI( parms );
 }
 
 void Com_ScriptModule_Shutdown( void )
@@ -106,7 +76,6 @@ void Com_ScriptModule_Shutdown( void )
 
 	ae->Shutdown();
 
-	Com_UnloadScriptLibrary();
 	Mem_FreePool( &com_scriptmodulepool );
 	ae = NULL;
 }
@@ -127,7 +96,6 @@ static bool Com_ScriptModule_Load( const char *name, angelwrap_import_t *import 
 	apiversion = ae->API();
 	if( apiversion != ANGELWRAP_API_VERSION )
 	{
-		Com_UnloadScriptLibrary();
 		ae = NULL;
 		Com_Printf( "Wrong module version for %s: %i, not %i\n", name, apiversion, ANGELWRAP_API_VERSION );
 		return false;
@@ -135,7 +103,6 @@ static bool Com_ScriptModule_Load( const char *name, angelwrap_import_t *import 
 
 	if( !ae->Init() )
 	{
-		Com_UnloadScriptLibrary();
 		ae = NULL;
 		Com_Printf( "Initialization of %s failed\n", name );
 		return false;
