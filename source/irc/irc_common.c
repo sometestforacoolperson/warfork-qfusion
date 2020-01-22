@@ -16,12 +16,6 @@ struct {
 
 static cvar_t *irc_console = NULL;
 
-#ifndef IRC_HARD_LINKED
-// this is only here so the functions in q_shared.c and q_math.c can link
-void Sys_Error( const char *format, ...) {}
-void Com_Printf( const char *format, ... ) {}
-#endif
-
 void Irc_Printf( const char *format, ... )
 {
 	va_list		argptr;

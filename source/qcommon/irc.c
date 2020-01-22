@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../irc/irc_interface.h"
 
 static irc_export_t *irc_export;
-static void *irc_libhandle = NULL;
 
 static cvar_t *irc_server;
 static dynvar_t *irc_connected;
@@ -124,10 +123,7 @@ static void Irc_MemEmptyPool( const char *filename, int fileline )
 static void Irc_LoadLibrary( void )
 {
 	static irc_import_t import;
-	dllfunc_t funcs[2];
 	GetIrcAPI_t GetIrcAPI_f;
-
-	assert( !irc_libhandle );
 
 	import.Printf = Irc_Print;
 	import.CL_GetKeyDest = CL_GetKeyDest;
@@ -195,58 +191,43 @@ static void Irc_LoadLibrary( void )
 	import.Trie_DumpIf = Trie_DumpIf;
 	import.Trie_FreeDump = Trie_FreeDump;
 
-	// load dynamic library
 	Com_Printf( "Loading IRC module... " );
-	funcs[0].name = "GetIrcAPI";
-	funcs[0].funcPointer = (void **) &GetIrcAPI_f;
-	funcs[1].name = NULL;
-	irc_libhandle = Com_LoadLibrary( LIB_DIRECTORY "/" LIB_PREFIX "irc" LIB_SUFFIX, funcs );
 
-	if( irc_libhandle )
+	int api_version;
+	irc_export = GetIrcAPI_f( &import );
+	irc_pool = Mem_AllocPool( NULL, "IRC Module" );
+	api_version = irc_export->API();
+	if( api_version == IRC_API_VERSION )
 	{
-		// load succeeded
-		int api_version;
-		irc_export = GetIrcAPI_f( &import );
-		irc_pool = Mem_AllocPool( NULL, "IRC Module" );
-		api_version = irc_export->API();
-		if( api_version == IRC_API_VERSION )
+		if( irc_export->Init() )
 		{
-			if( irc_export->Init() )
-			{
-				dynvar_t *const quit = Dynvar_Lookup( "quit" );
-				if( quit )
-					Dynvar_AddListener( quit, Irc_Quit_f );
-				irc_initialized = true;
-				Cmd_AddCommand( "irc_unload", Irc_UnloadLibrary );
-				Com_Printf( "Success.\n" );
-			}
-			else
-			{
-				// initialization failed
-				Mem_FreePool( &irc_pool );
-				Com_Printf( "Initialization failed.\n" );
-				Irc_UnloadLibrary();
-			}
+			dynvar_t *const quit = Dynvar_Lookup( "quit" );
+			if( quit )
+				Dynvar_AddListener( quit, Irc_Quit_f );
+			irc_initialized = true;
+			Cmd_AddCommand( "irc_unload", Irc_UnloadLibrary );
+			Com_Printf( "Success.\n" );
 		}
 		else
 		{
-			// wrong version
+			// initialization failed
 			Mem_FreePool( &irc_pool );
-			Com_Printf( "Wrong version: %i, not %i.\n", api_version, IRC_API_VERSION );
+			Com_Printf( "Initialization failed.\n" );
 			Irc_UnloadLibrary();
 		}
 	}
 	else
 	{
-		Com_Printf( "Not found.\n" );
+		// wrong version
+		Mem_FreePool( &irc_pool );
+		Com_Printf( "Wrong version: %i, not %i.\n", api_version, IRC_API_VERSION );
+		Irc_UnloadLibrary();
 	}
-
 	Mem_DebugCheckSentinelsGlobal();
 }
 
 static void Irc_UnloadLibrary( void )
 {
-	assert( irc_libhandle );
 	if( irc_initialized )
 	{
 		dynvar_t *const quit = Dynvar_Lookup( "quit" );
@@ -262,8 +243,6 @@ static void Irc_UnloadLibrary( void )
 			Dynvar_RemoveListener( quit, Irc_Quit_f );
 		irc_initialized = false;
 	}
-	Com_UnloadLibrary( &irc_libhandle );
-	assert( !irc_libhandle );
 	Com_Printf( "IRC module unloaded.\n" );
 }
 
@@ -272,43 +251,38 @@ void Irc_Connect_f( void )
 	const int argc = Cmd_Argc();
 	if( argc <= 3 )
 	{
-		if( !irc_libhandle )
-			Irc_LoadLibrary(); // load IRC library if not already loaded
-		if( irc_libhandle )
+		// library loaded, check for connection status
+		bool *c;
+		if( !irc_server )
+			irc_server = Cvar_Get( "irc_server", "irc.quakenet.org", CVAR_ARCHIVE );
+		if( !irc_connected )
+			irc_connected = Dynvar_Lookup( "irc_connected" );
+		assert( irc_server );
+		assert( irc_connected );
+		Dynvar_GetValue( irc_connected, (void **) &c );
+		if( !*c )
 		{
-			// library loaded, check for connection status
-			bool *c;
-			if( !irc_server )
-				irc_server = Cvar_Get( "irc_server", "irc.quakenet.org", CVAR_ARCHIVE );
-			if( !irc_connected )
-				irc_connected = Dynvar_Lookup( "irc_connected" );
-			assert( irc_server );
-			assert( irc_connected );
+			// not connected yet
+			if( argc >= 2 )
+				Cvar_Set( "irc_server", Cmd_Argv( 1 ) );
+			if( argc >= 3 )
+				Cvar_Set( "irc_port", Cmd_Argv( 2 ) );
+			Dynvar_AddListener( irc_connected, Irc_ConnectedListener_f );
+			irc_export->Connect();
 			Dynvar_GetValue( irc_connected, (void **) &c );
-			if( !*c )
+			if( *c )
 			{
-				// not connected yet
-				if( argc >= 2 )
-					Cvar_Set( "irc_server", Cmd_Argv( 1 ) );
-				if( argc >= 3 )
-					Cvar_Set( "irc_port", Cmd_Argv( 2 ) );
-				Dynvar_AddListener( irc_connected, Irc_ConnectedListener_f );
-				irc_export->Connect();
-				Dynvar_GetValue( irc_connected, (void **) &c );
-				if( *c )
-				{
-					irc_wakelock = Sys_AcquireWakeLock();
-				}
-				else
-				{
-					// connect failed
-					Com_Printf( "Could not connect to %s (%s).\n", Cvar_GetStringValue( irc_server ), irc_export->ERROR_MSG );
-					Dynvar_RemoveListener( irc_connected, Irc_ConnectedListener_f );
-				}
+				irc_wakelock = Sys_AcquireWakeLock();
 			}
 			else
-				Com_Printf( "Already connected.\n" );
+			{
+				// connect failed
+				Com_Printf( "Could not connect to %s (%s).\n", Cvar_GetStringValue( irc_server ), irc_export->ERROR_MSG );
+				Dynvar_RemoveListener( irc_connected, Irc_ConnectedListener_f );
+			}
 		}
+		else
+			Com_Printf( "Already connected.\n" );
 	}
 	else
 		Com_Printf( "usage: irc_connect [<server>] [<port>]" );
@@ -316,79 +290,72 @@ void Irc_Connect_f( void )
 
 void Irc_Disconnect_f( void )
 {
-	if( irc_libhandle )
+	bool *c;
+	if( !irc_server )
+		irc_server = Cvar_Get( "irc_server", "", 0 );
+	if( !irc_connected )
+		irc_connected = Dynvar_Lookup( "irc_connected" );
+	assert( irc_connected );
+	assert( irc_server );
+	Dynvar_GetValue( irc_connected, (void **) &c );
+	if( *c )
 	{
-		bool *c;
-		if( !irc_server )
-			irc_server = Cvar_Get( "irc_server", "", 0 );
-		if( !irc_connected )
-			irc_connected = Dynvar_Lookup( "irc_connected" );
-		assert( irc_connected );
-		assert( irc_server );
-		Dynvar_GetValue( irc_connected, (void **) &c );
-		if( *c )
+		// still connected, proceed
+		if( irc_wakelock )
 		{
-			// still connected, proceed
-			if( irc_wakelock )
-			{
-				Sys_ReleaseWakeLock( irc_wakelock );
-				irc_wakelock = NULL;
-			}
-			irc_export->Disconnect();
-			Dynvar_RemoveListener( irc_connected, Irc_ConnectedListener_f );
+			Sys_ReleaseWakeLock( irc_wakelock );
+			irc_wakelock = NULL;
 		}
-		else
-			Com_Printf( "Not connected.\n" );
+		irc_export->Disconnect();
+		Dynvar_RemoveListener( irc_connected, Irc_ConnectedListener_f );
 	}
 	else
-		Com_Printf( "IRC module not loaded. Connect first.\n" );
+		Com_Printf( "Not connected.\n" );
 }
 
 bool Irc_IsConnected( void )
 {
-	if( irc_libhandle ) {
-		bool *c;
+	bool *c;
 
-		if( !irc_connected )
-			irc_connected = Dynvar_Lookup( "irc_connected" );
-		assert( irc_connected );
+	if( !irc_connected )
+		irc_connected = Dynvar_Lookup( "irc_connected" );
+	assert( irc_connected );
 		
-		Dynvar_GetValue( irc_connected, (void **) &c );
-		if( *c ) {
-			return true;
-		}
+	Dynvar_GetValue( irc_connected, (void **) &c );
+	if( *c ) {
+		return true;
 	}
 	return false;
 }
 
 size_t Irc_HistorySize( void )
 {
-	return irc_libhandle ? irc_export->HistorySize() : 0;
+	return irc_export->HistorySize();
 }
 
 size_t Irc_HistoryTotalSize( void )
 {
-	return irc_libhandle ? irc_export->HistoryTotalSize() : 0;
+	return irc_export->HistoryTotalSize();
 }
 
 // history is in reverse order (newest line first)
 const struct irc_chat_history_node_s *Irc_GetHistoryHeadNode(void)
 {
-	return irc_libhandle ? irc_export->GetHistoryHeadNode() : NULL;
+	return irc_export->GetHistoryHeadNode();
 }
 
 const struct irc_chat_history_node_s *Irc_GetNextHistoryNode(const struct irc_chat_history_node_s *n)
 {
-	return irc_libhandle ? irc_export->GetNextHistoryNode(n) : NULL;
+	return irc_export->GetNextHistoryNode(n);
 }
 
 const struct irc_chat_history_node_s *Irc_GetPrevHistoryNode(const struct irc_chat_history_node_s *n)
 {
-	return irc_libhandle ? irc_export->GetPrevHistoryNode(n) : NULL;
+	return irc_export->GetPrevHistoryNode(n);
 }
 
 const char *Irc_GetHistoryNodeLine(const struct irc_chat_history_node_s *n)
 {
-	return irc_libhandle ? irc_export->GetHistoryNodeLine(n) : NULL;
+	return irc_export->GetHistoryNodeLine(n);
 }
 

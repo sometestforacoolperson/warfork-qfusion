@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../steamlib/steamlib_public.h"
 
 static steamlib_export_t *steamlib_export;
-static void *steamlib_libhandle = NULL;
 static bool steamlib_initialized = false;
 
 void Steam_LoadLibrary( void );
@@ -35,45 +34,29 @@ typedef void ( *com_error_t )( int code, const char *format, ... );
 void Steam_LoadLibrary( void )
 {
 	static steamlib_import_t import;
-	dllfunc_t funcs[2];
 	void *( *GetSteamLibAPI )(void *);
-
-	assert( !steamlib_libhandle );
 
 	import.Com_Error = (com_error_t)Com_Error;
 	import.Com_Printf = Com_Printf;
 	import.Com_DPrintf = Com_DPrintf;
 	import.Cbuf_ExecuteText = Cbuf_ExecuteText;
 
-	// load dynamic library
 	Com_Printf( "Loading Steam module... " );
-	funcs[0].name = "GetSteamLibAPI";
-	funcs[0].funcPointer = (void **) &GetSteamLibAPI;
-	funcs[1].name = NULL;
-	steamlib_libhandle = Com_LoadLibrary( LIB_DIRECTORY "/" LIB_PREFIX "steamlib" LIB_SUFFIX, funcs );
 
-	if( steamlib_libhandle )
+	int api_version;
+
+	steamlib_export = GetSteamLibAPI( &import );
+	api_version = steamlib_export->API();
+
+	if( api_version != STEAMLIB_API_VERSION )
 	{
-		// load succeeded
-		int api_version;
-
-		steamlib_export = GetSteamLibAPI( &import );
-		api_version = steamlib_export->API();
-
-		if( api_version != STEAMLIB_API_VERSION )
-		{
-			// wrong version
-			Com_Printf( "Wrong version: %i, not %i.\n", api_version, STEAMLIB_API_VERSION );
-			Steam_UnloadLibrary();
-		}
-		else
-		{
-			Com_Printf( "Success.\n" );
-		}
+		// wrong version
+		Com_Printf( "Wrong version: %i, not %i.\n", api_version, STEAMLIB_API_VERSION );
+		Steam_UnloadLibrary();
 	}
 	else
 	{
-		Com_Printf( "Not found.\n" );
+		Com_Printf( "Success.\n" );
 	}
 }
 
@@ -82,14 +65,9 @@ void Steam_LoadLibrary( void )
 */
 void Steam_UnloadLibrary( void )
 {
-	if( steamlib_libhandle ) {
-		steamlib_export->Shutdown();
+	steamlib_export->Shutdown();
 
-		Com_UnloadLibrary( &steamlib_libhandle );
-		assert( !steamlib_libhandle );
-
-		Com_Printf( "Steam module unloaded.\n" );
-	}
+	Com_Printf( "Steam module unloaded.\n" );
 
 	steamlib_export = NULL;
 	steamlib_initialized = false;

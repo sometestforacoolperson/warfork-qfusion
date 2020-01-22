@@ -21,4 +21,4 @@ LOCAL_SRC_FILES := \
   $(addprefix widgets/,$(notdir $(wildcard $(LOCAL_PATH)/widgets/*.cpp))) \
   $(notdir $(wildcard $(LOCAL_PATH)/*.cpp))
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)

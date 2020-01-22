@@ -13,4 +13,4 @@ LOCAL_SRC_FILES := \
   $(addprefix ../snd_common/,$(notdir $(wildcard $(LOCAL_PATH)/../snd_common/*.c))) \
   $(notdir $(wildcard $(LOCAL_PATH)/*.c))
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)

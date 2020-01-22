@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ftlib.h"
 
 static ftlib_export_t *ftlib_export;
-static void *ftlib_libhandle = NULL;
 static mempool_t *ftlib_mempool;
 
 static void CL_FTLibModule_Error( const char *msg )
@@ -106,10 +105,7 @@ static void CL_FTLibModule_ResetScissor( void )
 void FTLIB_LoadLibrary( bool verbose )
 {
 	static ftlib_import_t import;
-	dllfunc_t funcs[2];
 	void *( *GetFTLibAPI )(void *);
-
-	assert( !ftlib_libhandle );
 
 	import.Print = &CL_FTLibModule_Print;
 	import.Error = &CL_FTLibModule_Error;
@@ -166,60 +162,42 @@ void FTLIB_LoadLibrary( bool verbose )
 	import.Mem_FreePool = &CL_FTLibModule_MemFreePool;
 	import.Mem_EmptyPool = &CL_FTLibModule_MemEmptyPool;
 
-	// load dynamic library
-	ftlib_export = NULL;
 	if( verbose ) {
 		Com_Printf( "Loading Fonts module... " );
 	}
 
-	funcs[0].name = "GetFTLibAPI";
-	funcs[0].funcPointer = ( void ** ) &GetFTLibAPI;
-	funcs[1].name = NULL;
-	ftlib_libhandle = Com_LoadLibrary( LIB_DIRECTORY "/" LIB_PREFIX "ftlib" LIB_SUFFIX, funcs );
+	int api_version;
 
-	if( ftlib_libhandle )
+	ftlib_export = GetFTLibAPI( &import );
+	ftlib_mempool = Mem_AllocPool( NULL, "Fonts Library Module" );
+
+	api_version = ftlib_export->API();
+
+	if( api_version == FTLIB_API_VERSION )
 	{
-		// load succeeded
-		int api_version;
-
-		ftlib_export = GetFTLibAPI( &import );
-		ftlib_mempool = Mem_AllocPool( NULL, "Fonts Library Module" );
-
-		api_version = ftlib_export->API();
-
-		if( api_version == FTLIB_API_VERSION )
+		if( ftlib_export->Init( verbose ) )
 		{
-			if( ftlib_export->Init( verbose ) )
-			{
-				if( verbose ) {
-					Com_Printf( "Success.\n" );
-				}
-			}
-			else
-			{
-				// initialization failed
-				Mem_FreePool( &ftlib_mempool );
-				if( verbose ) {
-					Com_Printf( "Initialization failed.\n" );
-				}
-				FTLIB_UnloadLibrary( verbose );
+			if( verbose ) {
+				Com_Printf( "Success.\n" );
 			}
 		}
 		else
 		{
-			// wrong version
+			// initialization failed
 			Mem_FreePool( &ftlib_mempool );
-			Com_Printf( "ftlib_LoadLibrary: wrong version: %i, not %i.\n", api_version, FTLIB_API_VERSION );
+			if( verbose ) {
+				Com_Printf( "Initialization failed.\n" );
+			}
 			FTLIB_UnloadLibrary( verbose );
 		}
 	}
 	else
 	{
-		if( verbose ) {
-			Com_Printf( "Not found.\n" );
-		}
+		// wrong version
+		Mem_FreePool( &ftlib_mempool );
+		Com_Printf( "ftlib_LoadLibrary: wrong version: %i, not %i.\n", api_version, FTLIB_API_VERSION );
+		FTLIB_UnloadLibrary( verbose );
 	}
-
 	Mem_DebugCheckSentinelsGlobal();
 }
 
@@ -232,16 +210,6 @@ void FTLIB_UnloadLibrary( bool verbose )
 		ftlib_export->Shutdown( verbose );
 		ftlib_export = NULL;
 	}
-
-	if( !ftlib_libhandle ) {
-		return;
-	}
-
-	assert( ftlib_libhandle != NULL );
-
-	Com_UnloadLibrary( &ftlib_libhandle );
-
-	assert( !ftlib_libhandle );
 
 	if( verbose ) {
 		Com_Printf( "Fonts module unloaded.\n" );

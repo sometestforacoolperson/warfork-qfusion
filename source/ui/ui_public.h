@@ -259,14 +259,12 @@ typedef struct
 	void ( *AddToServerList )( const char *adr, const char *info );
 } ui_export_t;
 
-#ifdef UI_HARD_LINKED
 #ifdef __cplusplus
 extern "C" {
 #endif
 	ui_export_t *GetUIAPI( ui_import_t *import );
 #ifdef __cplusplus
 }
-#endif
 #endif
 
 #endif
