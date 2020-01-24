@@ -109,7 +109,7 @@ void Sys_Thread_Join( qthread_t *thread )
 */
 void Sys_Thread_Yield( void )
 {
-	Sys_Sleep(0);
+	/* WTF */
 }
 
 /*
