@@ -578,7 +578,7 @@ tv_module_t *TV_GetModule( const char *game )
 	iter->import.LocateEntities = TV_Module_LocateEntities;
 	iter->import.LocateLocalEntities = TV_Module_LocateLocalEntities;
 
-	GetTVModuleAPI( &iter->import );
+	iter->export = GetTVModuleAPI( &iter->import );
 	if( !iter->export )
 	{
 		Mem_Free( iter );
