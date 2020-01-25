@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "client.h"
 
+sound_export_t *GetSoundAPI( sound_import_t *import );
+
 static sound_export_t *se;
 static mempool_t *cl_soundmodulepool;
 
@@ -125,15 +127,12 @@ static void CL_SoundModule_MemEmptyPool( mempool_t *pool, const char *filename, 
 */
 static bool CL_SoundModule_Load( const char *name, sound_import_t *import, bool verbose )
 {
-	int apiversion;
-	void *( *GetSoundAPI )(void *);
-
 	if( verbose )
 		Com_Printf( "Loading sound module: %s\n", name );
 
 	s_loaded = true;
 
-	se = ( sound_export_t * )GetSoundAPI( import );
+	se = GetSoundAPI( import );
 	if( !se )
 	{
 		CL_SoundModule_Shutdown( verbose );
