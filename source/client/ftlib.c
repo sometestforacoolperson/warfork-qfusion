@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "ftlib.h"
 
+ftlib_export_t *GetFTLibAPI( ftlib_import_t * );
+
 static ftlib_export_t *ftlib_export;
 static mempool_t *ftlib_mempool;
 
@@ -105,7 +107,6 @@ static void CL_FTLibModule_ResetScissor( void )
 void FTLIB_LoadLibrary( bool verbose )
 {
 	static ftlib_import_t import;
-	void *( *GetFTLibAPI )(void *);
 
 	import.Print = &CL_FTLibModule_Print;
 	import.Error = &CL_FTLibModule_Error;
@@ -212,118 +213,7 @@ void FTLIB_UnloadLibrary( bool verbose )
 	}
 }
 
-/*
-* FTLIB_RegisterFont
-*/
-struct qfontface_s *FTLIB_RegisterFont( const char *family, const char *fallback, int style, unsigned int size )
-{
-	return ftlib_export ? ftlib_export->RegisterFont( family, fallback, style, size ) : NULL;
-}
-
-/*
-* FTLIB_TouchFont
-*/
-void FTLIB_TouchFont( struct qfontface_s *qfont )
-{
-	if( ftlib_export ) {
-		ftlib_export->TouchFont( qfont );
-	}
-}
-
-/*
-* FTLIB_TouchAllFonts
-*/
-void FTLIB_TouchAllFonts( void )
-{
-	if( ftlib_export ) {
-		ftlib_export->TouchAllFonts();
-	}
-}
-
-/*
-* FTLIB_PrecacheFonts
-*/
-void FTLIB_PrecacheFonts( bool verbose )
-{
-	if( ftlib_export ) {
-		ftlib_export->PrecacheFonts( verbose );
-	}
-}
-
-/*
-* FTLIB_FreeFonts
-*/
-void FTLIB_FreeFonts( bool verbose )
-{
-	if( ftlib_export ) {
-		ftlib_export->FreeFonts( verbose );
-	}
-}
-
 // drawing functions
-
-/*
-* FTLIB_FontSize
-*/
-size_t FTLIB_FontSize( struct qfontface_s *font )
-{
-	return ftlib_export ? ftlib_export->FontSize( font ) : 0;
-}
-
-/*
-* FTLIB_FontHeight
-*/
-size_t FTLIB_FontHeight( struct qfontface_s *font )
-{
-	return ftlib_export ? ftlib_export->FontHeight( font ) : 0;
-}
-
-/*
-* FTLIB_StringWidth
-*/
-size_t FTLIB_StringWidth( const char *str, struct qfontface_s *font, size_t maxlen, int flags )
-{
-	return ftlib_export ? ftlib_export->StringWidth( str, font, maxlen, flags ) : 0;
-}
-
-/*
-* FTLIB_StrlenForWidth
-*/
-size_t FTLIB_StrlenForWidth( const char *str, struct qfontface_s *font, size_t maxwidth, int flags )
-{
-	return ftlib_export ? ftlib_export->StrlenForWidth( str, font, maxwidth, flags ) : 0;
-}
-
-/*
-* FTLIB_FontUnderline
-*/
-int FTLIB_FontUnderline( struct qfontface_s *font, int *thickness )
-{
-	if( ftlib_export ) {
-		return ftlib_export->FontUnderline( font, thickness );
-	}
-
-	if( thickness ) {
-		*thickness = 0;
-	}
-	return 0;
-}
-
-/*
-* FTLIB_FontAdvance
-*/
-size_t FTLIB_FontAdvance( struct qfontface_s *font )
-{
-	return ftlib_export ? ftlib_export->FontAdvance( font ) : 0;
-}
-
-/*
-* FTLIB_FontXHeight
-*/
-size_t FTLIB_FontXHeight( struct qfontface_s *font )
-{
-	return ftlib_export ? ftlib_export->FontXHeight( font ) : 0;
-}
 
 /*
 * FTLIB_SetDrawCharIntercept
@@ -334,48 +224,9 @@ fdrawchar_t FTLIB_SetDrawCharIntercept( fdrawchar_t intercept )
 }
 
 /*
-* FTLIB_DrawRawChar
+* FTLIB_StringWidth
 */
-void FTLIB_DrawRawChar( int x, int y, wchar_t num, struct qfontface_s *font, vec4_t color )
+size_t FTLIB_StringWidth( const char *str, struct qfontface_s *font, size_t maxlen, int flags )
 {
-	if( ftlib_export ) {
-		ftlib_export->DrawRawChar( x, y, num, font, color );
-	}
+	return ftlib_export ? ftlib_export->StringWidth( str, font, maxlen, flags ) : 0;
 }
-
-/*
-* FTLIB_DrawClampChar
-*/
-void FTLIB_DrawClampChar( int x, int y, wchar_t num, int xmin, int ymin, int xmax, int ymax, struct qfontface_s *font, vec4_t color )
-{
-	if( ftlib_export ) {
-		ftlib_export->DrawClampChar( x, y, num, xmin, ymin, xmax, ymax, font, color );
-	}
-}
-
-/*
-* FTLIB_DrawClampString
-*/
-void FTLIB_DrawClampString( int x, int y, const char *str, int xmin, int ymin, int xmax, int ymax, struct qfontface_s *font, vec4_t color, int flags )
-{
-	if( ftlib_export ) {
-		ftlib_export->DrawClampString( x, y, str, xmin, ymin, xmax, ymax, font, color, flags );
-	}
-}
-
-/*
-* FTLIB_DrawRawString
-*/
-size_t FTLIB_DrawRawString( int x, int y, const char *str, size_t maxwidth, int *width, struct qfontface_s *font, vec4_t color, int flags )
-{
-	return ftlib_export ? ftlib_export->DrawRawString( x, y, str, maxwidth, width, font, color, flags ) : 0;
-}
-
-/*
-* FTLIB_DrawMultilineString
-*/
-int FTLIB_DrawMultilineString( int x, int y, const char *str, int halign, int maxwidth, int maxlines, struct qfontface_s *font, vec4_t color, int flags )
-{
-	return ftlib_export ? ftlib_export->DrawMultilineString( x, y, str, halign, maxwidth, maxlines, font, color, flags ) : 0;
-}
-

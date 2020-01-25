@@ -36,24 +36,7 @@ QF_DLL_EXPORT ftlib_export_t *GetFTLibAPI( ftlib_import_t *import )
 	globals.Init = &FTLIB_Init;
 	globals.Shutdown = &FTLIB_Shutdown;
 
-	globals.PrecacheFonts = &FTLIB_PrecacheFonts;
-	globals.RegisterFont = &FTLIB_RegisterFont;
-	globals.TouchFont = &FTLIB_TouchFont;
-	globals.TouchAllFonts = &FTLIB_TouchAllFonts;
-	globals.FreeFonts = &FTLIB_FreeFonts;
-	
-	globals.FontSize = &FTLIB_FontSize;
-	globals.FontHeight = &FTLIB_FontHeight;
 	globals.StringWidth = &FTLIB_strWidth;
-	globals.StrlenForWidth = &FTLIB_StrlenForWidth;
-	globals.FontUnderline = &FTLIB_FontUnderline;
-	globals.FontAdvance = &FTLIB_FontAdvance;
-	globals.FontXHeight = &FTLIB_FontXHeight;
-	globals.DrawClampChar = &FTLIB_DrawClampChar;
-	globals.DrawRawChar = &FTLIB_DrawRawChar;
-	globals.DrawClampString = &FTLIB_DrawClampString;
-	globals.DrawRawString = &FTLIB_DrawRawString;
-	globals.DrawMultilineString = &FTLIB_DrawMultilineString;
 	globals.SetDrawIntercept = &FTLIB_SetDrawIntercept;
 
 	return &globals;
