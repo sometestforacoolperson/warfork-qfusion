@@ -989,10 +989,6 @@ void Qcommon_Init( int argc, char **argv )
 
 	CM_Init();
 
-#if APP_STEAMID
-	Steam_LoadLibrary();
-#endif
-
 	Com_ScriptModule_Init();
 
 	MM_Init();
@@ -1152,8 +1148,6 @@ void Qcommon_Shutdown( void )
 	Netchan_Shutdown();
 	NET_Shutdown();
 	Key_Shutdown();
-
-	Steam_UnloadLibrary();
 
 	Com_Autoupdate_Shutdown();
 

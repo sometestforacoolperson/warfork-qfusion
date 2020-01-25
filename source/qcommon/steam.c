@@ -18,70 +18,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "../qcommon/qcommon.h"
-#include "../steamlib/steamlib_public.h"
 
-static steamlib_export_t *steamlib_export;
 static bool steamlib_initialized = false;
 
-void Steam_LoadLibrary( void );
-void Steam_UnloadLibrary( void );
-
 typedef void ( *com_error_t )( int code, const char *format, ... );
-
-/*
-* Steam_LoadLibrary
-*/
-void Steam_LoadLibrary( void )
-{
-	static steamlib_import_t import;
-	void *( *GetSteamLibAPI )(void *);
-
-	import.Com_Error = (com_error_t)Com_Error;
-	import.Com_Printf = Com_Printf;
-	import.Com_DPrintf = Com_DPrintf;
-	import.Cbuf_ExecuteText = Cbuf_ExecuteText;
-
-	Com_Printf( "Loading Steam module... " );
-
-	steamlib_export = GetSteamLibAPI( &import );
-
-	if( !steamlib_export )
-	{
-		// failure
-		Com_Printf( "Failure.\n" );
-		Steam_UnloadLibrary();
-	}
-	else
-	{
-		Com_Printf( "Success.\n" );
-	}
-}
-
-/*
-* Steam_UnloadLibrary
-*/
-void Steam_UnloadLibrary( void )
-{
-	steamlib_export->Shutdown();
-
-	Com_Printf( "Steam module unloaded.\n" );
-
-	steamlib_export = NULL;
-	steamlib_initialized = false;
-}
 
 /*
 * Steam_Init
 */
 void Steam_Init( void )
 {
-	if( steamlib_export ) {
-		if( !steamlib_export->Init() ) {
-			Com_Printf( "Steam initialization failed.\n" );
-			return;
-		}
-		steamlib_initialized = true;
-	}
+	steamlib_initialized = true;
 }
 
 /*
@@ -90,7 +37,7 @@ void Steam_Init( void )
 void Steam_RunFrame( void )
 {
 	if( steamlib_initialized ) {
-		steamlib_export->RunFrame();
+		/* WTF */
 	}
 }
 
@@ -100,7 +47,7 @@ void Steam_RunFrame( void )
 void Steam_Shutdown( void )
 {
 	if( steamlib_initialized ) {
-		steamlib_export->Shutdown();
+		/* WTF */
 	}
 }
 
@@ -110,7 +57,7 @@ void Steam_Shutdown( void )
 uint64_t Steam_GetSteamID( void )
 {
 	if( steamlib_initialized ) {
-		return steamlib_export->GetSteamID();
+		return 0; /* WTF */
 	}
 	return 0;
 }
@@ -121,7 +68,7 @@ uint64_t Steam_GetSteamID( void )
 int Steam_GetAuthSessionTicket( void (*callback)( void *, size_t ) )
 {
 	if( steamlib_initialized ) {
-		return steamlib_export->GetAuthSessionTicket( callback );
+		return 0; /* WTF */
 	}
 	return 0;
 }
@@ -132,7 +79,7 @@ int Steam_GetAuthSessionTicket( void (*callback)( void *, size_t ) )
 void Steam_AdvertiseGame( const uint8_t *ip, unsigned short port )
 {
 	if( steamlib_initialized ) {
-		steamlib_export->AdvertiseGame( ip, port );
+		/* WTF */
 	}
 }
 
@@ -146,7 +93,7 @@ void Steam_GetPersonaName( char *name, size_t namesize )
 	}
 
 	if( steamlib_initialized ) {
-		steamlib_export->GetPersonaName( name, namesize );
+		name[0] = '\0'; /* WTF */
 	} else {
 		name[0] = '\0';
 	}
