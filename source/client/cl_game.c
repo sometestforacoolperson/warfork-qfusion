@@ -375,7 +375,6 @@ static bool CL_GameModule_AddRawSamplesListener( struct cinematics_s *cin,
 */
 void CL_GameModule_Init( void )
 {
-	int apiversion;
 	unsigned int start;
 	cgame_import_t import;
 
