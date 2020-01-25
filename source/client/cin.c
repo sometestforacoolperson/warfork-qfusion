@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "cin.h"
 
+cin_export_t *GetCinematicsAPI( cin_import_t *import );
+
 static cin_export_t *cin_export;
 static mempool_t *cin_mempool;
 
@@ -86,7 +88,6 @@ static void CL_CinModule_MemEmptyPool( mempool_t *pool, const char *filename, in
 void CIN_LoadLibrary( bool verbose )
 {
 	static cin_import_t import;
-	void *( *GetCinematicsAPI )(void *);
 
 	import.Print = &CL_CinModule_Print;
 	import.Error = &CL_CinModule_Error;

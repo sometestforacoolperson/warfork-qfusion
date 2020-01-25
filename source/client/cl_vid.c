@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ftlib.h"
 #include "xpm.h"
 
+ref_export_t *GetRefAPI( ref_import_t *import );
+
 cvar_t *vid_ref;
 cvar_t *vid_width, *vid_height;
 cvar_t *vid_xpos;          // X coordinate of window position
@@ -319,7 +321,6 @@ static struct cinematics_s *VID_RefModule_CIN_Open( const char *name, unsigned i
 static bool VID_LoadRefresh( const char *name )
 {
 	static ref_import_t import;
-	GetRefAPI_t GetRefAPI_f;
 
 	VID_UnloadRefresh();
 
@@ -408,7 +409,7 @@ static bool VID_LoadRefresh( const char *name )
 
 	ref_export_t *rep;
 
-	rep = GetRefAPI_f( &import );
+	rep = GetRefAPI( &import );
 	re = *rep;
 	vid_ref_mempool = Mem_AllocPool( NULL, "Refresh" );
 	Com_Printf( "\n" );

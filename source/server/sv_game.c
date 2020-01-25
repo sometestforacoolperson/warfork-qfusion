@@ -444,7 +444,6 @@ static void SV_LocateEntities( struct edict_s *edicts, int edict_size, int num_e
 */
 void SV_InitGameProgs( void )
 {
-	int apiversion;
 	game_import_t import;
 	char manifest[MAX_INFO_STRING];
 

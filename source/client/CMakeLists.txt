@@ -28,7 +28,6 @@ file(GLOB CLIENT_HEADERS
 	"../ui/ui_public.h"
 	"../ftlib/ftlib_public.h"
 	"../irc/irc_interface.h"
-	"../steamlib/steamlib_public.h"
 	"../cin/cin_public.h"
 	"../matchmaker/*.h"
 )
@@ -197,7 +196,7 @@ else()
 endif()
 
 add_executable(${QFUSION_CLIENT_NAME} ${CLIENT_BINARY_TYPE} ${CLIENT_HEADERS} ${CLIENT_PLATFORM_HEADERS} ${CLIENT_COMMON_SOURCES} ${CLIENT_PLATFORM_SOURCES} ${BUNDLE_RESOURCES})
-add_dependencies(${QFUSION_CLIENT_NAME} angelwrap cgame cin ftlib game irc ref_gl snd_openal steamlib ui)
+add_dependencies(${QFUSION_CLIENT_NAME} angelwrap cgame cin ftlib game irc ref_gl snd_openal ui)
 
 if (APPLE)
     set_target_properties(${QFUSION_CLIENT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${QFUSION_MAC_INFO_PLIST})
@@ -219,5 +218,5 @@ if (APPLE)
     add_custom_command(TARGET ${QFUSION_CLIENT_NAME} POST_BUILD COMMAND ${COPY_DYLIBS})
 endif()
 
-target_link_libraries(${QFUSION_CLIENT_NAME} PRIVATE ${CURL_LIBRARY} ${ZLIB_LIBRARY} ${CLIENT_PLATFORM_LIBRARIES} angelwrap cgame cin ftlib game irc ref_gl snd_openal steamlib ui)
+target_link_libraries(${QFUSION_CLIENT_NAME} PRIVATE ${CURL_LIBRARY} ${ZLIB_LIBRARY} ${CLIENT_PLATFORM_LIBRARIES} angelwrap cgame cin ftlib game irc ref_gl snd_openal ui)
 qf_set_output_dir(${QFUSION_CLIENT_NAME} "")

@@ -163,7 +163,6 @@ static int CL_UIModule_PlayerNum( void )
 */
 void CL_UIModule_Init( void )
 {
-	int apiversion;
 	ui_import_t import;
 
 	CL_UIModule_Shutdown();

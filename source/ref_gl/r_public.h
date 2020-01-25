@@ -220,8 +220,6 @@ typedef struct
 	void		( *AppActivate )( bool active, bool destroy );
 } ref_export_t;
 
-typedef ref_export_t *(*GetRefAPI_t)(const ref_import_t *imports);
-
 #ifdef __cplusplus
 extern "C" {
 #endif

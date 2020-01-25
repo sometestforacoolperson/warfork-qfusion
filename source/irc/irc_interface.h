@@ -270,9 +270,6 @@ typedef struct irc_export_s {
 	void		(*AddListener)(irc_command_t cmd, irc_listener_f listener);
 	void		(*RemoveListener)(irc_command_t cmd, irc_listener_f listener);
 
-	size_t		(*HistorySize)(void);
-	size_t		(*HistoryTotalSize)(void);
-
 	// history is in reverse order (newest line first)
 	const struct irc_chat_history_node_s *(*GetHistoryHeadNode)(void);
 	const struct irc_chat_history_node_s *(*GetNextHistoryNode)(const struct irc_chat_history_node_s *n);
@@ -283,7 +280,6 @@ typedef struct irc_export_s {
 } irc_export_t;
 
 // the one and only function this shared library exports
-typedef irc_export_t *(*GetIrcAPI_t)(const irc_import_t *imports);
 QF_DLL_EXPORT irc_export_t *GetIrcAPI(const irc_import_t *imports);
 
 #endif
