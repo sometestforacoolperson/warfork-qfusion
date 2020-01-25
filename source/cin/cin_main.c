@@ -24,14 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct mempool_s *cinPool;
 
 /*
-* CIN_API
-*/
-int CIN_API( void )
-{
-	return CIN_API_VERSION;
-}
-
-/*
 * CIN_Init
 */
 bool CIN_Init( bool verbose )

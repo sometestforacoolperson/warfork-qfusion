@@ -84,7 +84,6 @@ typedef struct cinematics_s
 
 void Com_DPrintf( const char *format, ... );
 
-int CIN_API( void );
 bool CIN_Init( bool verbose );
 void CIN_Shutdown( bool verbose );
 char *CIN_CopyString( const char *in );

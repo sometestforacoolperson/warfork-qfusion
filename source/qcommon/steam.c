@@ -43,15 +43,12 @@ void Steam_LoadLibrary( void )
 
 	Com_Printf( "Loading Steam module... " );
 
-	int api_version;
-
 	steamlib_export = GetSteamLibAPI( &import );
-	api_version = steamlib_export->API();
 
-	if( api_version != STEAMLIB_API_VERSION )
+	if( !steamlib_export )
 	{
-		// wrong version
-		Com_Printf( "Wrong version: %i, not %i.\n", api_version, STEAMLIB_API_VERSION );
+		// failure
+		Com_Printf( "Failure.\n" );
 		Steam_UnloadLibrary();
 	}
 	else

@@ -128,7 +128,6 @@ int main( int argc, char **argv )
 			time = newtime - oldtime;
 			if( time > 0 )
 				break;
-			Sys_Sleep( 0 );
 		} while( 1 );
 		oldtime = newtime;
 

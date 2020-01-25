@@ -120,14 +120,6 @@ static const char *G_SelectNextMapName( void );
 //===================================================================
 
 /*
-* G_API
-*/
-int G_API( void )
-{
-	return GAME_API_VERSION;
-}
-
-/*
 * G_Error
 * 
 * Abort the server with a game error

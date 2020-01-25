@@ -151,7 +151,6 @@ typedef struct qfontfamily_s
 
 void Com_DPrintf( const char *format, ... );
 
-int FTLIB_API( void );
 bool FTLIB_Init( bool verbose );
 void FTLIB_Shutdown( bool verbose );
 

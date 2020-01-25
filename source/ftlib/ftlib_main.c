@@ -23,14 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct mempool_s *ftlibPool;
 
 /*
-* FTLIB_API
-*/
-int FTLIB_API( void )
-{
-	return FTLIB_API_VERSION;
-}
-
-/*
 * FTLIB_Init
 */
 bool FTLIB_Init( bool verbose )

@@ -33,8 +33,6 @@ void QAS_InitAngelExport( void )
 {
 	memset( &angelExport, 0, sizeof( angelExport ) );
 
-	angelExport.angelwrap_api_version = ANGELWRAP_API_VERSION;
-
 	angelExport.asCreateEngine = qasCreateEngine;
 	angelExport.asReleaseEngine = qasReleaseEngine;
 
@@ -54,11 +52,6 @@ void QAS_InitAngelExport( void )
 
 	angelExport.asCreateAnyCpp = qasCreateAnyCpp;
 	angelExport.asReleaseAnyCpp = qasReleaseAnyCpp;
-}
-
-int QAS_API( void )
-{
-	return ANGELWRAP_API_VERSION;
 }
 
 int QAS_Init( void )

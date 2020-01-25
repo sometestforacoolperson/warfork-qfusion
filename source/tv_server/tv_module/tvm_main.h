@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "tvm_local.h"
 
-int TVM_API( void );
 void TVM_Init( const char *game, unsigned int maxclients );
 void TVM_Shutdown( void );
 tvm_relay_t *TVM_InitRelay( relay_t *relay_server, unsigned int snapFrameTime, int playernum );

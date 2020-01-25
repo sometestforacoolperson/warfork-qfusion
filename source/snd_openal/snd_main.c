@@ -486,14 +486,6 @@ void SF_PositionedRawSamples( int entnum, float fvol, float attenuation,
 // =====================================================================
 
 /*
-* S_API
-*/
-int S_API( void )
-{
-	return SOUND_API_VERSION;
-}
-
-/*
 * S_Error
 */
 void S_Error( const char *format, ... )

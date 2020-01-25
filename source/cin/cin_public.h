@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cin_public.h -- cinematics playback as a separate dll, making the engine
 // container- and format- agnostic
 
-#define	CIN_API_VERSION				8
-
 #define CIN_LOOP					1
 #define CIN_NOAUDIO					2
 

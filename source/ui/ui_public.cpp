@@ -28,12 +28,6 @@ namespace WSWUI
 	UI_Main *ui_main = 0;
 	ui_import_t UI_IMPORT;
 
-	// if API is different, the dll cannot be used
-	int API( void )
-	{
-		return UI_API_VERSION;
-	}
-
 	void Init( int vidWidth, int vidHeight, float pixelRatio,
 		int protocol, const char *demoExtension, const char *basePath )
 	{
@@ -194,8 +188,6 @@ ui_export_t *GetUIAPI( ui_import_t *import )
 
 	// Trap::UI_IMPORT = *import;
 	WSWUI::UI_IMPORT = *import;
-
-	globals.API = WSWUI::API;
 
 	globals.Init = WSWUI::Init;
 	globals.Shutdown = WSWUI::Shutdown;

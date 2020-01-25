@@ -12,7 +12,6 @@ cvar_t *irc_perform;
 cvar_t *irc_defaultChannel;
 
 // the functions in irc_export_t
-int Irc_If_API(void);
 bool Irc_If_Init(void);
 void Irc_If_Shutdown(void);
 bool Irc_If_Connect(void);
@@ -27,7 +26,6 @@ const irc_chat_history_node_t *Irc_If_GetPrevHistoryNode(const irc_chat_history_
 irc_export_t *GetIrcAPI(const irc_import_t *imports) {
 	static irc_export_t exports;
 	IRC_IMPORT = *imports;
-	exports.API = Irc_If_API;
 	exports.Init = Irc_If_Init;
 	exports.Shutdown = Irc_If_Shutdown;
 	exports.Connect = Irc_If_Connect;
@@ -42,10 +40,6 @@ irc_export_t *GetIrcAPI(const irc_import_t *imports) {
 	exports.GetHistoryNodeLine = Irc_If_GetHistoryNodeLine;
 	exports.ERROR_MSG = IRC_ERROR_MSG;
 	return &exports;
-}
-
-int Irc_If_API(void) {
-	return IRC_API_VERSION;
 }
 
 bool Irc_If_Init(void) {

@@ -82,22 +82,12 @@ void Com_ScriptModule_Shutdown( void )
 
 static bool Com_ScriptModule_Load( const char *name, angelwrap_import_t *import )
 {
-	int apiversion;
-
 	Com_Printf( "Loading %s module.\n", name );
 
 	ae = (angelwrap_export_t *)Com_LoadScriptLibrary( name, import );
 	if( !ae )
 	{
 		Com_Printf( "Loading %s failed\n", name );
-		return false;
-	}
-
-	apiversion = ae->API();
-	if( apiversion != ANGELWRAP_API_VERSION )
-	{
-		ae = NULL;
-		Com_Printf( "Wrong module version for %s: %i, not %i\n", name, apiversion, ANGELWRAP_API_VERSION );
 		return false;
 	}
 

@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __TVM_PUBLIC_H
 #define __TVM_PUBLIC_H
 
-#define TV_MODULE_API_VERSION 7
-
 //===============================================================
 
 // link_t is only used for entity area links now
@@ -198,9 +196,6 @@ typedef struct
 //
 typedef struct
 {
-	// if API is different, the dll cannot be used
-	int ( *API )( void );
-
 	// the init function will only be called when a game starts,
 	// not each time a level is loaded.  Persistant data for clients
 	// and the server can be allocated in init

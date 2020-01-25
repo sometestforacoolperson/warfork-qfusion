@@ -474,7 +474,6 @@ void android_main( struct android_app *app )
 	app->onAppCmd = Sys_Android_WaitOnAppCmd;
 	while( !sys_android_initialized )
 	{
-		Sys_Sleep( 0 );
 		while( ( ident = ALooper_pollAll( 0, NULL, &events, ( void ** )( &source ) ) ) >= 0 )
 		{
 			if ( source )
@@ -488,9 +487,6 @@ void android_main( struct android_app *app )
 	oldtime = Sys_Milliseconds();
 	for( ;; )
 	{
-		if( dedicated && dedicated->integer )
-			Sys_Sleep( 1 );
-
 		while( ( ident = ALooper_pollAll( 0, NULL, &events, ( void ** )( &source ) ) ) >= 0 )
 		{
 			if( source )
@@ -503,7 +499,6 @@ void android_main( struct android_app *app )
 			time = newtime - oldtime;
 			if( time > 0 )
 				break;
-			Sys_Sleep( 0 );
 		}
 		oldtime = newtime;
 

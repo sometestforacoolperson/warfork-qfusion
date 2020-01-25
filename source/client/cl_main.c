@@ -2675,20 +2675,6 @@ void CL_Frame( int realmsec, int gamemsec )
 
 	if( allRealMsec + extraMsec < minMsec )
 	{
-		// let CPU sleep while playing fullscreen video, while minimized 
-		// or when cl_sleep is enabled
-		bool sleep = cl_sleep->integer != 0;
-
-		sleep = sleep || (cls.state == CA_CINEMATIC || cls.state == CA_DISCONNECTED);
-		sleep = sleep || !VID_AppIsActive(); // FIXME: not sure about listen server here..
-
-#ifndef __OpenBSD__
-		if( sleep && minMsec - extraMsec > 1 )
-			Sys_Sleep( 1 );
-#else
-		if( sleep && minMsec - extraMsec > 10 )
-			Sys_Sleep( 10 );
-#endif
 		return;
 	}
 

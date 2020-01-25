@@ -52,20 +52,10 @@ static void RF_AdapterFrame( ref_frontendAdapter_t *adapter )
 	bias -= minMsec;
 
 	wait = frameTime;
-	do {
-#ifndef __OpenBSD__
-		if( wait >= minMsec )
-			wait = 0;
-		else
-			wait = minMsec - wait;
-		if( wait < 1 )
-			ri.Sys_Sleep( 0 );
-		else
-			ri.Sys_Sleep( wait - 1 );
-#endif
+	while( wait < minMsec ) {
 		wait = ri.Sys_Milliseconds() - lastTime;
-	} while( wait < minMsec );
-	
+	}
+
 	lastTime = ri.Sys_Milliseconds();
 
 	frame = RF_GetNextAdapterFrame( adapter );
@@ -166,7 +156,6 @@ static void RF_AdapterWait( ref_frontendAdapter_t *adapter )
 	}
 
 	while( adapter->frameId != adapter->readFrameId ) {
-		ri.Sys_Sleep( 0 );
 	}
 	
 	adapter->cmdPipe->FinishCmds( adapter->cmdPipe );

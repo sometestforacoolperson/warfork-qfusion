@@ -134,11 +134,10 @@ static bool CL_SoundModule_Load( const char *name, sound_import_t *import, bool 
 	s_loaded = true;
 
 	se = ( sound_export_t * )GetSoundAPI( import );
-	apiversion = se->API();
-	if( apiversion != SOUND_API_VERSION )
+	if( !se )
 	{
 		CL_SoundModule_Shutdown( verbose );
-		Com_Printf( "Wrong module version for %s: %i, not %i\n", name, apiversion, SOUND_API_VERSION );
+		Com_Printf( "Sound export failed.\n", name );
 		return false;
 	}
 
@@ -300,7 +299,7 @@ void CL_SoundModule_Shutdown( bool verbose )
 
 	s_loaded = false;
 
-	if( se && se->API() == SOUND_API_VERSION ) {
+	if( se ) {
 		se->Shutdown( verbose );
 		se = NULL;
 	}

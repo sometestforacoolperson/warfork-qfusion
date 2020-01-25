@@ -182,31 +182,9 @@ static void SV_ReloadPureList( void )
 		}
 	}
 
-	if( !sv_pure_forcemodulepk3->string[0] )
+	if( !sv_pure_forcemodulepk3->string[0] && sv_pure->integer )
 	{
-		char *libname;
-		int libname_size;
-
-		libname_size = strlen( LIB_PREFIX ) + 4 + strlen( LIB_SUFFIX ) + 1;
-		libname = Mem_TempMalloc( libname_size );
-		Q_snprintfz( libname, libname_size, LIB_PREFIX "game" LIB_SUFFIX );
-
-		if( !FS_PakNameForFile( libname ) )
-		{
-			if( sv_pure->integer )
-			{
-				Com_Printf( "Warning: Game module not in pk3, disabling pure mode\n" );
-				Com_Printf( "sv_pure_forcemodulepk3 can be used to force the pure system to use a different module\n" );
-				Cvar_ForceSet( "sv_pure", "0" );
-			}
-		}
-		else
-		{
-			SV_AddPureFile( libname );
-		}
-
-		Mem_TempFree( libname );
-		libname = NULL;
+		Cvar_ForceSet( "sv_pure", "0" );
 	}
 
 	// *pure.(pk3|pak)

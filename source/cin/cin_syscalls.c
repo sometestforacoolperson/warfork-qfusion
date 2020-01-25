@@ -33,8 +33,6 @@ QF_DLL_EXPORT cin_export_t *GetCinematicsAPI( cin_import_t *import )
 
 	CIN_IMPORT = *import;
 
-	globals.API = &CIN_API;
-
 	globals.Init = &CIN_Init;
 	globals.Shutdown = &CIN_Shutdown;
 

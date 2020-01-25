@@ -962,7 +962,6 @@ extern cvar_t *cg_flashWindowCount;
 #define CG_Malloc( size ) trap_MemAlloc( size, __FILE__, __LINE__ )
 #define CG_Free( data ) trap_MemFree( data, __FILE__, __LINE__ )
 
-int CG_API( void );
 void CG_Init(	const char *serverName, unsigned int playerNum,
 				int vidWidth, int vidHeight, float pixelRatio,
 				bool demoplaying, const char *demoName, bool pure, unsigned int snapFrameTime,
