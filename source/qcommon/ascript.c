@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "qcommon.h"
 #include "../angelwrap/qas_public.h"
 
+angelwrap_export_t *GetAngelwrapAPI( angelwrap_import_t* );
+
 static angelwrap_export_t *ae;
 static mempool_t *com_scriptmodulepool;
 
@@ -64,8 +66,6 @@ static void Com_ScriptModule_MemEmptyPool( mempool_t *pool, const char *filename
 */
 static void *Com_LoadScriptLibrary( const char *basename, void *parms )
 {
-	void *( *GetAngelwrapAPI )(void *);
-
 	return GetAngelwrapAPI( parms );
 }
 
