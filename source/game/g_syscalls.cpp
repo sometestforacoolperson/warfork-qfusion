@@ -33,8 +33,6 @@ extern "C" QF_DLL_EXPORT game_export_t *GetGameAPI( game_import_t *import )
 
 	GAME_IMPORT = *import;
 
-	globals.API = G_API;
-
 	globals.Init = G_Init;
 	globals.Shutdown = G_Shutdown;
 

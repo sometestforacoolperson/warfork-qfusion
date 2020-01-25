@@ -24,8 +24,6 @@ License along with this library.
 
 // steamlib_public.h - steam integration subsystem
 
-#define	STEAMLIB_API_VERSION 3
-
 //===============================================================
 
 //
@@ -49,9 +47,6 @@ typedef struct
 //
 typedef struct
 {
-	// if API is different, the dll cannot be used
-	int ( *API )( void );
-
 	int ( *Init )( void );
 	void ( *RunFrame )( void );
 	void ( *Shutdown )( void );

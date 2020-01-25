@@ -18,9 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// snd_public.h -- sound dll information visible to engine
-
-#define	SOUND_API_VERSION   39
+// snd_public.h -- sound information visible to engine
 
 #define	ATTN_NONE 0
 

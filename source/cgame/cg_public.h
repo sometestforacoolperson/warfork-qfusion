@@ -42,9 +42,6 @@ typedef unsigned int (*cg_get_raw_samples_cb_t)(void*);
 typedef void ( *fdrawchar_t )( int x, int y, int w, int h, float s1, float t1, float s2, float t2, const vec4_t color, const struct shader_s *shader );
 
 // cg_public.h -- client game dll information visible to engine
-
-#define	CGAME_API_VERSION   98
-
 //
 // structs and variables shared with the main engine
 //
@@ -277,9 +274,6 @@ typedef struct
 //
 typedef struct
 {
-	// if API is different, the dll cannot be used
-	int ( *API )( void );
-
 	// the init function will be called at each restart
 	void ( *Init )( const char *serverName, unsigned int playerNum,
 		int vidWidth, int vidHeight, float pixelRatio,

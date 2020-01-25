@@ -137,14 +137,10 @@ void CIN_LoadLibrary( bool verbose )
 		Com_Printf( "Loading CIN module...\n" );
 	}
 
-	int api_version;
-
 	cin_export = GetCinematicsAPI( &import );
 	cin_mempool = Mem_AllocPool( NULL, "CIN Module" );
 
-	api_version = cin_export->API();
-
-	if( api_version == CIN_API_VERSION )
+	if( cin_export )
 	{
 		if( cin_export->Init( verbose ) )
 		{
@@ -164,10 +160,10 @@ void CIN_LoadLibrary( bool verbose )
 	}
 	else
 	{
-		// wrong version
+		// failure
 		Mem_FreePool( &cin_mempool );
 		if( verbose ) {
-			Com_Printf( "...Wrong version: %i, not %i.\n", api_version, CIN_API_VERSION );
+			Com_Printf( "...Export failed.\n" );
 		}
 		CIN_UnloadLibrary( verbose );
 	}

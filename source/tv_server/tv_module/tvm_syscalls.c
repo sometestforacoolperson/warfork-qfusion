@@ -42,8 +42,6 @@ tv_module_export_t *GetTVModuleAPI( tv_module_import_t *import )
 
 	TV_MODULE_IMPORT = *import;
 
-	globals.API = TVM_API;
-
 	globals.Init = TVM_Init;
 	globals.Shutdown = TVM_Shutdown;
 

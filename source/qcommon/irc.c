@@ -193,11 +193,9 @@ static void Irc_LoadLibrary( void )
 
 	Com_Printf( "Loading IRC module... " );
 
-	int api_version;
 	irc_export = GetIrcAPI_f( &import );
 	irc_pool = Mem_AllocPool( NULL, "IRC Module" );
-	api_version = irc_export->API();
-	if( api_version == IRC_API_VERSION )
+	if( irc_export )
 	{
 		if( irc_export->Init() )
 		{
@@ -218,9 +216,9 @@ static void Irc_LoadLibrary( void )
 	}
 	else
 	{
-		// wrong version
+		// failure
 		Mem_FreePool( &irc_pool );
-		Com_Printf( "Wrong version: %i, not %i.\n", api_version, IRC_API_VERSION );
+		Com_Printf( "Export failed.\n" );
 		Irc_UnloadLibrary();
 	}
 	Mem_DebugCheckSentinelsGlobal();

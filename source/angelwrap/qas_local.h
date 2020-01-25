@@ -55,7 +55,6 @@ extern struct mempool_s *angelwrappool;
 #define QAS_NEWARRAY(x,cnt)  (x*)QAS_Malloc(sizeof(x)*cnt)
 #define QAS_DELETEARRAY(ptr) QAS_Free(ptr)
 
-int QAS_API( void );
 int QAS_Init( void );
 void QAS_ShutDown( void );
 struct angelwrap_api_s *QAS_GetAngelExport( void );

@@ -33,8 +33,6 @@ QF_DLL_EXPORT ftlib_export_t *GetFTLibAPI( ftlib_import_t *import )
 
 	FTLIB_IMPORT = *import;
 
-	globals.API = &FTLIB_API;
-
 	globals.Init = &FTLIB_Init;
 	globals.Shutdown = &FTLIB_Shutdown;
 

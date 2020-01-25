@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __UI_PUBLIC_H__
 #define __UI_PUBLIC_H__
 
-#define	UI_API_VERSION	    63
-
 typedef size_t (*ui_async_stream_read_cb_t)(const void *buf, size_t numb, float percentage, 
 	int status, const char *contentType, void *privatep);
 typedef void (*ui_async_stream_done_cb_t)(int status, const char *contentType, void *privatep);
@@ -226,8 +224,6 @@ typedef struct
 
 typedef struct
 {
-	// if API is different, the dll cannot be used
-	int ( *API )( void );
 	void ( *Init )( int vidWidth, int vidHeight, float pixelRatio,
 			int protocol, const char *demoExtension, const char *basePath );
 	void ( *Shutdown )( void );

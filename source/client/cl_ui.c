@@ -331,8 +331,7 @@ void CL_UIModule_Init( void )
 	import.L10n_GetUserLanguage = &L10n_GetUserLanguage;
 
 	uie = GetUIAPI( &import );
-	apiversion = uie->API();
-	if( apiversion == UI_API_VERSION )
+	if( uie )
 	{
 		CL_UIModule_AsyncStream_Init();
 
@@ -343,11 +342,11 @@ void CL_UIModule_Init( void )
 	}
 	else
 	{
-		// wrong version
+		// failure
 		uie = NULL;
 		Com_UnloadLibrary( &module_handle );
 		Mem_FreePool( &ui_mempool );
-		Com_Error( ERR_FATAL, "UI version is %i, not %i", apiversion, UI_API_VERSION );
+		Com_Error( ERR_FATAL, "UI export failed" );
 	}
 
 	Com_Printf( "------------------------------------\n" );

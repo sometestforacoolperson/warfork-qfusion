@@ -21,14 +21,6 @@ License along with this library.
 namespace WSWSTEAM {
 
 /*
-* SteamLib_API
-*/
-int SteamLib_API( void )
-{
-	return STEAMLIB_API_VERSION;
-}
-
-/*
 * SteamLib_SteamLib_InitAPI
 */
 int SteamLib_Init( void )

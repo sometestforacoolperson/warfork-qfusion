@@ -166,14 +166,10 @@ void FTLIB_LoadLibrary( bool verbose )
 		Com_Printf( "Loading Fonts module... " );
 	}
 
-	int api_version;
-
 	ftlib_export = GetFTLibAPI( &import );
 	ftlib_mempool = Mem_AllocPool( NULL, "Fonts Library Module" );
 
-	api_version = ftlib_export->API();
-
-	if( api_version == FTLIB_API_VERSION )
+	if( ftlib_export )
 	{
 		if( ftlib_export->Init( verbose ) )
 		{
@@ -193,9 +189,9 @@ void FTLIB_LoadLibrary( bool verbose )
 	}
 	else
 	{
-		// wrong version
+		// failure
 		Mem_FreePool( &ftlib_mempool );
-		Com_Printf( "ftlib_LoadLibrary: wrong version: %i, not %i.\n", api_version, FTLIB_API_VERSION );
+		Com_Printf( "Export failed.\n" );
 		FTLIB_UnloadLibrary( verbose );
 	}
 	Mem_DebugCheckSentinelsGlobal();

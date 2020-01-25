@@ -81,14 +81,6 @@ void TVM_RelayError( tvm_relay_t *relay, const char *format, ... )
 //===================================================================
 
 /*
-* TVM_API
-*/
-int TVM_API( void )
-{
-	return TV_MODULE_API_VERSION;
-}
-
-/*
 * TVM_InitRelay
 */
 tvm_relay_t *TVM_InitRelay( relay_t *relay_server, unsigned int snapFrameTime, int playernum )

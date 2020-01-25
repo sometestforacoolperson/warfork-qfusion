@@ -556,15 +556,7 @@ void SV_InitGameProgs( void )
 
 	ge = GetGameAPI( &import );
 	if( !ge )
-		Com_Error( ERR_DROP, "Failed to load game DLL" );
-
-	apiversion = ge->API();
-	if( apiversion != GAME_API_VERSION )
-	{
-		Mem_FreePool( &sv_gameprogspool );
-		ge = NULL;
-		Com_Error( ERR_DROP, "Game is version %i, not %i", apiversion, GAME_API_VERSION );
-	}
+		Com_Error( ERR_DROP, "Failed to export game" );
 
 	Cvar_ForceSet( "sv_modmanifest", manifest );
 

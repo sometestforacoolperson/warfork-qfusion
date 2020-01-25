@@ -406,21 +406,11 @@ static bool VID_LoadRefresh( const char *name )
 
 	Com_Printf( "Loading refresh module %s... ", name );
 
-	int api_version;
 	ref_export_t *rep;
 
 	rep = GetRefAPI_f( &import );
 	re = *rep;
 	vid_ref_mempool = Mem_AllocPool( NULL, "Refresh" );
-	api_version = re.API();
-
-	if( api_version != REF_API_VERSION ) {
-		// wrong version
-		Com_Printf( "Wrong version: %i, not %i.\n", api_version, REF_API_VERSION );
-		VID_UnloadRefresh();
-		return false;
-	}
-
 	Com_Printf( "\n" );
 	return true;
 }

@@ -552,15 +552,7 @@ void CL_GameModule_Init( void )
 
 	cge = GetCGameAPI( &import );
 	if( !cge )
-		Com_Error( ERR_DROP, "Failed to load client game DLL" );
-
-	apiversion = cge->API();
-	if( apiversion != CGAME_API_VERSION )
-	{
-		Mem_FreePool( &cl_gamemodulepool );
-		cge = NULL;
-		Com_Error( ERR_DROP, "Client game is version %i, not %i", apiversion, CGAME_API_VERSION );
-	}
+		Com_Error( ERR_DROP, "Failed to export client game" );
 
 	CL_GameModule_AsyncStream_Init();
 

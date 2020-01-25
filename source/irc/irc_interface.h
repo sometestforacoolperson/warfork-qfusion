@@ -6,8 +6,6 @@
 #include "../qcommon/cvar.h"
 #include "../qalgo/q_trie.h"
 
-#define IRC_API_VERSION 4
-
 // numeric commands as specified by RFC 1459 - Internet Relay Chat Protocol
 typedef enum irc_numeric_e {
 
@@ -265,7 +263,6 @@ typedef struct
 } irc_import_t;
 
 typedef struct irc_export_s {
-	int			(*API)(void);		// API version
 	bool	(*Init)(void);
 	void		(*Shutdown)(void);
 	bool	(*Connect)(void);	// connects to irc_server:irc_port

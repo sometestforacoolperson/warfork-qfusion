@@ -491,7 +491,6 @@ void TV_ReleaseModule( const char *game )
 */
 tv_module_t *TV_GetModule( const char *game )
 {
-	int apiversion;
 	tv_module_t *iter;
 
 	assert( game && strlen( game ) < MAX_CONFIGSTRING_CHARS );
@@ -580,13 +579,6 @@ tv_module_t *TV_GetModule( const char *game )
 
 	iter->export = GetTVModuleAPI( &iter->import );
 	if( !iter->export )
-	{
-		Mem_Free( iter );
-		return NULL;
-	}
-
-	apiversion = iter->export->API();
-	if( apiversion != TV_MODULE_API_VERSION )
 	{
 		Mem_Free( iter );
 		return NULL;

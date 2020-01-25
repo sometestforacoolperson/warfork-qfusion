@@ -154,14 +154,6 @@ cvar_t *cg_flashWindowCount;
 cvar_t *cg_viewBob;
 
 /*
-* CG_API
-*/
-int CG_API( void )
-{
-	return CGAME_API_VERSION;
-}
-
-/*
 * CG_Error
 */
 void CG_Error( const char *format, ... )

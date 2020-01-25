@@ -943,7 +943,6 @@ int G_BoxSlideMove( edict_t *ent, int contentmask, float slideBounce, float fric
 #define	G_LevelFree( data ) _G_LevelFree( ( data ), __FILE__, __LINE__ )
 #define	G_LevelCopyString( in ) _G_LevelCopyString( ( in ), __FILE__, __LINE__ )
 
-int	G_API( void );
 void	G_Error( const char *format, ... );
 void	G_Printf( const char *format, ... );
 void	G_Init( unsigned int seed, unsigned int framemsec, int protocol, const char *demoExtension );

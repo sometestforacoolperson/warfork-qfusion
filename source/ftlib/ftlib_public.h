@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // ftlib_public.h - font provider subsystem
 
-#define	FTLIB_API_VERSION			11
-
 //===============================================================
 
 struct shader_s;
@@ -110,9 +108,6 @@ typedef struct
 //
 typedef struct
 {
-	// if API is different, the dll cannot be used
-	int ( *API )( void );
-
 	// the init function will be called at each restart
 	bool ( *Init )( bool verbose );
 	void ( *Shutdown )( bool verbose );
