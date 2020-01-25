@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../qcommon/qcommon.h"
 #include "../irc/irc_interface.h"
 
+irc_export_t *GetIrcAPI(const irc_import_t *imports);
+
 static irc_export_t *irc_export;
 
 static cvar_t *irc_server;
@@ -123,7 +125,6 @@ static void Irc_MemEmptyPool( const char *filename, int fileline )
 static void Irc_LoadLibrary( void )
 {
 	static irc_import_t import;
-	GetIrcAPI_t GetIrcAPI_f;
 
 	import.Printf = Irc_Print;
 	import.CL_GetKeyDest = CL_GetKeyDest;
@@ -193,7 +194,7 @@ static void Irc_LoadLibrary( void )
 
 	Com_Printf( "Loading IRC module... " );
 
-	irc_export = GetIrcAPI_f( &import );
+	irc_export = GetIrcAPI( &import );
 	irc_pool = Mem_AllocPool( NULL, "IRC Module" );
 	if( irc_export )
 	{
@@ -324,16 +325,6 @@ bool Irc_IsConnected( void )
 		return true;
 	}
 	return false;
-}
-
-size_t Irc_HistorySize( void )
-{
-	return irc_export->HistorySize();
-}
-
-size_t Irc_HistoryTotalSize( void )
-{
-	return irc_export->HistoryTotalSize();
 }
 
 // history is in reverse order (newest line first)

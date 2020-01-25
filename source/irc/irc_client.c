@@ -10,7 +10,7 @@
 // externalized dynvars and cvars
 cvar_t *irc_window = NULL;
 cvar_t *irc_windowLines = NULL;
-cvar_t *dedicated = NULL;
+cvar_t *ircdedicated = NULL;
 
 // warsow commands
 static void Irc_Client_Join_f(void);
@@ -88,8 +88,8 @@ static int	irc_messagemode_target_buflen = 0;
 void Irc_Client_Connected_f(void *connected) {
 
 	bool *c = (bool *) connected;
-	if (!dedicated)
-		dedicated = IRC_IMPORT.Cvar_Get("dedicated", "1", CVAR_NOSET);
+	if (!ircdedicated)
+		ircdedicated = IRC_IMPORT.Cvar_Get("dedicated", "1", CVAR_NOSET);
 
 	if (*c) {
 
@@ -206,7 +206,7 @@ void Irc_Client_Connected_f(void *connected) {
 		Irc_Proto_AddGenericListener(Irc_Client_CmdGeneric_f);
 #endif
 
-		if (!Cvar_GetIntegerValue(dedicated)) {
+		if (!Cvar_GetIntegerValue(ircdedicated)) {
 			dynvar_t * const frametick = IRC_IMPORT.Dynvar_Lookup("frametick");
 			IRC_IMPORT.Dynvar_AddListener(frametick, Irc_Client_Frametick_f);
 			IRC_IMPORT.Cmd_AddCommand("irc_messagemode", Irc_Client_Messagemode_f);
@@ -357,7 +357,7 @@ void Irc_Client_Connected_f(void *connected) {
 		IRC_IMPORT.Cmd_RemoveCommand("irc_names");
 		IRC_IMPORT.Cmd_RemoveCommand("irc_kick");
 
-		if (!Cvar_GetIntegerValue(dedicated)) {
+		if (!Cvar_GetIntegerValue(ircdedicated)) {
 			dynvar_t * const updatescreen = IRC_IMPORT.Dynvar_Lookup("updatescreen");
 			assert(updatescreen);
 			IRC_IMPORT.Dynvar_RemoveListener(updatescreen, Irc_Client_Draw_f);

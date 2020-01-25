@@ -16,8 +16,6 @@ bool Irc_If_Init(void);
 void Irc_If_Shutdown(void);
 bool Irc_If_Connect(void);
 bool Irc_If_Disconnect(void);
-size_t Irc_If_HistorySize(void);
-size_t Irc_If_HistoryTotalSize(void);
 const char *Irc_If_GetHistoryNodeLine(const irc_chat_history_node_t *n);
 const irc_chat_history_node_t *Irc_If_GetHistoryHeadNode(void);
 const irc_chat_history_node_t *Irc_If_GetNextHistoryNode(const irc_chat_history_node_t *n);
@@ -32,8 +30,6 @@ irc_export_t *GetIrcAPI(const irc_import_t *imports) {
 	exports.Disconnect = Irc_If_Disconnect;
 	exports.AddListener = Irc_Proto_AddListener;
 	exports.RemoveListener = Irc_Proto_RemoveListener;
-	exports.HistorySize = Irc_If_HistorySize;
-	exports.HistoryTotalSize = Irc_If_HistoryTotalSize;
 	exports.GetHistoryHeadNode = Irc_If_GetHistoryHeadNode;
 	exports.GetNextHistoryNode = Irc_If_GetNextHistoryNode;
 	exports.GetPrevHistoryNode = Irc_If_GetPrevHistoryNode;
