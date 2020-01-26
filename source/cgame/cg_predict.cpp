@@ -470,7 +470,7 @@ void CG_PredictMovement( void )
 		if( ucmdReady )
 			cg.predictingTimeStamp = pm.cmd.serverTimeStamp;
 
-		Pmove( &pm );
+		Pmove( &cg_gs, &pm );
 
 		// copy for stair smoothing
 		predictedSteps[frame] = pm.step;
@@ -480,7 +480,7 @@ void CG_PredictMovement( void )
 			if( ucmdExecuted >= ucmdHead - 1 )
 				GS_AddLaserbeamPoint( &cg.weaklaserTrail, &cg.predictedPlayerState, pm.cmd.serverTimeStamp );
 
-			cg_entities[cg.predictedPlayerState.POVnum].current.weapon = GS_ThinkPlayerWeapon( &cg.predictedPlayerState, pm.cmd.buttons, pm.cmd.msec, 0 );
+			cg_entities[cg.predictedPlayerState.POVnum].current.weapon = GS_ThinkPlayerWeapon( &cg_gs, &cg.predictedPlayerState, pm.cmd.buttons, pm.cmd.msec, 0 );
 		}
 
 		// save for debug checking
@@ -509,7 +509,7 @@ void CG_PredictMovement( void )
 				vec3_t move;
 				unsigned serverTime;
 
-				serverTime = GS_MatchPaused() ? cg.frame.serverTime : cg.time + cgs.extrapolationTime;
+				serverTime = GS_MatchPaused( &cg_gs ) ? cg.frame.serverTime : cg.time + cgs.extrapolationTime;
 				GS_LinearMovementDelta( ent, cg.frame.serverTime, serverTime, move );
 				VectorAdd( cg.predictedPlayerState.pmove.origin, move, cg.predictedPlayerState.pmove.origin );
 			}

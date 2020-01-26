@@ -150,7 +150,7 @@ void CG_ConfigString( int i, const char *s )
 	}
 	else if( i == CS_GAMETYPENAME )
 	{
-		GS_SetGametypeName( cgs.configStrings[CS_GAMETYPENAME] );
+		GS_SetGametypeName( &cg_gs, cgs.configStrings[CS_GAMETYPENAME] );
 	}
 	else if( i == CS_AUTORECORDSTATE )
 	{
@@ -223,7 +223,7 @@ static void CG_SC_PrintPlayerStats( const char *s, void ( *print )( const char *
 	gsitem_t *item;
 
 	playerNum = CG_ParseValue( &s );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= cg_gs.maxclients )
 		return;
 
 	if( !printDmg )
@@ -373,7 +373,7 @@ static const char *CG_SC_AutoRecordName( void )
 	// make file name
 	// duel_year-month-day_hour-min_map_player
 	Q_snprintfz( name, sizeof( name ), "%s_%04d-%02d-%02d_%02d-%02d_%s_%s_%04i",
-		gs.gametypeName,
+		cg_gs.gametypeName,
 		newtime->tm_year + 1900, newtime->tm_mon+1, newtime->tm_mday,
 		newtime->tm_hour, newtime->tm_min,
 		mapname,
@@ -417,7 +417,7 @@ void CG_SC_AutoRecordAction( const char *action )
 		{
 			trap_Cmd_ExecuteText( EXEC_NOW, "stop silent" );
 			trap_Cmd_ExecuteText( EXEC_NOW, va( "record autorecord/%s/%s silent",
-				gs.gametypeName, name ) );
+				cg_gs.gametypeName, name ) );
 			autorecording = true;
 		}
 	}
@@ -426,7 +426,7 @@ void CG_SC_AutoRecordAction( const char *action )
 		if( cg_autoaction_demo->integer && ( !spectator || cg_autoaction_spectator->integer ) )
 		{
 			trap_Cmd_ExecuteText( EXEC_NOW, va( "record autorecord/%s/%s silent",
-				gs.gametypeName, name ) );
+				cg_gs.gametypeName, name ) );
 			autorecording = true;
 		}
 	}
@@ -441,7 +441,7 @@ void CG_SC_AutoRecordAction( const char *action )
 		if( cg_autoaction_screenshot->integer && ( !spectator || cg_autoaction_spectator->integer ) )
 		{
 			trap_Cmd_ExecuteText( EXEC_NOW, va( "screenshot autorecord/%s/%s silent",
-				gs.gametypeName, name ) );
+				cg_gs.gametypeName, name ) );
 		}
 	}
 	else if( !Q_stricmp( action, "cancel" ) )
@@ -456,7 +456,7 @@ void CG_SC_AutoRecordAction( const char *action )
 	{
 		if( cg_autoaction_stats->integer && ( !spectator || cg_autoaction_spectator->integer ) )
 		{
-			const char *filename = va( "stats/%s/%s.txt", gs.gametypeName, name );
+			const char *filename = va( "stats/%s/%s.txt", cg_gs.gametypeName, name );
 			CG_SC_DumpPlayerStats( filename, trap_Cmd_Argv( 2 ) );
 		}
 	}
@@ -957,7 +957,7 @@ void CG_UseItem( const char *name )
 	if( !name )
 		return;
 
-	item = GS_Cmd_UseItem( &cg.frame.playerState, name, 0 );
+	item = GS_Cmd_UseItem( &cg_gs, &cg.frame.playerState, name, 0 );
 	if( item )
 	{
 		if( item->type & IT_WEAPON )
@@ -1000,7 +1000,7 @@ static void CG_Cmd_NextWeapon_f( void )
 		return;
 	}
 
-	item = GS_Cmd_NextWeapon_f( &cg.frame.playerState, cg.predictedWeaponSwitch );
+	item = GS_Cmd_NextWeapon_f( &cg_gs, &cg.frame.playerState, cg.predictedWeaponSwitch );
 	if( item )
 	{
 		CG_Predict_ChangeWeapon( item->tag );
@@ -1025,7 +1025,7 @@ static void CG_Cmd_PrevWeapon_f( void )
 		return;
 	}
 
-	item = GS_Cmd_PrevWeapon_f( &cg.frame.playerState, cg.predictedWeaponSwitch );
+	item = GS_Cmd_PrevWeapon_f( &cg_gs, &cg.frame.playerState, cg.predictedWeaponSwitch );
 	if( item )
 	{
 		CG_Predict_ChangeWeapon( item->tag );
@@ -1046,7 +1046,7 @@ static void CG_Cmd_LastWeapon_f( void )
 
 	if( cg.lastWeapon != WEAP_NONE && cg.lastWeapon != cg.predictedPlayerState.stats[STAT_PENDING_WEAPON] )
 	{
-		item = GS_Cmd_UseItem( &cg.frame.playerState, va( "%i", cg.lastWeapon ), IT_WEAPON );
+		item = GS_Cmd_UseItem( &cg_gs, &cg.frame.playerState, va( "%i", cg.lastWeapon ), IT_WEAPON );
 		if( item )
 		{
 			if( item->type & IT_WEAPON )
@@ -1148,7 +1148,7 @@ static void CG_Cmd_WeaponCross_f( void )
 		select = 0;
 	}
 
-	item = GS_Cmd_UseItem( &cg.frame.playerState, va( "%i", WEAP_GUNBLADE + w[select] ), IT_WEAPON );
+	item = GS_Cmd_UseItem( &cg_gs, &cg.frame.playerState, va( "%i", WEAP_GUNBLADE + w[select] ), IT_WEAPON );
 	if( item )
 	{
 		if( item->type & IT_WEAPON )
@@ -1192,8 +1192,8 @@ static char **CG_PlayerNamesCompletionExt_f( const char *partial, bool teamOnly 
 	if( partial ) {
 		size_t partial_len = strlen( partial );
 
-		matches = (char **) CG_Malloc( sizeof( char * ) * ( gs.maxclients + 1 ) );
-		for( i = 0; i < gs.maxclients; i++ ) {
+		matches = (char **) CG_Malloc( sizeof( char * ) * ( cg_gs.maxclients + 1 ) );
+		for( i = 0; i < cg_gs.maxclients; i++ ) {
 			cg_clientInfo_t *info = cgs.clientInfo + i;
 			if( !info->cleanname[0] ) {
 				continue;

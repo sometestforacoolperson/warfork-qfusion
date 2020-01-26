@@ -30,10 +30,10 @@ void G_Gametype_GENERIC_SetUpWarmup( void )
 	level.gametype.scoreAnnouncementEnabled = false;
 	level.gametype.countdownEnabled = false;
 	level.gametype.pickableItemsMask = ( level.gametype.spawnableItemsMask|level.gametype.dropableItemsMask );
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		level.gametype.pickableItemsMask &= ~G_INSTAGIB_NEGATE_ITEMMASK;
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		bool any = false;
 		int team;
@@ -72,7 +72,7 @@ void G_Gametype_GENERIC_SetUpCountdown( void )
 	level.gametype.countdownEnabled = true;
 	level.gametype.pickableItemsMask = 0; // disallow item pickup
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		for( team = TEAM_ALPHA; team < GS_MAX_TEAMS; team++ )
 			if( G_Teams_LockTeam( team ) )
@@ -99,7 +99,7 @@ void G_Gametype_GENERIC_SetUpMatch( void )
 	level.gametype.scoreAnnouncementEnabled = true;
 	level.gametype.countdownEnabled = true;
 	level.gametype.pickableItemsMask = ( level.gametype.spawnableItemsMask|level.gametype.dropableItemsMask );
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		level.gametype.pickableItemsMask &= ~G_INSTAGIB_NEGATE_ITEMMASK;
 
 	// clear player stats and scores, team scores and respawn clients in team lists
@@ -139,7 +139,7 @@ void G_Gametype_GENERIC_SetUpEndMatch( void )
 	level.gametype.pickableItemsMask = 0; // disallow item pickup
 	level.gametype.countdownEnabled = false;
 
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 	{
 		if( ent->r.inuse && trap_GetClientState( PLAYERNUM( ent ) ) >= CS_SPAWNED )
 			G_ClientRespawn( ent, true );
@@ -150,11 +150,11 @@ void G_Gametype_GENERIC_SetUpEndMatch( void )
 
 static bool G_Gametype_GENERIC_MatchStateFinished( int incomingMatchState )
 {
-	if( GS_MatchState() <= MATCH_STATE_WARMUP && incomingMatchState > MATCH_STATE_WARMUP
+	if( GS_MatchState( &g_gs ) <= MATCH_STATE_WARMUP && incomingMatchState > MATCH_STATE_WARMUP
 		&& incomingMatchState < MATCH_STATE_POSTMATCH )
 		G_Match_Autorecord_Start();
 
-	if( GS_MatchState() == MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_POSTMATCH )
 		G_Match_Autorecord_Stop();
 
 	return true;
@@ -162,7 +162,7 @@ static bool G_Gametype_GENERIC_MatchStateFinished( int incomingMatchState )
 
 static void G_Gametype_GENERIC_MatchStateStarted( void )
 {
-	switch( GS_MatchState() )
+	switch( GS_MatchState( &g_gs ) )
 	{
 //	case MATCH_STATE_WAITING:
 	case MATCH_STATE_WARMUP:
@@ -185,9 +185,9 @@ static void G_Gametype_GENERIC_MatchStateStarted( void )
 static void G_Gametype_GENERIC_ThinkRules( void )
 {
 	if( G_Match_ScorelimitHit() || G_Match_TimelimitHit() || G_Match_SuddenDeathFinished() )
-		G_Match_LaunchState( GS_MatchState() + 1 );
+		G_Match_LaunchState( GS_MatchState( &g_gs ) + 1 );
 
-	if( GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH )
 		return;
 }
 
@@ -230,7 +230,7 @@ void G_Gametype_GENERIC_ScoreboardMessage( void )
 			e->r.client->level.stats.score,
 			e->r.client->r.ping > 999 ? 999 : e->r.client->r.ping,
 			carrierIcon,
-			( level.ready[PLAYERNUM( e )] || GS_MatchState() >= MATCH_STATE_PLAYTIME ) ? trap_ImageIndex( PATH_VSAY_YES_ICON ) : 0
+			( level.ready[PLAYERNUM( e )] || GS_MatchState( &g_gs ) >= MATCH_STATE_PLAYTIME ) ? trap_ImageIndex( PATH_VSAY_YES_ICON ) : 0
 			);
 
 		if( SCOREBOARD_MSG_MAXSIZE - len > strlen( entry ) )
@@ -255,7 +255,7 @@ void G_Gametype_GENERIC_ClientRespawn( edict_t *self, int old_team, int new_team
 	//give default items
 	if( self->s.team != TEAM_SPECTATOR )
 	{
-		if( GS_Instagib() )
+		if( GS_Instagib( &g_gs ) )
 		{
 			client->ps.inventory[WEAP_INSTAGUN] = 1;
 			client->ps.inventory[AMMO_INSTAS] = 1;
@@ -263,7 +263,7 @@ void G_Gametype_GENERIC_ClientRespawn( edict_t *self, int old_team, int new_team
 		}
 		else
 		{
-			if( GS_MatchState() <= MATCH_STATE_WARMUP )
+			if( GS_MatchState( &g_gs ) <= MATCH_STATE_WARMUP )
 			{
 				for( i = WEAP_GUNBLADE; i < WEAP_TOTAL; i++ )
 				{
@@ -303,16 +303,16 @@ void G_Gametype_GENERIC_ClientRespawn( edict_t *self, int old_team, int new_team
 
 void G_Gametype_GENERIC_PlayerKilled( edict_t *targ, edict_t *attacker, edict_t *inflictor )
 {
-	if( !attacker || GS_MatchState() != MATCH_STATE_PLAYTIME || ( targ->r.svflags & SVF_CORPSE ) )
+	if( !attacker || GS_MatchState( &g_gs ) != MATCH_STATE_PLAYTIME || ( targ->r.svflags & SVF_CORPSE ) )
 		return;
 
 	if( !attacker->r.client || attacker == targ || attacker == world )
 		teamlist[targ->s.team].stats.score--;
 	else
 	{
-		if( GS_InvidualGameType() )
+		if( GS_InvidualGameType( &g_gs ) )
 			teamlist[attacker->s.team].stats.score = attacker->r.client->level.stats.score;
-		if( GS_IsTeamDamage( &targ->s, &attacker->s ) )
+		if( GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) )
 			teamlist[attacker->s.team].stats.score--;
 		else
 			teamlist[attacker->s.team].stats.score++;
@@ -395,7 +395,7 @@ static void G_Gametype_GENERIC_Init( void )
 	level.gametype.respawnableItemsMask = ( IT_WEAPON|IT_AMMO|IT_ARMOR|IT_POWERUP|IT_HEALTH );
 	level.gametype.dropableItemsMask = ( IT_WEAPON|IT_AMMO|IT_ARMOR|IT_POWERUP|IT_HEALTH );
 	level.gametype.pickableItemsMask = ( level.gametype.spawnableItemsMask|level.gametype.dropableItemsMask );
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		level.gametype.pickableItemsMask &= ~G_INSTAGIB_NEGATE_ITEMMASK;
 
 	level.gametype.isTeamBased = false;
@@ -432,7 +432,7 @@ static void G_Gametype_GENERIC_Init( void )
 
 	level.gametype.mmCompatible = false;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		level.gametype.spawnpointRadius *= 2;
 
 	trap_ConfigString( CS_SCB_PLAYERTAB_LAYOUT, "%n 164 %i 64 %l 48 %p 18 %p 18" );
@@ -464,7 +464,7 @@ void G_MatchSendReport( void );
 */
 game_state_t *G_GetGameState( void )
 {
-	return &gs.gameState;
+	return &g_gs.gameState;
 }
 
 /*
@@ -511,34 +511,34 @@ bool G_Match_Tied( void )
 bool G_Match_CheckExtendPlayTime( void )
 {
 	// check for extended time/sudden death
-	if( GS_MatchState() != MATCH_STATE_PLAYTIME )
+	if( GS_MatchState( &g_gs ) != MATCH_STATE_PLAYTIME )
 		return false;
 
-	if( GS_TeamBasedGametype() && !level.forceExit )
+	if( GS_TeamBasedGametype( &g_gs ) && !level.forceExit )
 	{
 		if( G_Match_Tied() )
 		{
-			GS_GamestatSetFlag( GAMESTAT_FLAG_MATCHEXTENDED, true );
-			gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_PLAYTIME;
-			gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
+			GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_MATCHEXTENDED, true );
+			g_gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_PLAYTIME;
+			g_gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
 
 			if( g_match_extendedtime->value )
 			{
-				if( !GS_MatchExtended() )  // first one
+				if( !GS_MatchExtended( &g_gs ) )  // first one
 					G_AnnouncerSound( NULL, trap_SoundIndex( S_ANNOUNCER_OVERTIME_GOING_TO_OVERTIME ), GS_MAX_TEAMS, true, NULL );
 				else
 					G_AnnouncerSound( NULL, trap_SoundIndex( S_ANNOUNCER_OVERTIME_OVERTIME ), GS_MAX_TEAMS, true, NULL );
 
 				G_PrintMsg( NULL, "Match tied. Timelimit extended by %i minutes!\n", g_match_extendedtime->integer );
 				G_CenterPrintFormatMsg( NULL, "%s MINUTES OVERTIME\n", va( "%i", g_match_extendedtime->integer ), NULL );
-				gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)( ( fabs( g_match_extendedtime->value ) * 60 ) * 1000 );
+				g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)( ( fabs( g_match_extendedtime->value ) * 60 ) * 1000 );
 			}
 			else
 			{
 				G_AnnouncerSound( NULL, trap_SoundIndex( va( S_ANNOUNCER_OVERTIME_SUDDENDEATH_1_to_2, ( rand()&1 )+1 ) ), GS_MAX_TEAMS, true, NULL );
 				G_PrintMsg( NULL, "Match tied. Sudden death!\n" );
 				G_CenterPrintMsg( NULL, "SUDDEN DEATH" );
-				gs.gameState.longstats[GAMELONG_MATCHDURATION] = 0;
+				g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = 0;
 			}
 
 			return true;
@@ -596,7 +596,7 @@ void G_Match_Autorecord_Start( void )
 		Q_strncpyz( players, trap_GetConfigString( CS_MATCHNAME ), sizeof( players ) );
 		if( players[0] == '\0' )
 		{
-			if( GS_InvidualGameType() )
+			if( GS_InvidualGameType( &g_gs ) )
 			{
 				const char *netname;
 				int team;
@@ -625,7 +625,7 @@ void G_Match_Autorecord_Start( void )
 
 		// combine
 		Q_snprintfz( level.autorecord_name, sizeof( level.autorecord_name ), "%s_%s_%s%s%s_auto%04i", 
-			datetime, gs.gametypeName, level.mapname, players[0] == '\0' ? "" : "_", players, (int)brandom( 1, 9999 ) );
+			datetime, g_gs.gametypeName, level.mapname, players[0] == '\0' ? "" : "_", players, (int)brandom( 1, 9999 ) );
 
 		trap_Cmd_ExecuteText( EXEC_APPEND, va( "serverrecord %s\n", level.autorecord_name ) );
 	}
@@ -646,7 +646,7 @@ void G_Match_Autorecord_Stats( void )
 {
 	edict_t *ent;
 
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 	{
 		if( !ent->r.inuse || ent->s.team == TEAM_SPECTATOR || ( ent->r.svflags & SVF_FAKECLIENT ) )
 			continue;
@@ -691,14 +691,14 @@ static void G_Match_CheckStateAbort( void )
 	bool any = false;
 	bool enough;
 
-	if( GS_MatchState() <= MATCH_STATE_NONE || GS_MatchState() >= MATCH_STATE_POSTMATCH
+	if( GS_MatchState( &g_gs ) <= MATCH_STATE_NONE || GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH
 		|| level.gametype.matchAbortDisabled )
 	{
-		GS_GamestatSetFlag( GAMESTAT_FLAG_WAITING, false );
+		GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_WAITING, false );
 		return;
 	}
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		int team, emptyteams = 0;
 
@@ -719,18 +719,18 @@ static void G_Match_CheckStateAbort( void )
 	}
 
 	// if waiting, turn on match states when enough players joined
-	if( GS_MatchWaiting() && enough )
+	if( GS_MatchWaiting( &g_gs ) && enough )
 	{
-		GS_GamestatSetFlag( GAMESTAT_FLAG_WAITING, false );
+		GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_WAITING, false );
 		G_UpdatePlayersMatchMsgs();
 	}
 	// turn off active match states if not enough players left
-	else if( GS_MatchState() == MATCH_STATE_WARMUP && !enough && GS_MatchDuration() )
+	else if( GS_MatchState( &g_gs ) == MATCH_STATE_WARMUP && !enough && GS_MatchDuration( &g_gs ) )
 	{
-		GS_GamestatSetFlag( GAMESTAT_FLAG_WAITING, true );
+		GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_WAITING, true );
 		G_UpdatePlayersMatchMsgs();
 	}
-	else if( GS_MatchState() == MATCH_STATE_COUNTDOWN && !enough )
+	else if( GS_MatchState( &g_gs ) == MATCH_STATE_COUNTDOWN && !enough )
 	{
 		if( any ) {
 			G_PrintMsg( NULL, "Not enough players left. Countdown aborted.\n" );
@@ -738,11 +738,11 @@ static void G_Match_CheckStateAbort( void )
 		}
 		G_Match_Autorecord_Cancel();
 		G_Match_LaunchState( MATCH_STATE_WARMUP );
-		GS_GamestatSetFlag( GAMESTAT_FLAG_WAITING, true );
+		GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_WAITING, true );
 		G_UpdatePlayersMatchMsgs();
 	}
 	// match running, but not enough players left
-	else if( GS_MatchState() == MATCH_STATE_PLAYTIME && !enough )
+	else if( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME && !enough )
 	{
 		if( any ) {
 			G_PrintMsg( NULL, "Not enough players left. Match aborted.\n" );
@@ -772,15 +772,15 @@ void G_Match_LaunchState( int matchState )
 			return;
 	}
 
-	GS_GamestatSetFlag( GAMESTAT_FLAG_MATCHEXTENDED, false );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_WAITING, false );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_MATCHEXTENDED, false );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_WAITING, false );
 	
 	if( matchState == MATCH_STATE_POSTMATCH ) {
-		level.finalMatchDuration = game.serverTime - GS_MatchStartTime();
+		level.finalMatchDuration = game.serverTime - GS_MatchStartTime( &g_gs );
 	}
 
-    if( ( matchState == MATCH_STATE_POSTMATCH && GS_RaceGametype() )
-        || ( matchState != MATCH_STATE_POSTMATCH && gs.gameState.stats[GAMESTAT_MATCHSTATE] == MATCH_STATE_POSTMATCH ) )
+    if( ( matchState == MATCH_STATE_POSTMATCH && GS_RaceGametype( &g_gs ) )
+        || ( matchState != MATCH_STATE_POSTMATCH && g_gs.gameState.stats[GAMESTAT_MATCHSTATE] == MATCH_STATE_POSTMATCH ) )
 	{
 		// entering postmatch in race or leaving postmatch in normal gt
 		G_Match_SendReport();
@@ -795,12 +795,12 @@ void G_Match_LaunchState( int matchState )
 			advance_queue = false;
 			level.forceStart = false;
 
-			gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_WARMUP;
-			gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)( fabs( g_warmup_timelimit->value * 60 ) * 1000 );
-			gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
+			g_gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_WARMUP;
+			g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)( fabs( g_warmup_timelimit->value * 60 ) * 1000 );
+			g_gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
 
 			// race has playtime in warmup too, so flag the matchmaker about this
-			if( GS_RaceGametype() )
+			if( GS_RaceGametype( &g_gs ) )
 				trap_MM_GameState( true );
 
 			break;
@@ -810,9 +810,9 @@ void G_Match_LaunchState( int matchState )
 		{
 			advance_queue = true;
 
-			gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_COUNTDOWN;
-			gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)( fabs( g_countdown_time->value ) * 1000 );
-			gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
+			g_gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_COUNTDOWN;
+			g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)( fabs( g_countdown_time->value ) * 1000 );
+			g_gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
 
 			break;
 		}
@@ -824,9 +824,9 @@ void G_Match_LaunchState( int matchState )
 			advance_queue = true; // shouldn't be needed here
 			level.forceStart = false;
 
-			gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_PLAYTIME;
-			gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)( fabs( 60 * g_timelimit->value )*1000 );
-			gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
+			g_gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_PLAYTIME;
+			g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)( fabs( 60 * g_timelimit->value )*1000 );
+			g_gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
 
 			// request a new match UUID
 			trap_ConfigString( CS_MATCHUUID, "" );
@@ -840,9 +840,9 @@ void G_Match_LaunchState( int matchState )
 
 	case MATCH_STATE_POSTMATCH:
 		{
-			gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_POSTMATCH;
-			gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)fabs( g_postmatch_timelimit->value * 1000 ); // postmatch time in seconds
-			gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
+			g_gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_POSTMATCH;
+			g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)fabs( g_postmatch_timelimit->value * 1000 ); // postmatch time in seconds
+			g_gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
 
 			G_Timeout_Reset();
 			level.teamlock = false;
@@ -860,9 +860,9 @@ void G_Match_LaunchState( int matchState )
 				advance_queue = true;
 			}
 
-			gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_WAITEXIT;
-			gs.gameState.longstats[GAMELONG_MATCHDURATION] = 25000;
-			gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
+			g_gs.gameState.stats[GAMESTAT_MATCHSTATE] = MATCH_STATE_WAITEXIT;
+			g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = 25000;
+			g_gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
 
 			level.exitNow = false;
 		}
@@ -886,14 +886,14 @@ bool G_Match_ScorelimitHit( void )
 {
 	edict_t	*e;
 
-	if( GS_MatchState() != MATCH_STATE_PLAYTIME )
+	if( GS_MatchState( &g_gs ) != MATCH_STATE_PLAYTIME )
 		return false;
 
 	if( g_scorelimit->integer )
 	{
-		if( !GS_TeamBasedGametype() )
+		if( !GS_TeamBasedGametype( &g_gs ) )
 		{
-			for( e = game.edicts+1; PLAYERNUM( e ) < gs.maxclients; e++ )
+			for( e = game.edicts+1; PLAYERNUM( e ) < g_gs.maxclients; e++ )
 			{
 				if( !e->r.inuse )
 					continue;
@@ -922,10 +922,10 @@ bool G_Match_ScorelimitHit( void )
 */
 bool G_Match_SuddenDeathFinished( void )
 {
-	if( GS_MatchState() != MATCH_STATE_PLAYTIME )
+	if( GS_MatchState( &g_gs ) != MATCH_STATE_PLAYTIME )
 		return false;
 
-	if( !GS_MatchExtended() || GS_MatchDuration() )
+	if( !GS_MatchExtended( &g_gs ) || GS_MatchDuration( &g_gs ) )
 		return false;
 
 	return G_Match_Tied() ? false : true;
@@ -937,13 +937,13 @@ bool G_Match_SuddenDeathFinished( void )
 bool G_Match_TimelimitHit( void )
 {
 	// check for timelimit hit
-	if( !GS_MatchDuration() || game.serverTime < GS_MatchEndTime() )
+	if( !GS_MatchDuration( &g_gs ) || game.serverTime < GS_MatchEndTime( &g_gs ) )
 		return false;
 
-	if( GS_MatchState() == MATCH_STATE_WARMUP )
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_WARMUP )
 		level.forceStart = true; // force match starting when timelimit is up, even if someone goes unready
 
-	if( GS_MatchState() == MATCH_STATE_WAITEXIT )
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_WAITEXIT )
 	{
 		level.exitNow = true;
 		return false; // don't advance into next state. The match will be restarted
@@ -965,7 +965,7 @@ static bool G_IsLeading( edict_t *ent )
 {
 	int num, i;
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 		num = ent->s.team;
 	else
 		num = PLAYERNUM( ent ) + 1;
@@ -986,7 +986,7 @@ static bool G_WasLeading( edict_t *ent )
 {
 	int num, i;
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 		num = ent->s.team;
 	else
 		num = PLAYERNUM( ent ) + 1;
@@ -1015,7 +1015,7 @@ static void G_Match_ScoreAnnouncement( void )
 	num_leaders = 0;
 	memset( leaders, 0, sizeof( leaders ) );
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		int score_max = -999999999;
 
@@ -1065,7 +1065,7 @@ static void G_Match_ScoreAnnouncement( void )
 		return;
 	}
 
-	for( e = game.edicts + 1; PLAYERNUM( e ) < gs.maxclients; e++ )
+	for( e = game.edicts + 1; PLAYERNUM( e ) < g_gs.maxclients; e++ )
 	{
 		if( !e->r.client || trap_GetClientState( PLAYERNUM( e ) ) < CS_SPAWNED )
 			continue;
@@ -1078,7 +1078,7 @@ static void G_Match_ScoreAnnouncement( void )
 		// floating spectator
 		if( chased->s.team == TEAM_SPECTATOR )
 		{
-			if( !GS_TeamBasedGametype() )
+			if( !GS_TeamBasedGametype( &g_gs ) )
 				continue;
 
 			if( last_leaders[1] == 0 && leaders[1] != 0 )
@@ -1097,7 +1097,7 @@ static void G_Match_ScoreAnnouncement( void )
 		// in the game or chasing someone who is
 		if( G_WasLeading( chased ) && !G_IsLeading( chased ) )
 		{
-			if( GS_TeamBasedGametype() && !GS_InvidualGameType() )
+			if( GS_TeamBasedGametype( &g_gs ) && !GS_InvidualGameType( &g_gs ) )
 				G_AnnouncerSound( e, trap_SoundIndex( va( S_ANNOUNCER_SCORE_TEAM_LOST_LEAD_1_to_2, ( rand()&1 )+1 ) ),
 				GS_MAX_TEAMS, true, NULL );
 			else
@@ -1106,7 +1106,7 @@ static void G_Match_ScoreAnnouncement( void )
 		}
 		else if( ( !G_WasLeading( chased ) || ( last_leaders[1] != 0 ) ) && G_IsLeading( chased ) && ( leaders[1] == 0 ) )
 		{
-			if( GS_TeamBasedGametype() && !GS_InvidualGameType() )
+			if( GS_TeamBasedGametype( &g_gs ) && !GS_InvidualGameType( &g_gs ) )
 				G_AnnouncerSound( e, trap_SoundIndex( va( S_ANNOUNCER_SCORE_TEAM_TAKEN_LEAD_1_to_2, ( rand()&1 )+1 ) ),
 				GS_MAX_TEAMS, true, NULL );
 			else
@@ -1115,7 +1115,7 @@ static void G_Match_ScoreAnnouncement( void )
 		}
 		else if( ( !G_WasLeading( chased ) || ( last_leaders[1] == 0 ) ) && G_IsLeading( chased ) && ( leaders[1] != 0 ) )
 		{
-			if( GS_TeamBasedGametype() && !GS_InvidualGameType() )
+			if( GS_TeamBasedGametype( &g_gs ) && !GS_InvidualGameType( &g_gs ) )
 				G_AnnouncerSound( e, trap_SoundIndex( va( S_ANNOUNCER_SCORE_TEAM_TIED_LEAD_1_to_2, ( rand()&1 )+1 ) ),
 				GS_MAX_TEAMS, true, NULL );
 			else
@@ -1144,7 +1144,7 @@ static void G_Match_ReadyAnnouncement( void )
 
 	// ready up announcements
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		START_TEAM = TEAM_ALPHA;
 		END_TEAM = GS_MAX_TEAMS;
@@ -1228,10 +1228,10 @@ void G_Match_CheckReadys( void )
 	int readys, notreadys, teamsready;
 	int team, i;
 
-	if( GS_MatchState() != MATCH_STATE_WARMUP && GS_MatchState() != MATCH_STATE_COUNTDOWN )
+	if( GS_MatchState( &g_gs ) != MATCH_STATE_WARMUP && GS_MatchState( &g_gs ) != MATCH_STATE_COUNTDOWN )
 		return;
 
-	if( GS_MatchState() == MATCH_STATE_COUNTDOWN && level.forceStart )
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_COUNTDOWN && level.forceStart )
 		return; // never stop countdown if we have run out of warmup_timelimit
 
 	teamsready = 0;
@@ -1257,7 +1257,7 @@ void G_Match_CheckReadys( void )
 	}
 
 	// everyone has commited
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		if( teamsready == GS_MAX_TEAMS - TEAM_ALPHA )
 			allready = true;
@@ -1272,12 +1272,12 @@ void G_Match_CheckReadys( void )
 			allready = false;
 	}
 
-	if( allready == true && GS_MatchState() != MATCH_STATE_COUNTDOWN )
+	if( allready == true && GS_MatchState( &g_gs ) != MATCH_STATE_COUNTDOWN )
 	{
 		G_PrintMsg( NULL, "All players are ready. Match starting!\n" );
 		G_Match_LaunchState( MATCH_STATE_COUNTDOWN );
 	}
-	else if( allready == false && GS_MatchState() == MATCH_STATE_COUNTDOWN )
+	else if( allready == false && GS_MatchState( &g_gs ) == MATCH_STATE_COUNTDOWN )
 	{
 		G_PrintMsg( NULL, "Countdown aborted.\n" );
 		G_CenterPrintMsg( NULL, "COUNTDOWN ABORTED" );
@@ -1300,7 +1300,7 @@ void G_Match_Ready( edict_t *ent )
 		return;
 	}
 
-	if( GS_MatchState() != MATCH_STATE_WARMUP )
+	if( GS_MatchState( &g_gs ) != MATCH_STATE_WARMUP )
 	{
 		if( !( ent->r.svflags & SVF_FAKECLIENT ) )
 			G_PrintMsg( ent, "We're not in warmup.\n" );
@@ -1333,7 +1333,7 @@ void G_Match_NotReady( edict_t *ent )
 		return;
 	}
 
-	if( GS_MatchState() != MATCH_STATE_WARMUP && GS_MatchState() != MATCH_STATE_COUNTDOWN )
+	if( GS_MatchState( &g_gs ) != MATCH_STATE_WARMUP && GS_MatchState( &g_gs ) != MATCH_STATE_COUNTDOWN )
 	{
 		G_PrintMsg( ent, "A match is not being setup.\n" );
 		return;
@@ -1372,7 +1372,7 @@ void G_Match_RemoveAllProjectiles( void )
 {
 	edict_t *ent;
 
-	for( ent = game.edicts + gs.maxclients; ENTNUM( ent ) < game.numentities; ent++ )
+	for( ent = game.edicts + g_gs.maxclients; ENTNUM( ent ) < game.numentities; ent++ )
 	{
 		if( ent->r.inuse && !ent->r.client && ent->r.svflags & SVF_PROJECTILE && ent->r.solid != SOLID_NOT )
 		{
@@ -1389,7 +1389,7 @@ void G_Match_FreeBodyQueue( void )
 	edict_t *ent;
 	int i;
 
-	ent = &game.edicts[gs.maxclients + 1];
+	ent = &game.edicts[g_gs.maxclients + 1];
 	for( i = 0; i < BODY_QUEUE_SIZE; ent++, i++ )
 	{
 		if( !ent->r.inuse )
@@ -1488,7 +1488,7 @@ bool G_Gametype_CanRespawnItem( const gsitem_t *item )
 		return false;
 
 	itemmask = level.gametype.respawnableItemsMask;
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 	{
 		itemmask &= ~G_INSTAGIB_NEGATE_ITEMMASK;
 	}
@@ -1508,12 +1508,12 @@ bool G_Gametype_CanDropItem( const gsitem_t *item, bool ignoreMatchState )
 
 	if( !ignoreMatchState )
 	{
-		if( GS_MatchState() > MATCH_STATE_PLAYTIME )
+		if( GS_MatchState( &g_gs ) > MATCH_STATE_PLAYTIME )
 			return false;
 	}
 
 	itemmask = level.gametype.dropableItemsMask;
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 	{
 		itemmask &= ~G_INSTAGIB_NEGATE_ITEMMASK;
 	}
@@ -1529,7 +1529,7 @@ bool G_Gametype_CanTeamDamage( int damageflags )
 	if( damageflags & DAMAGE_NO_PROTECTION )
 		return true;
 
-	if( !GS_TeamBasedGametype() )
+	if( !GS_TeamBasedGametype( &g_gs ) )
 		return true;
 
 	return g_allow_teamdamage->integer ? true : false;
@@ -1633,18 +1633,18 @@ static void G_CheckNumBots( void )
 	if( g_numbots->integer < 0 )
 		trap_Cvar_Set( "g_numbots", "0" );
 
-	if( g_numbots->integer > gs.maxclients )
-		trap_Cvar_Set( "g_numbots", va( "%i", gs.maxclients ) );
+	if( g_numbots->integer > g_gs.maxclients )
+		trap_Cvar_Set( "g_numbots", va( "%i", g_gs.maxclients ) );
 
-	if( level.gametype.numBots > gs.maxclients )
-		level.gametype.numBots = gs.maxclients;
+	if( level.gametype.numBots > g_gs.maxclients )
+		level.gametype.numBots = g_gs.maxclients;
 
 	desiredNumBots = level.gametype.numBots ? level.gametype.numBots : g_numbots->integer;
 
 	if( desiredNumBots < game.numBots )
 	{
 		// kick one bot
-		for( ent = game.edicts + gs.maxclients; PLAYERNUM( ent ) >= 0; ent-- )
+		for( ent = game.edicts + g_gs.maxclients; PLAYERNUM( ent ) >= 0; ent-- )
 		{
 			if( !ent->r.inuse || !( ent->r.svflags & SVF_FAKECLIENT ) )
 				continue;
@@ -1659,7 +1659,7 @@ static void G_CheckNumBots( void )
 
 	if( desiredNumBots > game.numBots )
 	{                                     // add a bot if there is room
-		for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients && game.numBots < desiredNumBots; ent++ )
+		for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients && game.numBots < desiredNumBots; ent++ )
 		{
 			if( !ent->r.inuse && trap_GetClientState( PLAYERNUM( ent ) ) == CS_FREE )
 				BOT_SpawnBot( NULL );
@@ -1676,7 +1676,7 @@ static void G_TickOutPowerUps( void )
 	gsitem_t *item;
 	int i;
 
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 	{
 		if( ent->r.inuse && trap_GetClientState( PLAYERNUM( ent ) ) >= CS_SPAWNED )
 		{
@@ -1692,7 +1692,7 @@ static void G_TickOutPowerUps( void )
 	}
 
 	// also tick out dropped powerups
-	for( ent = game.edicts + gs.maxclients + BODY_QUEUE_SIZE; ENTNUM( ent ) < game.numentities; ent++ )
+	for( ent = game.edicts + g_gs.maxclients + BODY_QUEUE_SIZE; ENTNUM( ent ) < game.numentities; ent++ )
 	{
 		if( !ent->r.inuse || !ent->item )
 			continue;
@@ -1734,14 +1734,14 @@ static bool G_EachNewMinute( void )
 static void G_CheckEvenTeam( void )
 {
 	int max = 0;
-	int min = gs.maxclients + 1;
+	int min = g_gs.maxclients + 1;
 	int uneven_team = TEAM_SPECTATOR;
 	int i;
 
-	if( GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH )
 		return;
 
-	if( !GS_TeamBasedGametype() )
+	if( !GS_TeamBasedGametype( &g_gs ) )
 		return;
 
 	if( g_teams_allow_uneven->integer )
@@ -1815,7 +1815,7 @@ void G_RunGametype( void )
 	G_Match_ScoreAnnouncement();
 	G_Match_ReadyAnnouncement();
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 		G_Teams_UpdateTeamInfoMessages();
 
 	G_asGarbageCollect( false );
@@ -1994,12 +1994,12 @@ void G_Gametype_Init( void )
 	}
 
 	// fixme: we are doing this twice because the gametype may check for GS_Instagib
-	G_CheckCvars(); // update GS_Instagib, GS_FallDamage, etc
+	G_CheckCvars(); // update GS_Instagib, &g_gs  GS_FallDamage, &g_gs  etc
 
 	G_Gametype_SetDefaults();
 
-	// most GT_InitGametype implementations rely on gs.gametypeName being set for checking their default config file
-	GS_SetGametypeName( g_gametype->string );
+	// most GT_InitGametype implementations rely on g_gs.gametypeName being set for checking their default config file
+	GS_SetGametypeName( &g_gs, g_gametype->string );
 
 	// Init the current gametype
 	if( !GT_asLoadScript( g_gametype->string ) )
@@ -2007,7 +2007,7 @@ void G_Gametype_Init( void )
 
 	trap_ConfigString( CS_GAMETYPENAME, g_gametype->string );
 
-	G_CheckCvars(); // update GS_Instagib, GS_FallDamage, etc
+	G_CheckCvars(); // update GS_Instagib, &g_gs  GS_FallDamage, &g_gs  etc
 
 	// ch : if new gametype has been initialized, transfer the
 	// client-specific ratings to gametype-specific list

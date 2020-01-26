@@ -1033,7 +1033,7 @@ void CG_UpdatePlayerModelEnt( centity_t *cent )
 	// outline color
 	CG_SetOutlineColor( cent->outlineColor, cent->ent.shaderRGBA );
 
-	if( cg_raceGhosts->integer && !ISVIEWERENTITY( cent->current.number ) && GS_RaceGametype() )
+	if( cg_raceGhosts->integer && !ISVIEWERENTITY( cent->current.number ) && GS_RaceGametype( &cg_gs ) )
 	{
 		cent->effects &= ~EF_OUTLINE;
 		cent->effects |= EF_RACEGHOST;

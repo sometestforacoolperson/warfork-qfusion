@@ -98,7 +98,7 @@ void G_TransferRatings( void )
 	g_ratingsFree( game.ratings );
 	game.ratings = 0;
 
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 	{
 		client = ent->r.client;
 
@@ -112,13 +112,13 @@ void G_TransferRatings( void )
 		if( found )
 			continue;
 
-		found = Rating_Find( client->ratings, gs.gametypeName );
+		found = Rating_Find( client->ratings, g_gs.gametypeName );
 
 		// create a new default rating if this doesnt exist
 		// DONT USE G_AddDefaultRating cause this will cause double entries in game.ratings
 		if( !found )
 		{
-			found = g_ratingAlloc( gs.gametypeName, MM_RATING_DEFAULT, MM_DEVIATION_DEFAULT, client->mm_session );
+			found = g_ratingAlloc( g_gs.gametypeName, MM_RATING_DEFAULT, MM_DEVIATION_DEFAULT, client->mm_session );
 			if( !found )
 				continue;	// ??
 
@@ -143,7 +143,7 @@ clientRating_t *G_AddDefaultRating( edict_t *ent, const char *gametype )
 	gclient_t *client;
 
 	if ( gametype == NULL )
-		gametype = gs.gametypeName;
+		gametype = g_gs.gametypeName;
 
 	client = ent->r.client;
 	if( ! ent->r.inuse )
@@ -160,7 +160,7 @@ clientRating_t *G_AddDefaultRating( edict_t *ent, const char *gametype )
 		client->ratings = cr;
 	}
 
-	if( !strcmp( gametype, gs.gametypeName) )
+	if( !strcmp( gametype, g_gs.gametypeName) )
 	{
 		clientRating_t *found;
 
@@ -194,7 +194,7 @@ clientRating_t *G_AddRating( edict_t *ent, const char *gametype, float rating, f
 	gclient_t *client;
 
 	if ( gametype == NULL )
-		gametype = gs.gametypeName;
+		gametype = g_gs.gametypeName;
 
 	client = ent->r.client;
 	if( ! ent->r.inuse )
@@ -216,7 +216,7 @@ clientRating_t *G_AddRating( edict_t *ent, const char *gametype, float rating, f
 		client->ratings = cr;
 	}
 
-	if( !strcmp( gametype, gs.gametypeName) )
+	if( !strcmp( gametype, g_gs.gametypeName) )
 	{
 		clientRating_t *found;
 
@@ -276,7 +276,7 @@ void G_ListRatings_f( void )
 		Com_Printf("  %s %d %f %f\n", cr->gametype, cr->uuid, cr->rating, cr->deviation );
 
 	Com_Printf("Listing ratings by player\n");
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 	{
 		cl = ent->r.client;
 
@@ -469,15 +469,15 @@ void G_AddPlayerReport( edict_t *ent, bool final )
 
 	// TODO: check if MM is enabled
 
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 	{
 		// force sending report when someone disconnects
 		G_Match_SendReport();
 		return;
 	}
 
-	// if( !g_isSupportedGametype( gs.gametypeName ) )
-	if( !GS_MMCompatible() )
+	// if( !g_isSupportedGametype( g_gs.gametypeName ) )
+	if( !GS_MMCompatible( &g_gs ) )
 		return;
 
 	cl = ent->r.client;
@@ -642,15 +642,15 @@ static void g_mm_writeHeader( stat_query_t *query, int teamGame )
 
 	// Write match properties
 	// sq_api->SetNumber( matchsection, "final", (target_cl==NULL) ? 1 : 0 );
-	sq_api->SetString( matchsection, "gametype", gs.gametypeName );
+	sq_api->SetString( matchsection, "gametype", g_gs.gametypeName );
 	sq_api->SetString( matchsection, "map", level.mapname );
 	sq_api->SetString( matchsection, "hostname", trap_Cvar_String( "sv_hostname" ) );
 	sq_api->SetNumber( matchsection, "timeplayed", level.finalMatchDuration / 1000 );
-	sq_api->SetNumber( matchsection, "timelimit", GS_MatchDuration() / 1000 );
+	sq_api->SetNumber( matchsection, "timelimit", GS_MatchDuration( &g_gs ) / 1000 );
 	sq_api->SetNumber( matchsection, "scorelimit", g_scorelimit->integer );
-	sq_api->SetNumber( matchsection, "instagib", ( GS_Instagib() ? 1 : 0 ));
+	sq_api->SetNumber( matchsection, "instagib", ( GS_Instagib( &g_gs ) ? 1 : 0 ));
 	sq_api->SetNumber( matchsection, "teamgame", teamGame );
-	sq_api->SetNumber( matchsection, "racegame", ( GS_RaceGametype() ? 1 : 0 ));
+	sq_api->SetNumber( matchsection, "racegame", ( GS_RaceGametype( &g_gs ) ? 1 : 0 ));
 	sq_api->SetString( matchsection, "gamedir", trap_Cvar_String( "fs_game" ) );
 	sq_api->SetNumber( matchsection, "timestamp", trap_Milliseconds() );
 	if( g_autorecord->integer ) {
@@ -676,15 +676,15 @@ static stat_query_t *G_Match_GenerateReport( void )
 	if( !query )
 		return 0;
 
-	// ch : race properties through GS_RaceGametype()
+	// ch : race properties through GS_RaceGametype( &g_gs )
 
 	// official duel frag support
-	duelGame = GS_TeamBasedGametype() && GS_MaxPlayersInTeam() == 1 ? 1 : 0;
+	duelGame = GS_TeamBasedGametype( &g_gs ) && GS_MaxPlayersInTeam( &g_gs ) == 1 ? 1 : 0;
 
 	// ch : fixme do mark duels as teamgames
 	if( duelGame ) {
 		teamGame = 0;
-	} else if( !GS_TeamBasedGametype() ) {
+	} else if( !GS_TeamBasedGametype( &g_gs ) ) {
 		teamGame = 0;
 	} else {
 		teamGame = 1;
@@ -726,7 +726,7 @@ static stat_query_t *G_Match_GenerateReport( void )
 
 	if( potm ) {
 		edict_t *ent;
-		for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ ) {
+		for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ ) {
 			if( ent->r.client->mm_session != potm->mm_session ) {
 				continue;
 			}
@@ -911,17 +911,17 @@ void G_Match_SendReport( void )
 	if( !sq_api )
 		return;
 
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 	{
 		G_Match_RaceReport();
 		return;
 	}
 
-	// if( g_isSupportedGametype( gs.gametypeName ) )
-	if( GS_MMCompatible() )
+	// if( g_isSupportedGametype( g_gs.gametypeName ) )
+	if( GS_MMCompatible( &g_gs ) )
 	{
 		// merge game.clients with game.quits
-		for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+		for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 			G_AddPlayerReport( ent, true );
 
 		// check if we have enough players to report (at least 2)
@@ -964,7 +964,7 @@ static void G_Match_RaceReport( void )
 	raceRun_t *prr;
 	int i, j, size;
 
-	if( !GS_RaceGametype() )
+	if( !GS_RaceGametype( &g_gs ) )
 	{
 		G_Printf("G_Match_RaceReport.. not race gametype\n");
 		return;

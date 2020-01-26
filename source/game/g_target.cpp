@@ -198,7 +198,7 @@ Changes level to "map" when fired
 */
 void use_target_changelevel( edict_t *self, edict_t *other, edict_t *activator )
 {
-	//	if( GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	//	if( GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH )
 	return;		// allready activated
 	/*
 	if( 0 )
@@ -383,7 +383,7 @@ static void target_laser_think( edict_t *self )
 		{
 			if( game.edicts[tr.ent].r.client && self->activator->r.client )
 			{
-				if( !GS_TeamBasedGametype() ||
+				if( !GS_TeamBasedGametype( &g_gs ) ||
 					game.edicts[tr.ent].s.team != self->activator->s.team )
 					G_Damage( &game.edicts[tr.ent], self, self->activator, self->moveinfo.movedir, self->moveinfo.movedir, tr.endpos, self->dmg, 1, 0, 0, self->count );
 			}
@@ -753,7 +753,7 @@ static void SP_target_print_use( edict_t *self, edict_t *other, edict_t *activat
 	if( activator->r.client && self->spawnflags & 3 )
 	{
 		edict_t *e;
-		for( e = game.edicts + 1; PLAYERNUM( e ) < gs.maxclients; e++ )
+		for( e = game.edicts + 1; PLAYERNUM( e ) < g_gs.maxclients; e++ )
 		{
 			if( e->r.inuse && e->s.team )
 			{
@@ -766,7 +766,7 @@ static void SP_target_print_use( edict_t *self, edict_t *other, edict_t *activat
 		return;
 	}
 
-	for( n = 1; n <= gs.maxclients; n++ )
+	for( n = 1; n <= g_gs.maxclients; n++ )
 	{
 		player = &game.edicts[n];
 		if( !player->r.inuse )

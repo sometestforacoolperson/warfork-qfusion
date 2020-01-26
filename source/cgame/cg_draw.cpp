@@ -249,13 +249,13 @@ void CG_DrawMiniMap( int x, int y, int iw, int ih, bool draw_playernames, bool d
 	// if inside a team
 	if( cg.predictedPlayerState.stats[STAT_REALTEAM] >= TEAM_PLAYERS && cg.predictedPlayerState.stats[STAT_REALTEAM] < GS_MAX_TEAMS )
 	{
-		if( !GS_CanShowMinimap() || !( cg_showminimap->integer & 1 ) )
+		if( !GS_CanShowMinimap( &cg_gs ) || !( cg_showminimap->integer & 1 ) )
 			return;
 	}
 	else if( !( cg_showminimap->integer & 2 ) )
 	{
 		// allow only when chasing a player and the player is allowed to see it
-		if( !GS_CanShowMinimap() || !( cg_showminimap->integer & 1 ) ||
+		if( !GS_CanShowMinimap( &cg_gs ) || !( cg_showminimap->integer & 1 ) ||
 			cg.predictedPlayerState.stats[STAT_REALTEAM] == cg.predictedPlayerState.stats[STAT_TEAM] )
 			return;
 	}
@@ -343,7 +343,7 @@ void CG_DrawMiniMap( int x, int y, int iw, int ih, bool draw_playernames, bool d
 
 			// check if we're allowed to see team members only (coaches, CA)
 			if( cg.predictedPlayerState.stats[STAT_LAYOUTS] & STAT_LAYOUT_SPECTEAMONLY ||
-				(cg.predictedPlayerState.stats[STAT_REALTEAM] != TEAM_SPECTATOR && GS_TeamOnlyMinimap()) )
+				(cg.predictedPlayerState.stats[STAT_REALTEAM] != TEAM_SPECTATOR && GS_TeamOnlyMinimap( &cg_gs )) )
 			{
 				if( cg.predictedPlayerState.stats[STAT_REALTEAM] != cent->current.team )
 					continue;

@@ -171,7 +171,7 @@ static bool BOT_GetUnusedSkin( char *bot_model, char *bot_skin, char *bot_name )
 	while( LocalBotSkins[skinnumber] != NULL )
 	{
 		inuse = false;
-		for( i = 0, ent = game.edicts + 1; i < gs.maxclients; i++, ent++ )
+		for( i = 0, ent = game.edicts + 1; i < g_gs.maxclients; i++, ent++ )
 		{
 			if( !( ent->r.svflags & SVF_FAKECLIENT ) || !ent->r.client )
 				continue;
@@ -208,7 +208,7 @@ static bool BOT_GetUnusedSkin( char *bot_model, char *bot_skin, char *bot_name )
 	while( LocalBotSkins[skinnumber] != NULL )
 	{
 		inuse = false;
-		for( i = 0, ent = game.edicts + 1; i < gs.maxclients; i++, ent++ )
+		for( i = 0, ent = game.edicts + 1; i < g_gs.maxclients; i++, ent++ )
 		{
 			if( !( ent->r.svflags & SVF_FAKECLIENT ) || !ent->r.client )
 				continue;
@@ -287,7 +287,7 @@ static void BOT_CreateUserinfo( char *userinfo, size_t userinfo_size, int bot_pe
 		edict_t	*ent;
 
 		//count spawned bots for the names
-		for( i = 0, ent = game.edicts + 1; i < gs.maxclients; i++, ent++ )
+		for( i = 0, ent = game.edicts + 1; i < g_gs.maxclients; i++, ent++ )
 		{
 			if( !ent->r.inuse || !ent->ai ) continue;
 			if( ent->r.svflags & SVF_FAKECLIENT && AI_GetType( ent->ai ) == AI_ISBOT )
@@ -505,7 +505,7 @@ void BOT_RemoveBot( const char *name )
 	bool freed = false;
 	edict_t	*ent;
 
-	for( i = 0, ent = game.edicts + 1; i < gs.maxclients; i++, ent++ )
+	for( i = 0, ent = game.edicts + 1; i < g_gs.maxclients; i++, ent++ )
 	{
 		if( !ent->r.inuse || AI_GetType( ent->ai ) != AI_ISBOT )
 			continue;

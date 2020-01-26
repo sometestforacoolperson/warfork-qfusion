@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 static bool G_TriggerWait( edict_t *ent, edict_t *other )
 {
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 	{
 		if( other->trigger_entity == ent && other->trigger_timeout && other->trigger_timeout >= level.time )
 			return true;

@@ -33,7 +33,7 @@ void G_Timeout_Reset( void )
 {
 	int i;
 
-	GS_GamestatSetFlag( GAMESTAT_FLAG_PAUSED, false );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_PAUSED, false );
 	level.timeout.time = 0;
 	level.timeout.endtime = 0;
 	level.timeout.caller = 0;
@@ -52,7 +52,7 @@ static void G_Timeout_Update( unsigned int msec )
 	static int timeout_last_endtime = 0;
 	static int countdown_set = 1;
 
-	if( !GS_MatchPaused() )
+	if( !GS_MatchPaused( &g_gs ) )
 		return;
 
 	game.frametime = 0;
@@ -68,7 +68,7 @@ static void G_Timeout_Update( unsigned int msec )
 	{
 		level.timeout.time = 0;
 		level.timeout.caller = -1;
-		GS_GamestatSetFlag( GAMESTAT_FLAG_PAUSED, false );
+		GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_PAUSED, false );
 
 		timeout_printtime = 0;
 		timeout_last_endtime = -1;
@@ -117,26 +117,26 @@ static void G_Timeout_Update( unsigned int msec )
 static void G_UpdateServerInfo( void )
 {
 	// g_match_time
-	if( GS_MatchState() <= MATCH_STATE_WARMUP )
+	if( GS_MatchState( &g_gs ) <= MATCH_STATE_WARMUP )
 	{
 		trap_Cvar_ForceSet( "g_match_time", "Warmup" );
 	}
-	else if( GS_MatchState() == MATCH_STATE_COUNTDOWN )
+	else if( GS_MatchState( &g_gs ) == MATCH_STATE_COUNTDOWN )
 	{
 		trap_Cvar_ForceSet( "g_match_time", "Countdown" );
 	}
-	else if( GS_MatchState() == MATCH_STATE_PLAYTIME )
+	else if( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME )
 	{
 		// partly from G_GetMatchState
 		char extra[MAX_INFO_VALUE];
 		int clocktime, timelimit, mins, secs;
 
-		if( GS_MatchDuration() )
-			timelimit = ( ( GS_MatchDuration() ) * 0.001 ) / 60;
+		if( GS_MatchDuration( &g_gs ) )
+			timelimit = ( ( GS_MatchDuration( &g_gs ) ) * 0.001 ) / 60;
 		else
 			timelimit = 0;
 
-		clocktime = (float)( game.serverTime - GS_MatchStartTime() ) * 0.001f;
+		clocktime = (float)( game.serverTime - GS_MatchStartTime( &g_gs ) ) * 0.001f;
 
 		if( clocktime <= 0 )
 		{
@@ -150,14 +150,14 @@ static void G_UpdateServerInfo( void )
 		}
 
 		extra[0] = 0;
-		if( GS_MatchExtended() )
+		if( GS_MatchExtended( &g_gs ) )
 		{
 			if( timelimit )
 				Q_strncatz( extra, " overtime", sizeof( extra ) );
 			else
 				Q_strncatz( extra, " suddendeath", sizeof( extra ) );
 		}
-		if( GS_MatchPaused() )
+		if( GS_MatchPaused( &g_gs ) )
 			Q_strncatz( extra, " (in timeout)", sizeof( extra ) );
 
 		if( timelimit )
@@ -171,7 +171,7 @@ static void G_UpdateServerInfo( void )
 	}
 
 	// g_match_score
-	if( GS_MatchState() >= MATCH_STATE_PLAYTIME && GS_TeamBasedGametype() )
+	if( GS_MatchState( &g_gs ) >= MATCH_STATE_PLAYTIME && GS_TeamBasedGametype( &g_gs ) )
 	{
 		char score[MAX_INFO_STRING];
 
@@ -248,7 +248,7 @@ static void G_UpdateServerInfo( void )
 		g_disable_vote_gametype->modified = false;
 	}
 
-	if( GS_RaceGametype() ) {
+	if( GS_RaceGametype( &g_gs ) ) {
 		trap_Cvar_ForceSet( "g_race_gametype", "1" );
 	}
 	else {
@@ -282,9 +282,9 @@ void G_CheckCvars( void )
 	if( g_warmup_timelimit->modified )
 	{
 		// if we are inside timelimit period, update the endtime
-		if( GS_MatchState() == MATCH_STATE_WARMUP )
+		if( GS_MatchState( &g_gs ) == MATCH_STATE_WARMUP )
 		{
-			gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)fabs( 60.0f * 1000 * g_warmup_timelimit->integer );
+			g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)fabs( 60.0f * 1000 * g_warmup_timelimit->integer );
 		}
 		g_warmup_timelimit->modified = false;
 	}
@@ -292,13 +292,13 @@ void G_CheckCvars( void )
 	if( g_timelimit->modified )
 	{
 		// if we are inside timelimit period, update the endtime
-		if( GS_MatchState() == MATCH_STATE_PLAYTIME &&
-			!GS_MatchExtended() )
+		if( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME &&
+			!GS_MatchExtended( &g_gs ) )
 		{
 			if( g_timelimit->value )
-				gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)fabs( 60.0f * 1000 * g_timelimit->value );
+				g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)fabs( 60.0f * 1000 * g_timelimit->value );
 			else
-				gs.gameState.longstats[GAMELONG_MATCHDURATION] = 0;
+				g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = 0;
 		}
 		g_timelimit->modified = false;
 	}
@@ -306,10 +306,10 @@ void G_CheckCvars( void )
 	if( g_match_extendedtime->modified )
 	{
 		// if we are inside extended_time period, update the endtime
-		if( GS_MatchExtended() )
+		if( GS_MatchExtended( &g_gs ) )
 		{
 			if( g_match_extendedtime->integer )
-				gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)fabs( 60 * 1000 * g_match_extendedtime->value );
+				g_gs.gameState.longstats[GAMELONG_MATCHDURATION] = (unsigned int)fabs( 60 * 1000 * g_match_extendedtime->value );
 		}
 		g_match_extendedtime->modified = false;
 	}
@@ -322,28 +322,28 @@ void G_CheckCvars( void )
 	// update gameshared server settings
 
 	// FIXME: This should be restructured so gameshared settings are the master settings
-	GS_GamestatSetFlag( GAMESTAT_FLAG_INSTAGIB, ( g_instagib->integer != 0 ) );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_FALLDAMAGE, ( g_allow_falldamage->integer != 0 ) );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_SELFDAMAGE, ( g_allow_selfdamage->integer != 0 ) );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_HASCHALLENGERS, level.gametype.hasChallengersQueue );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_INSTAGIB, ( g_instagib->integer != 0 ) );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_FALLDAMAGE, ( g_allow_falldamage->integer != 0 ) );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_SELFDAMAGE, ( g_allow_selfdamage->integer != 0 ) );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_HASCHALLENGERS, level.gametype.hasChallengersQueue );
 
-	GS_GamestatSetFlag( GAMESTAT_FLAG_ISTEAMBASED, level.gametype.isTeamBased );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_ISRACE, level.gametype.isRace );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_ISTEAMBASED, level.gametype.isTeamBased );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_ISRACE, level.gametype.isRace );
 
-	GS_GamestatSetFlag( GAMESTAT_FLAG_COUNTDOWN, level.gametype.countdownEnabled );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_INHIBITSHOOTING, level.gametype.shootingDisabled );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_INFINITEAMMO, ( level.gametype.infiniteAmmo || GS_Instagib() ) );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_CANFORCEMODELS, level.gametype.canForceModels );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_CANSHOWMINIMAP, level.gametype.canShowMinimap );
-	GS_GamestatSetFlag( GAMESTAT_FLAG_TEAMONLYMINIMAP, level.gametype.teamOnlyMinimap );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_COUNTDOWN, level.gametype.countdownEnabled );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_INHIBITSHOOTING, level.gametype.shootingDisabled );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_INFINITEAMMO, ( level.gametype.infiniteAmmo || GS_Instagib( &g_gs ) ) );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_CANFORCEMODELS, level.gametype.canForceModels );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_CANSHOWMINIMAP, level.gametype.canShowMinimap );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_TEAMONLYMINIMAP, level.gametype.teamOnlyMinimap );
 
-	GS_GamestatSetFlag( GAMESTAT_FLAG_MMCOMPATIBLE, level.gametype.mmCompatible );
+	GS_GamestatSetFlag( &g_gs, GAMESTAT_FLAG_MMCOMPATIBLE, level.gametype.mmCompatible );
 
-	GS_GamestatSetLongFlag( GAMELONG_FLAG_ISTUTORIAL, level.gametype.isTutorial );
-	GS_GamestatSetLongFlag( GAMELONG_FLAG_CANDROPWEAPON, ( level.gametype.dropableItemsMask & IT_WEAPON ) != 0 );
+	GS_GamestatSetLongFlag( &g_gs, GAMELONG_FLAG_ISTUTORIAL, level.gametype.isTutorial );
+	GS_GamestatSetLongFlag( &g_gs, GAMELONG_FLAG_CANDROPWEAPON, ( level.gametype.dropableItemsMask & IT_WEAPON ) != 0 );
 
-	gs.gameState.stats[GAMESTAT_MAXPLAYERSINTEAM] = level.gametype.maxPlayersPerTeam;
-	clamp( gs.gameState.stats[GAMESTAT_MAXPLAYERSINTEAM], 0, 255 );
+	g_gs.gameState.stats[GAMESTAT_MAXPLAYERSINTEAM] = level.gametype.maxPlayersPerTeam;
+	clamp( g_gs.gameState.stats[GAMESTAT_MAXPLAYERSINTEAM], 0, 255 );
 
 }
 
@@ -362,7 +362,7 @@ void G_SnapClients( void )
 	edict_t	*ent;
 
 	// calc the player views now that all pushing and damage has been added
-	for( i = 0; i < gs.maxclients; i++ )
+	for( i = 0; i < g_gs.maxclients; i++ )
 	{
 		ent = game.edicts + 1 + i;
 		if( !ent->r.inuse || !ent->r.client )
@@ -526,7 +526,7 @@ void G_ClearSnap( void )
 	game.realtime = trap_Milliseconds(); // level.time etc. might not be real time
 
 	// clear gametype's clock override
-	gs.gameState.longstats[GAMELONG_CLOCKOVERRIDE] = 0;
+	g_gs.gameState.longstats[GAMELONG_CLOCKOVERRIDE] = 0;
 
 	// clear all events in the snap
 	for( ent = &game.edicts[0]; ENTNUM( ent ) < game.numentities; ent++ )
@@ -551,7 +551,7 @@ void G_ClearSnap( void )
 	// recover some info, let players respawn and finally clear the snap structures
 	for( ent = &game.edicts[0]; ENTNUM( ent ) < game.numentities; ent++ )
 	{
-		if( !GS_MatchPaused() )
+		if( !GS_MatchPaused( &g_gs ) )
 		{
 			// copy origin to old origin ( this old_origin is for snaps )
 			if( !( ent->r.svflags & SVF_TRANSMITORIGIN2 ) )
@@ -560,7 +560,7 @@ void G_ClearSnap( void )
 			G_CheckClientRespawnClick( ent );
 		}
 
-		if( GS_MatchPaused() )
+		if( GS_MatchPaused( &g_gs ) )
 			ent->s.sound = entity_sound_backup[ENTNUM( ent )];
 
 		// clear the snap temp info
@@ -643,7 +643,7 @@ void G_SnapFrame( void )
 		if( ent->takedamage )
 			ent->s.effects |= EF_TAKEDAMAGE;
 
-		if( GS_MatchPaused() )
+		if( GS_MatchPaused( &g_gs ) )
 		{
 			// when in timeout, we don't send entity sounds
 			entity_sound_backup[ENTNUM( ent )] = ent->s.sound;
@@ -713,7 +713,7 @@ static void G_RunClients( void )
 
 	if( level.framenum & 1 )
 	{
-		i = gs.maxclients - 1;
+		i = g_gs.maxclients - 1;
 		step = -1;
 	}
 	else
@@ -722,7 +722,7 @@ static void G_RunClients( void )
 		step = 1;
 	}
 
-	for( ; i < gs.maxclients && i >= 0; i += step )
+	for( ; i < g_gs.maxclients && i >= 0; i += step )
 	{
 		ent = game.edicts + 1 + i;
 		if( !ent->r.inuse )
@@ -747,7 +747,7 @@ static edict_t *G_GetNextThinkClient( edict_t *current )
 	edict_t *first, *last;
 
 	first = game.edicts + 1;
-	last = game.edicts + gs.maxclients + 1;
+	last = game.edicts + g_gs.maxclients + 1;
 	start = current ? current + 1 : first;
 
 	for( check = start; ; check++ ) {
@@ -784,11 +784,11 @@ void G_RunFrame( unsigned int msec, unsigned int serverTime )
 
 	G_CallVotes_Think();
 
-	if( GS_MatchPaused() )
+	if( GS_MatchPaused( &g_gs ) )
 	{
 		// freeze match clock and linear projectiles
-		gs.gameState.longstats[GAMELONG_MATCHSTART] += serverTimeDelta;
-		for( edict_t *ent = game.edicts + gs.maxclients; ENTNUM( ent ) < game.numentities; ent++ )
+		g_gs.gameState.longstats[GAMELONG_MATCHSTART] += serverTimeDelta;
+		for( edict_t *ent = game.edicts + g_gs.maxclients; ENTNUM( ent ) < game.numentities; ent++ )
 		{
 			if( ent->s.linearMovement )
 				ent->s.linearMovementTimeStamp += serverTimeDelta;
@@ -801,8 +801,8 @@ void G_RunFrame( unsigned int msec, unsigned int serverTime )
 	}
 
 	// reset warmup clock if not enough players
-	if( GS_MatchWaiting() )
-		gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
+	if( GS_MatchWaiting( &g_gs ) )
+		g_gs.gameState.longstats[GAMELONG_MATCHSTART] = game.serverTime;
 
 	level.framenum++;
 	level.time += msec;

@@ -159,7 +159,7 @@ bool CG_PModelForCentity( centity_t *cent, pmodelinfo_t **pmodelinfo, struct ski
 	if( skin )
 		*skin = cgs.skinPrecache[cent->current.skinnum];
 
-	if( GS_CanForceModels() && ( ownerNum < ( unsigned )( gs.maxclients + 1 ) ) )
+	if( GS_CanForceModels( &cg_gs ) && ( ownerNum < ( unsigned )( cg_gs.maxclients + 1 ) ) )
 	{
 		if( ( ( team == TEAM_ALPHA ) || ( team == TEAM_BETA ) || ( team == TEAM_PLAYERS ) ) &&
 			// Don't force the model for the local player including demos
@@ -366,7 +366,7 @@ uint8_t *_ColorForEntity( int entNum, byte_vec4_t color, bool player )
 		Vector4Set( color, COLOR_R( rgbcolor ), COLOR_G( rgbcolor ), COLOR_B( rgbcolor ), 255 );
 	}
 	// user defined colors if it's a player
-	else if( ( player && ( owner->current.number - 1 < gs.maxclients ) ) && cent->current.type != ET_CORPSE )
+	else if( ( player && ( owner->current.number - 1 < cg_gs.maxclients ) ) && cent->current.type != ET_CORPSE )
 	{
 		Vector4Copy( cgs.clientInfo[owner->current.number - 1].color, color );
 	} 

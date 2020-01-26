@@ -84,7 +84,7 @@ static int G_Chase_FindFollowPOV( edict_t *ent )
 			edict_t *attacker = targ->r.client->teamstate.last_killer;
 
 			// ignore world and team kills
-			if( attacker && attacker->r.client && !GS_IsTeamDamage( &targ->s, &attacker->s ) ) {
+			if( attacker && attacker->r.client && !GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) ) {
 				newpov = ENTNUM( attacker );
 			}
 		}
@@ -101,7 +101,7 @@ static int G_Chase_FindFollowPOV( edict_t *ent )
 	newctfpov = newpoweruppov = -1;
 	maxteam = 0;
 
-	for( i = 1; PLAYERNUM( (game.edicts+i) ) < gs.maxclients; i++ )
+	for( i = 1; PLAYERNUM( (game.edicts+i) ) < g_gs.maxclients; i++ )
 	{
 		target = game.edicts + i;
 
@@ -297,13 +297,13 @@ static void G_EndFrame_UpdateChaseCam( edict_t *ent )
 			ent->r.client->ps.stats[STAT_LAYOUTS] |= STAT_LAYOUT_SPECDEAD; // show deadcam effect
 	}
 
-	if( ent->r.client->level.showscores || GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( ent->r.client->level.showscores || GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH )
 		ent->r.client->ps.stats[STAT_LAYOUTS] |= STAT_LAYOUT_SCOREBOARD; // show the scoreboard
 
-	if( GS_HasChallengers() && ent->r.client->queueTimeStamp )
+	if( GS_HasChallengers( &g_gs ) && ent->r.client->queueTimeStamp )
 		ent->r.client->ps.stats[STAT_LAYOUTS] |= STAT_LAYOUT_CHALLENGER;
 
-	if( GS_MatchState() <= MATCH_STATE_WARMUP && level.ready[PLAYERNUM( ent )] )
+	if( GS_MatchState( &g_gs ) <= MATCH_STATE_WARMUP && level.ready[PLAYERNUM( ent )] )
 		ent->r.client->ps.stats[STAT_LAYOUTS] |= STAT_LAYOUT_READY;
 
 	// chasecam uses PM_CHASECAM
@@ -390,7 +390,7 @@ void G_ChasePlayer( edict_t *ent, const char *name, bool teamonly, int followmod
 	if( name && name[0] )
 	{
 		// find it by player names
-		for( e = game.edicts + 1; PLAYERNUM( e ) < gs.maxclients; e++ )
+		for( e = game.edicts + 1; PLAYERNUM( e ) < g_gs.maxclients; e++ )
 		{
 			if( !G_Chase_IsValidTarget( ent, e, teamonly ) )
 				continue;
@@ -408,7 +408,7 @@ void G_ChasePlayer( edict_t *ent, const char *name, bool teamonly, int followmod
 		if( targetNum == -1 )
 		{
 			i = atoi( name );
-			if( i >= 0 && i < gs.maxclients )
+			if( i >= 0 && i < g_gs.maxclients )
 			{
 				e = game.edicts + 1 + i;
 				if( G_Chase_IsValidTarget( ent, e, teamonly ) )
@@ -421,7 +421,7 @@ void G_ChasePlayer( edict_t *ent, const char *name, bool teamonly, int followmod
 	}
 
 	// try to reuse old target if we didn't find a valid one
-	if( targetNum == -1 && oldTarget > 0 && oldTarget < gs.maxclients )
+	if( targetNum == -1 && oldTarget > 0 && oldTarget < g_gs.maxclients )
 	{
 		e = game.edicts + 1 + oldTarget;
 		if( G_Chase_IsValidTarget( ent, e, teamonly ) )
@@ -431,7 +431,7 @@ void G_ChasePlayer( edict_t *ent, const char *name, bool teamonly, int followmod
 	// if we still don't have a target, just pick the first valid one
 	if( targetNum == -1 )
 	{
-		for( e = game.edicts + 1; PLAYERNUM( e ) < gs.maxclients; e++ )
+		for( e = game.edicts + 1; PLAYERNUM( e ) < g_gs.maxclients; e++ )
 		{
 			if( !G_Chase_IsValidTarget( ent, e, teamonly ) )
 				continue;
@@ -511,7 +511,7 @@ void G_ChaseStep( edict_t *ent, int step )
 		// reset the team if the previously chased player was not found
 		if( team == GS_MAX_TEAMS )
 			team = TEAM_PLAYERS;
-		for( j = 0; j < gs.maxclients; j++ )
+		for( j = 0; j < g_gs.maxclients; j++ )
 		{
 			// at this point step is -1 or 1
 			i += step;
@@ -570,7 +570,7 @@ void Cmd_ChaseCam_f( edict_t *ent )
 	// & 4 = objectives
 	// & 8 = fragger
 
-	if( ent->r.client->teamstate.is_coach && GS_TeamBasedGametype() )
+	if( ent->r.client->teamstate.is_coach && GS_TeamBasedGametype( &g_gs ) )
 		team_only = true;
 	else 
 		team_only = false;
@@ -650,7 +650,7 @@ void G_SpectatorMode( edict_t *ent )
 		G_Chase_SetChaseActive( ent, false );
 
 		// reset movement speeds
-		ent->r.client->ps.pmove.stats[PM_STAT_MAXSPEED] = DEFAULT_PLAYERSPEED;
+		ent->r.client->ps.pmove.stats[PM_STAT_MAXSPEED] = DEFAULT_PLAYERSPEED( &g_gs );
 		ent->r.client->ps.pmove.stats[PM_STAT_JUMPSPEED] = DEFAULT_JUMPSPEED;
 		ent->r.client->ps.pmove.stats[PM_STAT_DASHSPEED] = DEFAULT_DASHSPEED;
 	}

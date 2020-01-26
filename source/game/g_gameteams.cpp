@@ -47,7 +47,7 @@ void G_Teams_Init( void )
 	//unlock all teams and clear up team lists
 	memset( teamlist, 0, sizeof( teamlist ) );
 
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 	{
 		if( ent->r.inuse )
 		{
@@ -95,7 +95,7 @@ void G_Teams_UpdateMembersList( void )
 		teamlist[team].has_coach = false;
 
 		//create a temp list with the clients inside this team
-		for( i = 0, ent = game.edicts + 1; i < gs.maxclients; i++, ent++ )
+		for( i = 0, ent = game.edicts + 1; i < g_gs.maxclients; i++, ent++ )
 		{
 			if( !ent->r.client || ( trap_GetClientState( PLAYERNUM( ent ) ) < CS_CONNECTED ) )
 				continue;
@@ -267,7 +267,7 @@ void G_Teams_Invite_f( edict_t *ent )
 		Q_strncatz( msg, "Usage: invite <player>\n", sizeof( msg ) );
 		Q_strncatz( msg, "- List of current players:\n", sizeof( msg ) );
 
-		for( i = 0, e = game.edicts+1; i < gs.maxclients; i++, e++ )
+		for( i = 0, e = game.edicts+1; i < g_gs.maxclients; i++, e++ )
 		{
 			if( !e->r.inuse ) 
 				continue;
@@ -316,7 +316,7 @@ void G_Teams_SetTeam( edict_t *ent, int team )
 	assert( team >= TEAM_SPECTATOR && team < GS_MAX_TEAMS );
 
 	// if player was on a team, send partial report to matchmaker
-	if( ent->r.client->team != TEAM_SPECTATOR && ent->r.client->team != team && GS_MatchState() == MATCH_STATE_PLAYTIME )
+	if( ent->r.client->team != TEAM_SPECTATOR && ent->r.client->team != team && GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME )
 	{
 		G_Printf("Sending teamchange to MM, team %d to team %d\n", ent->r.client->team, team );
 		G_AddPlayerReport( ent, false );
@@ -354,7 +354,7 @@ enum
 static bool G_Teams_CanKeepEvenTeam( int leaving, int joining )
 {
 	int max = 0;
-	int min = gs.maxclients + 1;
+	int min = g_gs.maxclients + 1;
 	int numplayers;
 	int i;
 
@@ -389,19 +389,19 @@ static int G_GameTypes_DenyJoinTeam( edict_t *ent, int team )
 	if( team == TEAM_SPECTATOR )
 		return ER_TEAM_OK;
 
-	if( GS_MatchState() > MATCH_STATE_PLAYTIME )
+	if( GS_MatchState( &g_gs ) > MATCH_STATE_PLAYTIME )
 		return ER_TEAM_MATCHSTATE;
 
 	// waiting for chanllengers queue to be executed
-	if( GS_HasChallengers() &&
+	if( GS_HasChallengers( &g_gs ) &&
 		game.realtime < level.spawnedTimeStamp + (unsigned)( G_CHALLENGERS_MIN_JOINTEAM_MAPTIME + game.snapFrameTime ) )
 		return ER_TEAM_CHALLENGERS;
 
 	// force eveyone to go through queue so things work on map change
-	if( GS_HasChallengers() && !ent->r.client->queueTimeStamp )
+	if( GS_HasChallengers( &g_gs ) && !ent->r.client->queueTimeStamp )
 		return ER_TEAM_CHALLENGERS;
 
-	if( GS_TeamBasedGametype() && ( team >= TEAM_ALPHA && team < GS_MAX_TEAMS ) )
+	if( GS_TeamBasedGametype( &g_gs ) && ( team >= TEAM_ALPHA && team < GS_MAX_TEAMS ) )
 	{
 		if( ent->r.svflags & SVF_FAKECLIENT && AI_GetType( ent->ai ) == AI_ISBOT )
 		{
@@ -419,7 +419,7 @@ static int G_GameTypes_DenyJoinTeam( edict_t *ent, int team )
 	if( G_Teams_TeamIsLocked( team ) && !G_Teams_PlayerIsInvited( team, ent ) )
 		return ER_TEAM_LOCKED;
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		if( team >= TEAM_ALPHA && team < GS_MAX_TEAMS )
 		{
@@ -467,7 +467,7 @@ bool G_Teams_JoinTeam( edict_t *ent, int team )
 		if( error == ER_TEAM_INVALID )
 		{
 			G_PrintMsg( ent, "Can't join %s in %s\n", GS_TeamName( team ),
-				gs.gametypeName );
+				g_gs.gametypeName );
 		}
 		else if( error == ER_TEAM_CHALLENGERS )
 		{
@@ -505,14 +505,14 @@ bool G_Teams_JoinTeam( edict_t *ent, int team )
 */
 bool G_Teams_JoinAnyTeam( edict_t *ent, bool silent )
 {
-	int best_numplayers = gs.maxclients + 1, best_score = 999999;
+	int best_numplayers = g_gs.maxclients + 1, best_score = 999999;
 	int i, team = -1;
 	bool wasinqueue = ( ent->r.client->queueTimeStamp != 0 );
 
 	G_Teams_UpdateMembersList(); // make sure we have up-to-date data
 
 	//depending on the gametype, of course
-	if( !GS_TeamBasedGametype() )
+	if( !GS_TeamBasedGametype( &g_gs ) )
 	{
 		if( ent->s.team == TEAM_PLAYERS )
 		{
@@ -575,12 +575,12 @@ bool G_Teams_JoinAnyTeam( edict_t *ent, bool silent )
 				return true;
 			}
 		}
-		if( GS_MatchState() <= MATCH_STATE_PLAYTIME && !silent )
+		if( GS_MatchState( &g_gs ) <= MATCH_STATE_PLAYTIME && !silent )
 			G_Teams_JoinChallengersQueue( ent );
 	}
 
 	// don't print message if we joined the queue
-	if( !silent && ( !GS_HasChallengers() || wasinqueue || !ent->r.client->queueTimeStamp ) )
+	if( !silent && ( !GS_HasChallengers( &g_gs ) || wasinqueue || !ent->r.client->queueTimeStamp ) )
 		G_PrintMsg( ent, "You can't join the game now\n" );
 
 	return false;
@@ -757,7 +757,7 @@ edict_t **G_Teams_ChallengersQueue( void )
 	gclient_t *cl;
 
 	// fill the challengers into array, then sort
-	for( e = game.edicts + 1; PLAYERNUM( e ) < gs.maxclients; e++ )
+	for( e = game.edicts + 1; PLAYERNUM( e ) < g_gs.maxclients; e++ )
 	{
 		if( !e->r.inuse || !e->r.client || e->s.team != TEAM_SPECTATOR )
 			continue;
@@ -794,10 +794,10 @@ void G_Teams_ExecuteChallengersQueue( void )
 	bool restartmatch = false;
 
 	// Medar fixme: this is only really makes sense, if playerlimit per team is one
-	if( GS_MatchState() == MATCH_STATE_PLAYTIME )
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME )
 		return;
 
-	if( !GS_HasChallengers() )
+	if( !GS_HasChallengers( &g_gs ) )
 		return;
 
 	if( game.realtime < level.spawnedTimeStamp + G_CHALLENGERS_MIN_JOINTEAM_MAPTIME )
@@ -828,7 +828,7 @@ void G_Teams_ExecuteChallengersQueue( void )
 				break;
 
 			// if we successfully execute the challengers queue during the countdown, revert to warmup
-			if( GS_MatchState() == MATCH_STATE_COUNTDOWN )
+			if( GS_MatchState( &g_gs ) == MATCH_STATE_COUNTDOWN )
 			{
 				restartmatch = true;
 			}
@@ -852,7 +852,7 @@ static edict_t *G_Teams_BestScoreBelow( int maxscore )
 	edict_t *e, *best = NULL;
 	int bestScore = -9999999;
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		for( team = TEAM_ALPHA; team < GS_MAX_TEAMS; team++ )
 		{
@@ -897,12 +897,12 @@ void G_Teams_AdvanceChallengersQueue( void )
 	edict_t *won, *e;
 	int START_TEAM = TEAM_PLAYERS, END_TEAM = TEAM_PLAYERS+1;
 
-	if( !GS_HasChallengers() )
+	if( !GS_HasChallengers( &g_gs ) )
 		return;
 
 	G_Teams_UpdateMembersList();
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		START_TEAM = TEAM_ALPHA;
 		END_TEAM = GS_MAX_TEAMS;
@@ -954,7 +954,7 @@ void G_Teams_AdvanceChallengersQueue( void )
 */
 void G_Teams_LeaveChallengersQueue( edict_t *ent )
 {
-	if( !GS_HasChallengers() )
+	if( !GS_HasChallengers( &g_gs ) )
 	{
 		ent->r.client->queueTimeStamp = 0;
 		return;
@@ -980,7 +980,7 @@ void G_Teams_JoinChallengersQueue( edict_t *ent )
 	int pos = 0;
 	edict_t *e;
 
-	if( !GS_HasChallengers() )
+	if( !GS_HasChallengers( &g_gs ) )
 	{
 		ent->r.client->queueTimeStamp = 0;
 		return;
@@ -993,7 +993,7 @@ void G_Teams_JoinChallengersQueue( edict_t *ent )
 	if( !ent->r.client->queueTimeStamp )
 	{                                       // enter the line
 		ent->r.client->queueTimeStamp = game.realtime;
-		for( e = game.edicts + 1; PLAYERNUM( e ) < gs.maxclients; e++ )
+		for( e = game.edicts + 1; PLAYERNUM( e ) < g_gs.maxclients; e++ )
 		{
 			if( !e->r.inuse || !e->r.client || trap_GetClientState( PLAYERNUM(e) ) < CS_SPAWNED )
 				continue;
@@ -1015,7 +1015,7 @@ void G_InitChallengersQueue( void )
 {
 	int i;
 
-	for( i = 0; i < gs.maxclients; i++ )
+	for( i = 0; i < g_gs.maxclients; i++ )
 		game.clients[i].queueTimeStamp = 0;
 }
 
@@ -1284,7 +1284,7 @@ void G_Say_Team( edict_t *who, char *msg, bool checkflood )
 	char *p;
 	char current_color[3];
 
-	if( who->s.team != TEAM_SPECTATOR && ( !GS_TeamBasedGametype() || GS_InvidualGameType() ) )
+	if( who->s.team != TEAM_SPECTATOR && ( !GS_TeamBasedGametype( &g_gs ) || GS_InvidualGameType( &g_gs ) ) )
 	{
 		Cmd_Say_f( who, false, true );
 		return;
@@ -1320,7 +1320,7 @@ void G_Say_Team( edict_t *who, char *msg, bool checkflood )
 	{
 		// unauthed players are only allowed to chat to public at non play-time
 		// they are allowed to team-chat at any time
-		if( GS_MatchState() == MATCH_STATE_PLAYTIME )
+		if( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME )
 		{
 			G_PrintMsg( who, "%s", S_COLOR_YELLOW "You must authenticate to be able to chat with other players during the match.\n");
 			return;
@@ -1409,11 +1409,11 @@ void G_Say_Team( edict_t *who, char *msg, bool checkflood )
 
 void G_Teams_Coach( edict_t *ent )
 {
-	if( GS_TeamBasedGametype() && !GS_InvidualGameType() && ent->s.team != TEAM_SPECTATOR )
+	if( GS_TeamBasedGametype( &g_gs ) && !GS_InvidualGameType( &g_gs ) && ent->s.team != TEAM_SPECTATOR )
 	{
 		if( !teamlist[ent->s.team].has_coach )
 		{
-			if( GS_MatchState() > MATCH_STATE_WARMUP && !GS_MatchPaused() )
+			if( GS_MatchState( &g_gs ) > MATCH_STATE_WARMUP && !GS_MatchPaused( &g_gs ) )
 			{
 				G_PrintMsg( ent, "Can't set coach mode with the match in progress\n" );
 			}

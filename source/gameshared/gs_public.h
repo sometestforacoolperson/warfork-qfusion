@@ -142,52 +142,40 @@ typedef struct
 	game_state_t gameState;
 } gs_state_t;
 
-#ifdef CGS
-#define gs cg_gs
-#define GS_TouchPushTrigger CG_GS_TouchPushTrigger
-#define GS_WaterLevel CG_GS_WaterLevel
-#define GS_BBoxForEntityState CG_GS_BBoxForEntityState
-#define GS_FrameForTime CG_GS_FrameForTime
-#define GS_SetGametypeName CG_GS_SetGametypeName
-#define GS_Obituary CG_GS_Obituary
-#endif
+#define GS_GamestatSetFlag( gs, flag, b ) ( b ? ( ( gs )->gameState.stats[GAMESTAT_FLAGS] |= flag ) : ( ( gs )->gameState.stats[GAMESTAT_FLAGS] &= ~flag ) )
+#define GS_GamestatSetLongFlag( gs, flag, b ) ( b ? ( ( gs )->gameState.longstats[GAMELONG_FLAGS] |= flag ) : ( ( gs )->gameState.longstats[GAMELONG_FLAGS] &= ~flag ) )
 
-extern gs_state_t gs;
+#define GS_Instagib( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_INSTAGIB ) ? true : false )
+#define GS_FallDamage( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_FALLDAMAGE ) ? true : false )
+#define GS_ShootingDisabled( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_INHIBITSHOOTING ) ? true : false )
+#define GS_HasChallengers( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_HASCHALLENGERS ) ? true : false )
+#define GS_TeamBasedGametype( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_ISTEAMBASED ) ? true : false )
+#define GS_RaceGametype( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_ISRACE ) ? true : false )
+#define GS_MatchPaused( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_PAUSED ) ? true : false )
+#define GS_MatchWaiting( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_WAITING ) ? true : false )
+#define GS_MatchExtended( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_MATCHEXTENDED ) ? true : false )
+#define GS_SelfDamage( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_SELFDAMAGE ) ? true : false )
+#define GS_Countdown( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_COUNTDOWN ) ? true : false )
+#define GS_InfiniteAmmo( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_INFINITEAMMO ) ? true : false )
+#define GS_CanForceModels( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_CANFORCEMODELS ) ? true : false )
+#define GS_CanShowMinimap( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_CANSHOWMINIMAP ) ? true : false )
+#define GS_TeamOnlyMinimap( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_TEAMONLYMINIMAP ) ? true : false )
+#define GS_MMCompatible( gs ) ( ( ( gs )->gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_MMCOMPATIBLE ) ? true : false )
+#define GS_TutorialGametype( gs ) ( ( gs )->gameState.longstats[GAMELONG_FLAGS] & GAMELONG_FLAG_ISTUTORIAL ? true : false )
+#define GS_CanDropWeapon( gs ) ( ( gs )->gameState.longstats[GAMELONG_FLAGS] & GAMELONG_FLAG_CANDROPWEAPON ? true : false )
 
-#define GS_GamestatSetFlag( flag, b ) ( b ? ( gs.gameState.stats[GAMESTAT_FLAGS] |= flag ) : ( gs.gameState.stats[GAMESTAT_FLAGS] &= ~flag ) )
-#define GS_GamestatSetLongFlag( flag, b ) ( b ? ( gs.gameState.longstats[GAMELONG_FLAGS] |= flag ) : ( gs.gameState.longstats[GAMELONG_FLAGS] &= ~flag ) )
+#define GS_MatchState( gs ) ( ( gs )->gameState.stats[GAMESTAT_MATCHSTATE] )
+#define GS_MaxPlayersInTeam( gs ) ( ( gs )->gameState.stats[GAMESTAT_MAXPLAYERSINTEAM] )
+#define GS_InvidualGameType( gs ) ( GS_MaxPlayersInTeam( gs ) == 1 ? true : false )
 
-#define GS_Instagib() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_INSTAGIB ) ? true : false )
-#define GS_FallDamage() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_FALLDAMAGE ) ? true : false )
-#define GS_ShootingDisabled() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_INHIBITSHOOTING ) ? true : false )
-#define GS_HasChallengers() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_HASCHALLENGERS ) ? true : false )
-#define GS_TeamBasedGametype() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_ISTEAMBASED ) ? true : false )
-#define GS_RaceGametype() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_ISRACE ) ? true : false )
-#define GS_MatchPaused() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_PAUSED ) ? true : false )
-#define GS_MatchWaiting() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_WAITING ) ? true : false )
-#define GS_MatchExtended() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_MATCHEXTENDED ) ? true : false )
-#define GS_SelfDamage() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_SELFDAMAGE ) ? true : false )
-#define GS_Countdown() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_COUNTDOWN ) ? true : false )
-#define GS_InfiniteAmmo() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_INFINITEAMMO ) ? true : false )
-#define GS_CanForceModels() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_CANFORCEMODELS ) ? true : false )
-#define GS_CanShowMinimap() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_CANSHOWMINIMAP ) ? true : false )
-#define GS_TeamOnlyMinimap() ( ( gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_TEAMONLYMINIMAP ) ? true : false )
-#define GS_MMCompatible() ( (gs.gameState.stats[GAMESTAT_FLAGS] & GAMESTAT_FLAG_MMCOMPATIBLE ) ? true : false )
-#define GS_TutorialGametype() ( gs.gameState.longstats[GAMELONG_FLAGS] & GAMELONG_FLAG_ISTUTORIAL ? true : false )
-#define GS_CanDropWeapon() ( gs.gameState.longstats[GAMELONG_FLAGS] & GAMELONG_FLAG_CANDROPWEAPON ? true : false )
+#define GS_MatchDuration( gs ) ( ( gs )->gameState.longstats[GAMELONG_MATCHDURATION] )
+#define GS_MatchStartTime( gs ) ( ( gs )->gameState.longstats[GAMELONG_MATCHSTART] )
+#define GS_MatchEndTime( gs ) ( ( gs )->gameState.longstats[GAMELONG_MATCHDURATION] ? ( gs )->gameState.longstats[GAMELONG_MATCHSTART] + ( gs )->gameState.longstats[GAMELONG_MATCHDURATION] : 0 )
+#define GS_MatchClockOverride(gs) ( ( gs )->gameState.longstats[GAMELONG_CLOCKOVERRIDE] )
 
-#define GS_MatchState() ( gs.gameState.stats[GAMESTAT_MATCHSTATE] )
-#define GS_MaxPlayersInTeam() ( gs.gameState.stats[GAMESTAT_MAXPLAYERSINTEAM] )
-#define GS_InvidualGameType() ( GS_MaxPlayersInTeam() == 1 ? true : false )
+#define GS_ColorCorrection( gs ) ( ( gs )->gameState.stats[GAMESTAT_COLORCORRECTION] )
 
-#define GS_MatchDuration() ( gs.gameState.longstats[GAMELONG_MATCHDURATION] )
-#define GS_MatchStartTime() ( gs.gameState.longstats[GAMELONG_MATCHSTART] )
-#define GS_MatchEndTime() ( gs.gameState.longstats[GAMELONG_MATCHDURATION] ? gs.gameState.longstats[GAMELONG_MATCHSTART] + gs.gameState.longstats[GAMELONG_MATCHDURATION] : 0 )
-#define GS_MatchClockOverride() ( gs.gameState.longstats[GAMELONG_CLOCKOVERRIDE] )
-
-#define GS_ColorCorrection() ( gs.gameState.stats[GAMESTAT_COLORCORRECTION] )
-
-#define DEFAULT_PLAYERSPEED ( GS_RaceGametype() ? DEFAULT_PLAYERSPEED_RACE : ( GS_Instagib() ? DEFAULT_PLAYERSPEED_INSTAGIB : DEFAULT_PLAYERSPEED_STANDARD ) )
+#define DEFAULT_PLAYERSPEED( gs ) ( GS_RaceGametype( gs ) ? DEFAULT_PLAYERSPEED_RACE : ( GS_Instagib( gs ) ? DEFAULT_PLAYERSPEED_INSTAGIB : DEFAULT_PLAYERSPEED_STANDARD ) )
 
 //==================================================================
 
@@ -286,7 +274,7 @@ enum {
 	GS_MAXBUNNIES
 };
 
-void Pmove( pmove_t *pmove );
+void Pmove( gs_state_t *gs, pmove_t *pmove );
 
 //===============================================================
 
@@ -564,9 +552,9 @@ extern gsitem_t itemdefs[];
 gsitem_t *GS_FindItemByTag( int tag );
 gsitem_t *GS_FindItemByClassname( const char *classname );
 gsitem_t *GS_FindItemByName( const char *name );
-gsitem_t *GS_Cmd_UseItem( player_state_t *playerState, const char *string, int typeMask );
-gsitem_t *GS_Cmd_NextWeapon_f( player_state_t *playerState, int predictedWeaponSwitch );
-gsitem_t *GS_Cmd_PrevWeapon_f( player_state_t *playerState, int predictedWeaponSwitch );
+gsitem_t *GS_Cmd_UseItem( gs_state_t *gs, player_state_t *playerState, const char *string, int typeMask );
+gsitem_t *GS_Cmd_NextWeapon_f( gs_state_t *gs, player_state_t *playerState, int predictedWeaponSwitch );
+gsitem_t *GS_Cmd_PrevWeapon_f( gs_state_t *gs, player_state_t *playerState, int predictedWeaponSwitch );
 int GS_Armor_TagForCount( float armorcount );
 int GS_Armor_MaxCountForTag( int tag );
 int GS_Armor_PickupCountForTag( int tag );
@@ -592,7 +580,7 @@ const char *GS_TeamName( int team );
 const char *GS_DefaultTeamName( int team );
 const char *GS_TeamSkinName( int team );
 int GS_Teams_TeamFromName( const char *teamname );
-bool GS_IsTeamDamage( entity_state_t *targ, entity_state_t *attacker );
+bool GS_IsTeamDamage( gs_state_t *gs, entity_state_t *targ, entity_state_t *attacker );
 
 //===============================================================
 
@@ -659,7 +647,7 @@ typedef enum
 } matchmessage_t;
 
 // gs_misc.c
-void GS_SetGametypeName( const char *name );
+void GS_SetGametypeName( gs_state_t *gs, const char *name );
 void GS_Obituary( void *victim, int gender, void *attacker, int mod, char *message, char *message2 );
 void GS_TouchPushTrigger( player_state_t *playerState, entity_state_t *pusher );
 int GS_WaterLevel( entity_state_t *state, vec3_t mins, vec3_t maxs );
@@ -1166,7 +1154,7 @@ void GS_InitWeapons( void );
 int GS_SelectBestWeapon( player_state_t *playerState );
 bool GS_CheckAmmoInWeapon( player_state_t *playerState, int checkweapon );
 firedef_t *GS_FiredefForPlayerState( player_state_t *playerState, int checkweapon );
-int GS_ThinkPlayerWeapon( player_state_t *playerState, int buttons, int msecs, int timeDelta );
+int GS_ThinkPlayerWeapon( gs_state_t *gs, player_state_t *playerState, int buttons, int msecs, int timeDelta );
 trace_t *GS_TraceBullet( trace_t	*trace, vec3_t start, vec3_t dir, float r, float u, int range, int ignore, int timeDelta );
 void GS_TraceLaserBeam( trace_t *trace, vec3_t origin, vec3_t angles, float range, int ignore, int timeDelta, void ( *impact )( trace_t *tr, vec3_t dir ) );
 void GS_TraceCurveLaserBeam( trace_t *trace, vec3_t origin, vec3_t angles, vec3_t blendPoint, int ignore, int timeDelta, void ( *impact )( trace_t *tr, vec3_t dir ) );

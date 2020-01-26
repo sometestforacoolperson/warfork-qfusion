@@ -278,7 +278,7 @@ static void CG_SizeDown_f( void )
 */
 static void CG_QuickMenuOn_f( void )
 {
-	if( GS_MatchState() < MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &cg_gs ) < MATCH_STATE_POSTMATCH )
 		CG_ShowQuickMenu( 1 );
 }
 
@@ -287,7 +287,7 @@ static void CG_QuickMenuOn_f( void )
 */
 static void CG_QuickMenuOff_f( void )
 {
-	if( GS_MatchState() < MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &cg_gs ) < MATCH_STATE_POSTMATCH )
 		CG_ShowQuickMenu( 0 );
 }
 
@@ -581,7 +581,7 @@ void CG_DrawKeyState( int x, int y, int w, int h, int align, const char *key )
 	vec4_t color;
 
 	if( !cg_showPressedKeys->integer && !cgs.demoTutorial &&
-		( !GS_TutorialGametype() || !( trap_IN_SupportedDevices() & IN_DEVICE_KEYBOARD ) ) )
+		( !GS_TutorialGametype( &cg_gs ) || !( trap_IN_SupportedDevices() & IN_DEVICE_KEYBOARD ) ) )
 	{
 		return;
 	}
@@ -619,25 +619,25 @@ void CG_DrawClock( int x, int y, int align, struct qfontface_s *font, vec4_t col
 	if( !cg_showTimer->integer )
 		return;
 
-	if( GS_MatchState() > MATCH_STATE_PLAYTIME )
+	if( GS_MatchState( &cg_gs ) > MATCH_STATE_PLAYTIME )
 		return;
 
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &cg_gs ) )
 	{
 		if( cg.predictedPlayerState.stats[STAT_TIME_SELF] != STAT_NOTSET )
 			clocktime = cg.predictedPlayerState.stats[STAT_TIME_SELF] * 100;
 		else
 			clocktime = 0;
 	}
-	else if( GS_MatchClockOverride() )
+	else if( GS_MatchClockOverride( &cg_gs ) )
 	{
-		clocktime = GS_MatchClockOverride();
+		clocktime = GS_MatchClockOverride( &cg_gs );
 	}
 	else
 	{
-		curtime = ( GS_MatchWaiting() || GS_MatchPaused() ) ? cg.frame.serverTime : cg.time;
-		duration = GS_MatchDuration();
-		startTime = GS_MatchStartTime();
+		curtime = ( GS_MatchWaiting( &cg_gs ) || GS_MatchPaused( &cg_gs ) ) ? cg.frame.serverTime : cg.time;
+		duration = GS_MatchDuration( &cg_gs );
+		startTime = GS_MatchStartTime( &cg_gs );
 
 		// count downwards when having a duration
 		if( duration && ( cg_showTimer->integer != 3 ) )
@@ -662,7 +662,7 @@ void CG_DrawClock( int x, int y, int align, struct qfontface_s *font, vec4_t col
 
 	// fixme?: this could have its own HUD drawing, I guess.
 
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &cg_gs ) )
 	{
 		Q_snprintfz( string, sizeof( string ), "%02i:%02i.%i",
 			minutes, ( int )seconds, ( int )( seconds * 10.0 ) % 10 );
@@ -747,7 +747,7 @@ void CG_DrawPlayerNames( struct qfontface_s *font, vec4_t color )
 	if( CG_IsScoreboardShown() )
 		return;
 
-	for( i = 0; i < gs.maxclients; i++ )
+	for( i = 0; i < cg_gs.maxclients; i++ )
 	{
 		if( !cgs.clientInfo[i].name[0] || ISVIEWERENTITY( i + 1 ) )
 			continue;
@@ -886,7 +886,7 @@ void CG_DrawTeamMates( void )
 	if( cg.predictedPlayerState.stats[STAT_TEAM] < TEAM_ALPHA )
 		return;
 
-	for( i = 0; i < gs.maxclients; i++ )
+	for( i = 0; i < cg_gs.maxclients; i++ )
 	{
 		trace_t trace;
 		cgs_media_handle_t *media;
@@ -1158,7 +1158,7 @@ void CG_DrawTeamInfo( int x, int y, int align, struct qfontface_s *font, vec4_t 
 
 	team = cg.predictedPlayerState.stats[STAT_TEAM];
 	if( team <= TEAM_PLAYERS || team >= GS_MAX_TEAMS
-		|| !GS_TeamBasedGametype() || GS_InvidualGameType() )
+		|| !GS_TeamBasedGametype( &cg_gs ) || GS_InvidualGameType( &cg_gs ) )
 		return;
 
 	// time to parse the teaminfo string
@@ -1193,7 +1193,7 @@ void CG_DrawTeamInfo( int x, int y, int align, struct qfontface_s *font, vec4_t 
 				break;
 
 			teammate = atoi( tok );
-			if( teammate < 0 || teammate >= gs.maxclients )
+			if( teammate < 0 || teammate >= cg_gs.maxclients )
 				break;
 
 			loc = COM_Parse( &ptr );
@@ -1236,7 +1236,7 @@ void CG_DrawTeamInfo( int x, int y, int align, struct qfontface_s *font, vec4_t 
 			break;
 
 		teammate = atoi( tok );
-		if( teammate < 0 || teammate >= gs.maxclients )
+		if( teammate < 0 || teammate >= cg_gs.maxclients )
 			break;
 
 		loc = COM_Parse( &ptr );
@@ -1353,13 +1353,13 @@ static void CG_InGameMenu( void )
 	int is_challenger = 0, needs_ready = 0, is_ready = 0;
 	int realteam = cg.predictedPlayerState.stats[STAT_REALTEAM];
 
-	if( GS_HasChallengers() && realteam == TEAM_SPECTATOR )
+	if( GS_HasChallengers( &cg_gs ) && realteam == TEAM_SPECTATOR )
 		is_challenger = ( ( cg.predictedPlayerState.stats[STAT_LAYOUTS] & STAT_LAYOUT_CHALLENGER ) != 0 );
 
-	if( GS_MatchState() <= MATCH_STATE_WARMUP && realteam != TEAM_SPECTATOR )
+	if( GS_MatchState( &cg_gs ) <= MATCH_STATE_WARMUP && realteam != TEAM_SPECTATOR )
 		needs_ready = !( cg.predictedPlayerState.stats[STAT_LAYOUTS] & STAT_LAYOUT_READY );
 
-	if( GS_MatchState() <= MATCH_STATE_WARMUP && realteam != TEAM_SPECTATOR )
+	if( GS_MatchState( &cg_gs ) <= MATCH_STATE_WARMUP && realteam != TEAM_SPECTATOR )
 		is_ready = ( ( cg.predictedPlayerState.stats[STAT_LAYOUTS] & STAT_LAYOUT_READY ) != 0 );
 
 	Q_snprintfz( menuparms, sizeof( menuparms ),
@@ -1374,12 +1374,12 @@ static void CG_InGameMenu( void )
 			" team_spec %i"
 			" team_list \"%i %i\"",
 
-			GS_TeamBasedGametype(),
+			GS_TeamBasedGametype( &cg_gs ),
 			realteam,
-			( realteam == TEAM_SPECTATOR ) ? ( GS_HasChallengers() + is_challenger ) : 0,
+			( realteam == TEAM_SPECTATOR ) ? ( GS_HasChallengers( &cg_gs ) + is_challenger ) : 0,
 			needs_ready,
 			is_ready,
-			gs.gametypeName,
+			cg_gs.gametypeName,
 			cgs.hasGametypeMenu,
 			TEAM_SPECTATOR,
 			TEAM_ALPHA,	TEAM_BETA

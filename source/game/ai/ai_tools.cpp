@@ -255,7 +255,7 @@ void Cmd_SaveNodes_f( void )
 void AITools_Frame( void )
 {
 	edict_t *ent;
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 	{
 		if( !ent->r.inuse )
 			continue;

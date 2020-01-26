@@ -936,37 +936,37 @@ static bool objectMatch_suddenDeathFinished( match_t *self )
 
 static bool objectMatch_isPaused( match_t *self )
 {
-	return GS_MatchPaused();
+	return GS_MatchPaused( &g_gs );
 }
 
 static bool objectMatch_isWaiting( match_t *self )
 {
-	return GS_MatchWaiting();
+	return GS_MatchWaiting( &g_gs );
 }
 
 static bool objectMatch_isExtended( match_t *self )
 {
-	return GS_MatchExtended();
+	return GS_MatchExtended( &g_gs );
 }
 
 static unsigned int objectMatch_duration( match_t *self )
 {
-	return GS_MatchDuration();
+	return GS_MatchDuration( &g_gs );
 }
 
 static unsigned int objectMatch_startTime( match_t *self )
 {
-	return GS_MatchStartTime();
+	return GS_MatchStartTime( &g_gs );
 }
 
 static unsigned int objectMatch_endTime( match_t *self )
 {
-	return GS_MatchEndTime();
+	return GS_MatchEndTime( &g_gs );
 }
 
 static int objectMatch_getState( match_t *self )
 {
-	return GS_MatchState();
+	return GS_MatchState( &g_gs );
 }
 
 static asstring_t *objectMatch_getName( match_t *self )
@@ -1003,7 +1003,7 @@ static void objectMatch_setScore( asstring_t *name, match_t *self )
 
 static void objectMatch_setClockOverride( unsigned int time, match_t *self )
 {
-	gs.gameState.longstats[GAMELONG_CLOCKOVERRIDE] = time;
+	g_gs.gameState.longstats[GAMELONG_CLOCKOVERRIDE] = time;
 }
 
 static const asFuncdef_t match_Funcdefs[] =
@@ -1081,7 +1081,7 @@ static void objectGametypeDescriptor_setTitle( asstring_t *other, gametype_descr
 
 static asstring_t *objectGametypeDescriptor_getName( gametype_descriptor_t *self )
 {
-	return angelExport->asStringFactoryBuffer( gs.gametypeName, strlen(gs.gametypeName) );
+	return angelExport->asStringFactoryBuffer( g_gs.gametypeName, strlen(g_gs.gametypeName) );
 }
 
 static asstring_t *objectGametypeDescriptor_getVersion( gametype_descriptor_t *self )
@@ -1128,22 +1128,22 @@ static void objectGametypeDescriptor_SetTeamSpawnsystem( int team, int spawnsyst
 
 static bool objectGametypeDescriptor_isInstagib( gametype_descriptor_t *self )
 {
-	return GS_Instagib();
+	return GS_Instagib( &g_gs );
 }
 
 static bool objectGametypeDescriptor_hasFallDamage( gametype_descriptor_t *self )
 {
-	return GS_FallDamage();
+	return GS_FallDamage( &g_gs );
 }
 
 static bool objectGametypeDescriptor_hasSelfDamage( gametype_descriptor_t *self )
 {
-	return GS_SelfDamage();
+	return GS_SelfDamage( &g_gs );
 }
 
 static bool objectGametypeDescriptor_isInvidualGameType( gametype_descriptor_t *self )
 {
-	return GS_InvidualGameType();
+	return GS_InvidualGameType( &g_gs );
 }
 
 static const asFuncdef_t gametypedescr_Funcdefs[] =
@@ -1239,7 +1239,7 @@ static edict_t *objectTeamlist_GetPlayerEntity( int index, g_teamlist_t *obj )
 	if( index < 0 || index >= obj->numplayers )
 		return NULL;
 
-	if( obj->playerIndices[index] < 1 || obj->playerIndices[index] > gs.maxclients )
+	if( obj->playerIndices[index] < 1 || obj->playerIndices[index] > g_gs.maxclients )
 		return NULL;
 
 	return &game.edicts[ obj->playerIndices[index] ];
@@ -1533,7 +1533,7 @@ static bool objectGameClient_isReady( gclient_t *self )
 	if( self->asFactored )
 		return false;
 
-	return ( level.ready[self - game.clients] || GS_MatchState() == MATCH_STATE_PLAYTIME ) ? true : false;
+	return ( level.ready[self - game.clients] || GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME ) ? true : false;
 }
 
 static bool objectGameClient_isBot( gclient_t *self )
@@ -1542,7 +1542,7 @@ static bool objectGameClient_isBot( gclient_t *self )
 	const edict_t *ent;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 && playerNum >= gs.maxclients )
+	if( playerNum < 0 && playerNum >= g_gs.maxclients )
 		return false;
 
 	ent = PLAYERENT( playerNum );
@@ -1555,7 +1555,7 @@ static ai_handle_t *objectGameClient_getBot( gclient_t *self )
 	const edict_t *ent;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 && playerNum >= gs.maxclients )
+	if( playerNum < 0 && playerNum >= g_gs.maxclients )
 		return NULL;
 
 	ent = PLAYERENT( playerNum );
@@ -1621,7 +1621,7 @@ static void objectGameClient_Respawn( bool ghost, gclient_t *self )
 
 	playerNum = objectGameClient_PlayerNum( self );
 
-	if( playerNum >= 0 && playerNum < gs.maxclients )
+	if( playerNum >= 0 && playerNum < g_gs.maxclients )
 		G_ClientRespawn( &game.edicts[playerNum + 1], ghost );
 }
 
@@ -1630,7 +1630,7 @@ static edict_t *objectGameClient_GetEntity( gclient_t *self )
 	int playerNum;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return NULL;
 
 	return PLAYERENT( playerNum );
@@ -1686,7 +1686,7 @@ static void objectGameClient_InventoryGiveItemExt( int index, int count, gclient
 		return;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	G_PickupItem( PLAYERENT( playerNum ), it, 0, count < 0 ? it->quantity : count, NULL );
@@ -1734,7 +1734,7 @@ static void objectGameClient_addAward( asstring_t *msg, gclient_t *self )
 		return;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	G_PlayerAward( PLAYERENT( playerNum ), msg->buffer );
@@ -1748,7 +1748,7 @@ static void objectGameClient_addMetaAward( asstring_t *msg, gclient_t *self )
 		return;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	G_PlayerMetaAward( PLAYERENT( playerNum ), msg->buffer );
@@ -1762,7 +1762,7 @@ static void objectGameClient_execGameCommand( asstring_t *msg, gclient_t *self )
 		return;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	trap_GameCmd( PLAYERENT( playerNum ), msg->buffer );
@@ -1811,7 +1811,7 @@ static unsigned int objectGameClient_getPressedKeys(gclient_t *self)
 static void objectGameClient_setPMoveMaxSpeed( float speed, gclient_t *self )
 {
 	if( speed < 0.0f )
-		self->ps.pmove.stats[PM_STAT_MAXSPEED] = (short)DEFAULT_PLAYERSPEED;
+		self->ps.pmove.stats[PM_STAT_MAXSPEED] = (short)DEFAULT_PLAYERSPEED( &g_gs );
 	else
 		self->ps.pmove.stats[PM_STAT_MAXSPEED] = ( (int)speed & 0xFFFF );
 }
@@ -1869,7 +1869,7 @@ static void objectGameClient_printMessage( asstring_t *str, gclient_t *self )
 		return;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	G_PrintMsg( PLAYERENT( playerNum ), "%s", str->buffer );
@@ -1880,7 +1880,7 @@ static void objectGameClient_ChaseCam( asstring_t *str, bool teamonly, gclient_t
 	int playerNum;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	G_ChasePlayer( PLAYERENT( playerNum ), str ? str->buffer : NULL, teamonly, 0 );
@@ -1891,7 +1891,7 @@ static void objectGameClient_SetChaseActive( bool active, gclient_t *self )
 	int playerNum;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	self->resp.chase.active = active;
@@ -1908,7 +1908,7 @@ static void objectGameClient_NewRaceRun( int numSectors, gclient_t *self )
 	int playerNum;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	G_NewRaceRun( PLAYERENT( playerNum ), numSectors );
@@ -1919,7 +1919,7 @@ static void objectGameClient_SetRaceTime( int sector, unsigned int time, gclient
 	int playerNum;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	G_SetRaceTime( PLAYERENT( playerNum ), sector, time );
@@ -1930,7 +1930,7 @@ static void objectGameClient_SetHelpMessage( unsigned int index, gclient_t *self
 	int playerNum;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	G_SetPlayerHelpMessage( PLAYERENT( playerNum ), index );
@@ -1944,7 +1944,7 @@ static void objectGameClient_SetQuickMenuItems( asstring_t *str, gclient_t *self
 		return;
 
 	playerNum = objectGameClient_PlayerNum( self );
-	if( playerNum < 0 || playerNum >= gs.maxclients )
+	if( playerNum < 0 || playerNum >= g_gs.maxclients )
 		return;
 
 	if( objectGameClient_isBot( self ) )
@@ -2720,7 +2720,7 @@ static edict_t *asFunc_GetEntity( int entNum )
 
 static gclient_t *asFunc_GetClient( int clientNum )
 {
-	if( clientNum < 0 || clientNum >= gs.maxclients )
+	if( clientNum < 0 || clientNum >= g_gs.maxclients )
 		return NULL;
 
 	return &game.clients[ clientNum ];
@@ -3187,7 +3187,7 @@ static void asFunc_G_LocalSound( gclient_t *target, int channel, int soundindex 
 	{
 		int playerNum = target - game.clients;
 
-		if( playerNum < 0 || playerNum >= gs.maxclients )
+		if( playerNum < 0 || playerNum >= g_gs.maxclients )
 			return;
 
 		ent = game.edicts + playerNum + 1;
@@ -3207,7 +3207,7 @@ static void asFunc_G_AnnouncerSound( gclient_t *target, int soundindex, int team
 	{
 		playerNum = target - game.clients;
 
-		if( playerNum < 0 || playerNum >= gs.maxclients )
+		if( playerNum < 0 || playerNum >= g_gs.maxclients )
 			return;
 
 		ent = game.edicts + playerNum + 1;
@@ -3217,7 +3217,7 @@ static void asFunc_G_AnnouncerSound( gclient_t *target, int soundindex, int team
 	{
 		playerNum = ignore - game.clients;
 
-		if( playerNum >= 0 && playerNum < gs.maxclients )
+		if( playerNum >= 0 && playerNum < g_gs.maxclients )
 			passent = game.edicts + playerNum + 1;
 	}
 
@@ -3292,7 +3292,7 @@ static unsigned asFunc_G_RegisterHelpMessage( asstring_t *str )
 
 static void asFunc_G_SetColorCorrection( int index )
 {
-	gs.gameState.stats[GAMESTAT_COLORCORRECTION] = index;
+	g_gs.gameState.stats[GAMESTAT_COLORCORRECTION] = index;
 }
 
 static int asFunc_G_GetDefaultColorCorrection( void )
@@ -3427,7 +3427,7 @@ static const asglobproperties_t asGlobProps[] =
 	{ "const uint64 localTime", &game.localTime },
 	{ "const int maxEntities", &game.maxentities },
 	{ "const int numEntities", &game.numentities },
-	{ "const int maxClients", &gs.maxclients },
+	{ "const int maxClients", &g_gs.maxclients },
 	{ "GametypeDesc gametype", &level.gametype },
 	{ "Match match", &level.gametype.match },
 

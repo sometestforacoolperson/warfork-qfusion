@@ -48,7 +48,7 @@ void AI_InitLevel( void )
 
 	// count bots
 	game.numBots = 0;
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 	{
 		if( !ent->r.inuse || !ent->ai ) continue;
 		if( ent->r.svflags & SVF_FAKECLIENT && AI_GetType( ent->ai ) == AI_ISBOT )
@@ -615,7 +615,7 @@ void AI_Think( edict_t *self )
 		edict_t *chaser;
 		bool chaserFound = false;
 
-		for( chaser = game.edicts + 1; ENTNUM( chaser ) < gs.maxclients; chaser++ )
+		for( chaser = game.edicts + 1; ENTNUM( chaser ) < g_gs.maxclients; chaser++ )
 		{
 			if( chaser->r.client->resp.chase.active && chaser->r.client->resp.chase.target == ENTNUM( self ) )
 			{

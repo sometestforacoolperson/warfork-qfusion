@@ -1170,11 +1170,11 @@ void AI_InitEntitiesData( void )
 	}
 
 	// create nodes for navigable map entities ( must happen after finding teams )
-	for( ent = game.edicts + 1 + gs.maxclients; ENTNUM( ent ) < game.numentities; ent++ )
+	for( ent = game.edicts + 1 + g_gs.maxclients; ENTNUM( ent ) < game.numentities; ent++ )
 		AI_AddNavigableEntity( ent );
 
 	// add all clients to goalEntities so they can be tracked as enemies
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 		AI_AddGoalEntity( ent );
 
 	// link all newly added nodes

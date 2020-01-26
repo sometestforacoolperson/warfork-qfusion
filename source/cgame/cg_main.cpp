@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 cg_static_t cgs;
 cg_state_t cg;
+gs_state_t cg_gs;
 
 centity_t cg_entities[MAX_EDICTS];
 
@@ -352,12 +353,12 @@ static void CG_InitGameShared( void )
 {
 	char cstring[MAX_CONFIGSTRING_CHARS];
 
-	memset( &gs, 0, sizeof( gs_state_t ) );
-	gs.module = GS_MODULE_CGAME;
+	memset( &cg_gs, 0, sizeof( gs_state_t ) );
+	cg_gs.module = GS_MODULE_CGAME;
 	trap_GetConfigString( CS_MAXCLIENTS, cstring, MAX_CONFIGSTRING_CHARS );
-	gs.maxclients = atoi( cstring );
-	if( gs.maxclients < 1 || gs.maxclients > MAX_CLIENTS )
-		gs.maxclients = MAX_CLIENTS;
+	cg_gs.maxclients = atoi( cstring );
+	if( cg_gs.maxclients < 1 || cg_gs.maxclients > MAX_CLIENTS )
+		cg_gs.maxclients = MAX_CLIENTS;
 
 	module_PredictedEvent = CG_PredictedEvent;
 	module_Error = CG_Error;
@@ -1067,9 +1068,9 @@ static void CG_RegisterConfigStrings( void )
 	// if we got the server settings configstring, update our local copy of the data
 	CG_UpdateTVServerString();
 
-	GS_SetGametypeName( cgs.configStrings[CS_GAMETYPENAME] );
+	GS_SetGametypeName( &cg_gs, cgs.configStrings[CS_GAMETYPENAME] );
 
-	trap_Cmd_ExecuteText( EXEC_NOW, va( "exec configs/client/%s.cfg silent", gs.gametypeName ) );
+	trap_Cmd_ExecuteText( EXEC_NOW, va( "exec configs/client/%s.cfg silent", cg_gs.gametypeName ) );
 
 	CG_SC_AutoRecordAction( cgs.configStrings[i] );
 }
