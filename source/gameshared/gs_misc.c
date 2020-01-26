@@ -37,9 +37,6 @@ void ( *module_PMoveTouchTriggers )( pmove_t *pm, vec3_t previous_origin );
 void ( *module_RoundUpToHullSize )( vec3_t mins, vec3_t maxs );
 const char *( *module_GetConfigString )( int index );
 
-// TEMP MOVE ME
-gs_state_t gs;
-
 /*
 * GS_TouchPushTrigger
 */
@@ -178,9 +175,9 @@ float GS_FrameForTime( int *frame, unsigned int curTime, unsigned int startTimeS
 /*
 * GS_SetGametypeName
 */
-void GS_SetGametypeName( const char *name )
+void GS_SetGametypeName( gs_state_t *gs, const char *name )
 {
-	Q_strncpyz( gs.gametypeName, name, sizeof( gs.gametypeName ) );
+	Q_strncpyz( gs->gametypeName, name, sizeof( gs->gametypeName ) );
 }
 
 /*

@@ -954,6 +954,8 @@ void	G_Timeout_Reset( void );
 
 bool G_AllowDownload( edict_t *ent, const char *requestname, const char *uploadname );
 
+extern gs_state_t g_gs;
+
 //
 // g_frame.c
 //

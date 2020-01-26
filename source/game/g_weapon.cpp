@@ -181,7 +181,7 @@ int G_Projectile_HitStyle( edict_t *projectile, edict_t *target )
 		if( ( trace.ent != -1 || trace.startsolid ) && ISWALKABLEPLANE( &trace.plane ) )
 		{
 			// add directhit and airhit to awards counter
-			if( attacker && !GS_IsTeamDamage( &attacker->s, &target->s ) && G_ModToAmmo( projectile->style ) != AMMO_NONE )
+			if( attacker && !GS_IsTeamDamage(  &g_gs,&attacker->s, &target->s ) && G_ModToAmmo( projectile->style ) != AMMO_NONE )
 			{
 				projectile->r.owner->r.client->level.stats.accuracy_hits_direct[G_ModToAmmo( projectile->style )-AMMO_GUNBLADE]++;
 				teamlist[projectile->r.owner->s.team].stats.accuracy_hits_direct[G_ModToAmmo( projectile->style )-AMMO_GUNBLADE]++;
@@ -195,7 +195,7 @@ int G_Projectile_HitStyle( edict_t *projectile, edict_t *target )
 	}
 
 	// add directhit to awards counter
-	if( attacker && !GS_IsTeamDamage( &attacker->s, &target->s ) && G_ModToAmmo( projectile->style ) != AMMO_NONE )
+	if( attacker && !GS_IsTeamDamage(  &g_gs,&attacker->s, &target->s ) && G_ModToAmmo( projectile->style ) != AMMO_NONE )
 	{
 		projectile->r.owner->r.client->level.stats.accuracy_hits_direct[G_ModToAmmo( projectile->style )-AMMO_GUNBLADE]++;
 		teamlist[projectile->r.owner->s.team].stats.accuracy_hits_direct[G_ModToAmmo( projectile->style )-AMMO_GUNBLADE]++;
@@ -273,7 +273,7 @@ static edict_t *W_Fire_LinearProjectile( edict_t *self, vec3_t start, vec3_t ang
 	projectile->s.linearMovement = true;
 
 	projectile->r.solid = SOLID_YES;
-	projectile->r.clipmask = ( !GS_RaceGametype() ) ? MASK_SHOT : MASK_SOLID;
+	projectile->r.clipmask = ( !GS_RaceGametype( &g_gs ) ) ? MASK_SHOT : MASK_SOLID;
 
 	projectile->r.svflags = SVF_PROJECTILE;
 	// enable me when drawing exception is added to cgame
@@ -331,7 +331,7 @@ static edict_t *W_Fire_TossProjectile( edict_t *self, vec3_t start, vec3_t angle
 	projectile->movetype = MOVETYPE_BOUNCEGRENADE;
 
 	// make missile fly through players in race
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 		projectile->r.clipmask = MASK_SOLID;
 	else
 		projectile->r.clipmask = MASK_SHOT;
@@ -381,13 +381,13 @@ void W_Fire_Blade( edict_t *self, int range, vec3_t start, vec3_t angles, float 
 	vec3_t dir;
 	int dmgflags = 0;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	AngleVectors( angles, dir, NULL, NULL );
 	VectorMA( start, range, dir, end );
 
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 		mask = MASK_SOLID;
 
 	G_Trace4D( &trace, start, NULL, NULL, end, self, mask, timeDelta );
@@ -468,7 +468,7 @@ edict_t *W_Fire_GunbladeBlast( edict_t *self, vec3_t start, vec3_t angles, float
 {
 	edict_t	*blast;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	blast = W_Fire_LinearProjectile( self, start, angles, speed, damage, minKnockback, maxKnockback, stun, minDamage, radius, timeout, timeDelta );
@@ -498,7 +498,7 @@ void W_Fire_Bullet( edict_t *self, vec3_t start, vec3_t angles, int seed, int ra
 	trace_t trace;
 	int dmgflags = DAMAGE_STUN_CLAMP|DAMAGE_KNOCKBACK_SOFT;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	AngleVectors( angles, dir, NULL, NULL );
@@ -556,7 +556,7 @@ static void G_Fire_SunflowerPattern( edict_t *self, vec3_t start, vec3_t dir, in
 			if( game.edicts[trace.ent].takedamage )
 			{
 				G_Damage( &game.edicts[trace.ent], self, self, dir, dir, trace.endpos, damage, kick, stun, dflags, mod );
-                if( !GS_IsTeamDamage( &game.edicts[trace.ent].s, &self->s ) && trace.ent <= MAX_CLIENTS ) {
+                if( !GS_IsTeamDamage(  &g_gs,&game.edicts[trace.ent].s, &self->s ) && trace.ent <= MAX_CLIENTS ) {
 				hits[trace.ent]++;
 			}
 			}
@@ -618,7 +618,7 @@ void W_Fire_Riotgun( edict_t *self, vec3_t start, vec3_t angles, int seed, int r
 	edict_t *event;
 	int dmgflags = 0;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	AngleVectors( angles, dir, NULL, NULL );
@@ -734,7 +734,7 @@ edict_t *W_Fire_Grenade( edict_t *self, vec3_t start, vec3_t angles, int speed, 
 {
 	edict_t	*grenade;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	if( aim_up )
@@ -840,7 +840,7 @@ edict_t *W_Fire_Rocket( edict_t *self, vec3_t start, vec3_t angles, int speed, f
 {
 	edict_t	*rocket;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	rocket = W_Fire_LinearProjectile( self, start, angles, speed, damage, minKnockback, maxKnockback, stun, minDamage, radius, timeout, timeDelta );
@@ -927,7 +927,7 @@ void W_Plasma_Backtrace( edict_t *ent, const vec3_t start )
 	vec3_t oldorigin;
 	vec3_t mins = { -2, -2, -2 }, maxs = { 2, 2, 2 };
 
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 		return;
 
 	VectorCopy( ent->s.origin, oldorigin );
@@ -993,7 +993,7 @@ edict_t *W_Fire_Plasma( edict_t *self, vec3_t start, vec3_t angles, float damage
 {
 	edict_t	*plasma;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	plasma = W_Fire_LinearProjectile( self, start, angles, speed, damage, minKnockback, maxKnockback, stun, minDamage, radius, timeout, timeDelta );
@@ -1087,7 +1087,7 @@ void W_Fire_Electrobolt_Combined( edict_t *self, vec3_t start, vec3_t angles, fl
 	fireMode = FIRE_MODE_STRONG;
 #endif
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		maxdamage = mindamage = 9999;
 
 	AngleVectors( angles, dir, NULL, NULL );
@@ -1098,7 +1098,7 @@ void W_Fire_Electrobolt_Combined( edict_t *self, vec3_t start, vec3_t angles, fl
 	hit = damaged = NULL;
 
 	mask = MASK_SHOT;
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 		mask = MASK_SOLID;
 
 	clamp_high( mindamage, maxdamage );
@@ -1162,7 +1162,7 @@ void W_Fire_Electrobolt_Combined( edict_t *self, vec3_t start, vec3_t angles, fl
 	VectorScale( dir, 1024, event->s.origin2 );
 	event->s.firemode = fireMode;
 
-	if( !GS_Instagib() && tr.ent == -1 )	// didn't touch anything, not even a wall
+	if( !GS_Instagib( &g_gs ) && tr.ent == -1 )	// didn't touch anything, not even a wall
 	{
 		edict_t *bolt;
 		gs_weapon_definition_t *weapondef = GS_GetWeaponDef( self->s.weapon );
@@ -1185,7 +1185,7 @@ void W_Fire_Electrobolt_FullInstant( edict_t *self, vec3_t start, vec3_t angles,
 
 #define FULL_DAMAGE_RANGE g_projectile_prestep->value
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		maxdamage = mindamage = 9999;
 
 	AngleVectors( angles, dir, NULL, NULL );
@@ -1196,7 +1196,7 @@ void W_Fire_Electrobolt_FullInstant( edict_t *self, vec3_t start, vec3_t angles,
 	hit = NULL;
 
 	mask = MASK_SHOT;
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 		mask = MASK_SOLID;
 
 	clamp_high( mindamage, maxdamage );
@@ -1278,7 +1278,7 @@ edict_t *W_Fire_Electrobolt_Weak( edict_t *self, vec3_t start, vec3_t angles, fl
 {
 	edict_t	*bolt;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	// projectile, weak mode
@@ -1308,7 +1308,7 @@ void W_Fire_Instagun( edict_t *self, vec3_t start, vec3_t angles, float damage, 
 	bool missed = true;
 	int dmgflags = 0;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	AngleVectors( angles, dir, NULL, NULL );
@@ -1316,7 +1316,7 @@ void W_Fire_Instagun( edict_t *self, vec3_t start, vec3_t angles, float damage, 
 	VectorCopy( start, from );
 	ignore = self;
 	mask = MASK_SHOT;
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 		mask = MASK_SOLID;
 	tr.ent = -1;
 	while( ignore )
@@ -1405,7 +1405,7 @@ static void G_Laser_Think( edict_t *ent )
 {
 	edict_t *owner;
 
-	if( ent->s.ownerNum < 1 || ent->s.ownerNum > gs.maxclients )
+	if( ent->s.ownerNum < 1 || ent->s.ownerNum > g_gs.maxclients )
 	{
 		G_FreeEdict( ent );
 		return;
@@ -1459,7 +1459,7 @@ static edict_t *_FindOrSpawnLaser( edict_t *owner, int entType, bool *newLaser )
 	*newLaser = false;
 	laser = NULL;
 	ownerNum = ENTNUM( owner );
-	for( i = gs.maxclients+1; i < game.maxentities; i++ )
+	for( i = g_gs.maxclients+1; i < game.maxentities; i++ )
 	{
 		e = &game.edicts[i];
 		if( !e->r.inuse )
@@ -1502,7 +1502,7 @@ edict_t	*W_Fire_Lasergun( edict_t *self, vec3_t start, vec3_t angles, float dama
 	trace_t	tr;
 	vec3_t dir;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	laser = _FindOrSpawnLaser( self, ET_LASERBEAM, &newLaser );
@@ -1550,7 +1550,7 @@ edict_t	*W_Fire_Lasergun_Weak( edict_t *self, vec3_t start, vec3_t end, float da
 	bool newLaser;
 	trace_t	trace;
 
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 		damage = 9999;
 
 	laser = _FindOrSpawnLaser( self, ET_CURVELASERBEAM, &newLaser );

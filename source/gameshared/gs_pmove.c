@@ -1021,7 +1021,7 @@ static void PM_ClearStun( void )
 /*
 * PM_CheckJump
 */
-static void PM_CheckJump( void )
+static void PM_CheckJump( gs_state_t *gs )
 {
 	if( pml.upPush < 10 )
 	{ 
@@ -1063,7 +1063,7 @@ static void PM_CheckJump( void )
 	if( pml.groundplane.normal[2] > 0 && pml.velocity[2] < 0 && DotProduct2D( pml.groundplane.normal, pml.velocity ) > 0 )
 		GS_ClipVelocity( pml.velocity, pml.groundplane.normal, pml.velocity, PM_OVERBOUNCE );
 
-	//if( gs.module == GS_MODULE_GAME ) GS_Printf( "upvel %f\n", pml.velocity[2] );
+	//if( gs->module == GS_MODULE_GAME ) GS_Printf( "upvel %f\n", pml.velocity[2] );
 	if( pml.velocity[2] > 100 )
 	{
 		module_PredictedEvent( pm->playerState->POVnum, EV_DOUBLEJUMP, 0 );
@@ -1699,11 +1699,11 @@ static void PM_InitialSnapPosition( void )
 	}
 }
 
-static void PM_UpdateDeltaAngles( void )
+static void PM_UpdateDeltaAngles( gs_state_t *gs )
 {
 	int i;
 
-	if( gs.module != GS_MODULE_GAME )
+	if( gs->module != GS_MODULE_GAME )
 		return;
 
 	for( i = 0; i < 3; i++ )
@@ -1759,7 +1759,7 @@ static void PM_ApplyMouseAnglesClamp( void )
 * 
 * Can be called by either the server or the client
 */
-void Pmove( pmove_t *pmove )
+void Pmove( gs_state_t *gs, pmove_t *pmove )
 {
 	float fallvelocity, falldelta, damage;
 	int oldGroundEntity;
@@ -1791,7 +1791,7 @@ void Pmove( pmove_t *pmove )
 
 	pml.maxPlayerSpeed = pm->playerState->pmove.stats[PM_STAT_MAXSPEED];
 	if( pml.maxPlayerSpeed < 0 )
-		pml.maxPlayerSpeed = DEFAULT_PLAYERSPEED;
+		pml.maxPlayerSpeed = DEFAULT_PLAYERSPEED( gs );
 
 	pml.jumpPlayerSpeed = (float)pm->playerState->pmove.stats[PM_STAT_JUMPSPEED] * GRAVITY_COMPENSATE;
 	if( pml.jumpPlayerSpeed < 0 )
@@ -1814,26 +1814,26 @@ void Pmove( pmove_t *pmove )
 	{
 	case PM_FREEZE:
 	case PM_CHASECAM:
-		if( gs.module == GS_MODULE_GAME )
+		if( gs->module == GS_MODULE_GAME )
 			pm->playerState->pmove.pm_flags |= PMF_NO_PREDICTION;
 		pm->contentmask = 0;
 		break;
 
 	case PM_GIB:
-		if( gs.module == GS_MODULE_GAME )
+		if( gs->module == GS_MODULE_GAME )
 			pm->playerState->pmove.pm_flags |= PMF_NO_PREDICTION;
 		pm->contentmask = MASK_DEADSOLID;
 		break;
 
 	case PM_SPECTATOR:
-		if( gs.module == GS_MODULE_GAME )
+		if( gs->module == GS_MODULE_GAME )
 			pm->playerState->pmove.pm_flags &= ~PMF_NO_PREDICTION;
 		pm->contentmask = MASK_DEADSOLID;
 		break;
 
 	default:
 	case PM_NORMAL:
-		if( gs.module == GS_MODULE_GAME )
+		if( gs->module == GS_MODULE_GAME )
 			pm->playerState->pmove.pm_flags &= ~PMF_NO_PREDICTION;
 		if( pm->playerState->pmove.stats[PM_STAT_FEATURES] & PMFEAT_GHOSTMOVE )
 			pm->contentmask = MASK_DEADSOLID;
@@ -1842,7 +1842,7 @@ void Pmove( pmove_t *pmove )
 		break;
 	}
 
-	if( ! GS_MatchPaused() )
+	if( ! GS_MatchPaused( gs ) )
 	{
 		// drop timing counters
 		if( pm->playerState->pmove.pm_time )
@@ -1923,7 +1923,7 @@ void Pmove( pmove_t *pmove )
 
 	if( pm->playerState->pmove.pm_type != PM_NORMAL ) // includes dead, freeze, chasecam...
 	{
-		if( !GS_MatchPaused() )
+		if( !GS_MatchPaused( gs ) )
 		{
 			PM_ClearDash();
 			PM_ClearWallJump();
@@ -1990,7 +1990,7 @@ void Pmove( pmove_t *pmove )
 	{
 		// Kurim
 		// Keep this order !
-		PM_CheckJump();
+		PM_CheckJump( gs );
 		PM_CheckDash();
 		PM_CheckWallJump();
 
@@ -2049,7 +2049,7 @@ void Pmove( pmove_t *pmove )
 	// Note that this method assumes the movement has been linear.
 	module_PMoveTouchTriggers( pm, pml.previous_origin );
 
-	PM_UpdateDeltaAngles(); // in case some trigger action has moved the view angles (like teleported).
+	PM_UpdateDeltaAngles( gs ); // in case some trigger action has moved the view angles (like teleported).
 
 	// touching triggers may force groundentity off
 	if( !( pm->playerState->pmove.pm_flags & PMF_ON_GROUND ) && pm->groundentity != -1 )
@@ -2082,7 +2082,7 @@ void Pmove( pmove_t *pmove )
 
 		if( falldelta > FALL_STEP_MIN_DELTA )
 		{
-			if( !GS_FallDamage() || ( pml.groundsurfFlags & SURF_NODAMAGE ) || ( pm->playerState->pmove.pm_flags & PMF_JUMPPAD_TIME ) )
+			if( !GS_FallDamage( gs ) || ( pml.groundsurfFlags & SURF_NODAMAGE ) || ( pm->playerState->pmove.pm_flags & PMF_JUMPPAD_TIME ) )
 				damage = 0;
 			else
 			{

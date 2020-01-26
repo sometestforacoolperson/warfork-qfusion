@@ -45,7 +45,7 @@ bool CG_ChaseStep( int step )
 		index = -1;
 		for( i = 0; i < cg.frame.numplayers; i++ )
 		{
-			if( cg.frame.playerStates[i].playerNum < (unsigned)gs.maxclients && cg.frame.playerStates[i].playerNum == cg.multiviewPlayerNum )
+			if( cg.frame.playerStates[i].playerNum < (unsigned)cg_gs.maxclients && cg.frame.playerStates[i].playerNum == cg.multiviewPlayerNum )
 			{
 				index = i;
 				break;
@@ -97,20 +97,20 @@ static void CG_AddLocalSounds( void )
 	static unsigned int lastSecond = 0;
 
 	// add local announces
-	if( GS_Countdown() )
+	if( GS_Countdown( &cg_gs ) )
 	{
-		if( GS_MatchDuration() )
+		if( GS_MatchDuration( &cg_gs ) )
 		{
 			unsigned int duration, curtime, remainingSeconds;
 			float seconds;
 
-			curtime = GS_MatchPaused() ? cg.frame.serverTime : cg.time;
-			duration = GS_MatchDuration();
+			curtime = GS_MatchPaused( &cg_gs ) ? cg.frame.serverTime : cg.time;
+			duration = GS_MatchDuration( &cg_gs );
 
-			if( duration + GS_MatchStartTime() < curtime )
-				duration = curtime - GS_MatchStartTime(); // avoid negative results
+			if( duration + GS_MatchStartTime( &cg_gs ) < curtime )
+				duration = curtime - GS_MatchStartTime( &cg_gs ); // avoid negative results
 
-			seconds = (float)( GS_MatchStartTime() + duration - curtime ) * 0.001f;
+			seconds = (float)( GS_MatchStartTime( &cg_gs ) + duration - curtime ) * 0.001f;
 			remainingSeconds = (unsigned int)seconds;
 
 			if( remainingSeconds != lastSecond )
@@ -133,7 +133,7 @@ static void CG_AddLocalSounds( void )
 	CG_ReleaseAnnouncerEvents();
 
 	// if in postmatch, play postmatch song
-	if( GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &cg_gs ) >= MATCH_STATE_POSTMATCH )
 	{
 		if( !postmatchsound_set && !demostream )
 		{
@@ -182,7 +182,7 @@ static void CG_FlashGameWindow( void )
 	static bool scoresSet = false;
 
 	// notify player of important match states
-	int newState = GS_MatchState();
+	int newState = GS_MatchState( &cg_gs );
 	if( oldState != newState )
 	{
 		switch( newState )
@@ -205,7 +205,7 @@ static void CG_FlashGameWindow( void )
 		oldAlphaScore = cg.predictedPlayerState.stats[STAT_TEAM_ALPHA_SCORE];
 		oldBetaScore = cg.predictedPlayerState.stats[STAT_TEAM_BETA_SCORE];
 
-		flash = scoresSet && GS_TeamBasedGametype() && !GS_InvidualGameType();
+		flash = scoresSet && GS_TeamBasedGametype( &cg_gs ) && !GS_InvidualGameType( &cg_gs );
 		scoresSet = true;
 	}
 
@@ -871,7 +871,7 @@ static void CG_SetupViewDef( cg_viewdef_t *view, int type, bool flipped )
 			view->thirdperson = false;
 
 		// check for drawing gun
-		if( !view->thirdperson && view->POVent > 0 && view->POVent <= gs.maxclients )
+		if( !view->thirdperson && view->POVent > 0 && view->POVent <= cg_gs.maxclients )
 		{
 			if( ( cg_entities[view->POVent].serverFrame == cg.frame.serverFrame ) &&
 				( cg_entities[view->POVent].current.weapon != 0 ) )
@@ -989,7 +989,7 @@ static void CG_SetupViewDef( cg_viewdef_t *view, int type, bool flipped )
 	view->refdef.colorCorrection = NULL;
 	if( cg_colorCorrection->integer )
 	{
-		int colorCorrection = GS_ColorCorrection();
+		int colorCorrection = GS_ColorCorrection( &cg_gs );
 		if( ( colorCorrection > 0 ) && ( colorCorrection < MAX_IMAGES ) )
 			view->refdef.colorCorrection = cgs.imagePrecache[colorCorrection];
 	}

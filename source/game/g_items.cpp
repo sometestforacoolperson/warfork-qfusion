@@ -83,7 +83,7 @@ void SetRespawn( edict_t *ent, int delay )
 	ent->r.solid = SOLID_NOT;
 	ent->nextThink = level.time + delay;
 	ent->think = DoRespawn;
-	if( GS_MatchState() == MATCH_STATE_WARMUP ) {
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_WARMUP ) {
 		ent->s.effects |= EF_GHOST;
 	}
 	else {
@@ -108,7 +108,7 @@ void G_Items_RespawnByType( unsigned int typeMask, int item_tag, float delay )
 	edict_t *ent;
 	int msecs;
 
-	for( ent = game.edicts + gs.maxclients + BODY_QUEUE_SIZE; ENTNUM( ent ) < game.maxentities; ent++ )
+	for( ent = game.edicts + g_gs.maxclients + BODY_QUEUE_SIZE; ENTNUM( ent ) < game.maxentities; ent++ )
 	{
 		if( !ent->r.inuse || !ent->item )
 			continue;
@@ -422,7 +422,7 @@ void Touch_Item( edict_t *ent, edict_t *other, cplane_t *plane, int surfFlags )
 
 	if( !( ent->spawnflags & DROPPED_ITEM ) && G_Gametype_CanRespawnItem( item ) )
 	{
-		if( (item->type & IT_WEAPON ) && GS_RaceGametype() )
+		if( (item->type & IT_WEAPON ) && GS_RaceGametype( &g_gs ) )
 			return; // weapons stay in race
 		SetRespawn( ent, G_Gametype_RespawnTimeForItem( item ) );
 		return;
@@ -501,7 +501,7 @@ edict_t *Drop_Item( edict_t *ent, const gsitem_t *item )
 
 			for( w = WEAP_GUNBLADE + 1; w < WEAP_TOTAL; w++ )
 			{
-				if( w == WEAP_INSTAGUN && !GS_Instagib() )
+				if( w == WEAP_INSTAGUN && !GS_Instagib( &g_gs ) )
 					continue;
 
 				if( item->tag == AMMO_PACK_WEAK || item->tag == AMMO_PACK )
@@ -563,7 +563,7 @@ edict_t *Drop_Item( edict_t *ent, const gsitem_t *item )
 
 			for( w = WEAP_GUNBLADE + 1; w < WEAP_TOTAL; w++ )
 			{
-				if( w == WEAP_INSTAGUN && !GS_Instagib() )
+				if( w == WEAP_INSTAGUN && !GS_Instagib( &g_gs ) )
 					continue;
 
 				if( item->tag == AMMO_PACK_WEAK || item->tag == AMMO_PACK )
@@ -700,7 +700,7 @@ static edict_t *G_ClosestFlagBase( edict_t *ent )
 	// store pointers to flag bases if called for the first time in this level spawn
 	if( firstTime || lastLevelSpawnCount != game.levelSpawnCount )
 	{
-		for( t = game.edicts + 1 + gs.maxclients; ENTNUM( t ) < game.numentities; t++ )
+		for( t = game.edicts + 1 + g_gs.maxclients; ENTNUM( t ) < game.numentities; t++ )
 		{
 			if( t->s.type != ET_FLAG_BASE )
 				continue;
@@ -830,7 +830,7 @@ static edict_t *Spawn_ItemTimer( edict_t *ent )
 	timer->think = item_timer_think;
 	VectorCopy( ent->s.origin, timer->s.origin ); // for z-sorting
 
-	if( /*( ( item->type != IT_POWERUP ) && */GS_TeamBasedGametype() )
+	if( /*( ( item->type != IT_POWERUP ) && */GS_TeamBasedGametype( &g_gs ) )
 	{
 		edict_t *base;
 
@@ -958,7 +958,7 @@ void G_Items_FinishSpawningItems( void )
 	edict_t *ops[MAX_EDICTS];
 
 	num_timers = num_opts = 0;
-	for( ent = game.edicts + 1 + gs.maxclients; ENTNUM( ent ) < game.numentities; ent++ )
+	for( ent = game.edicts + 1 + g_gs.maxclients; ENTNUM( ent ) < game.numentities; ent++ )
 	{
 		if( !ent->r.inuse || !ent->item || ent->s.type != ET_ITEM )
 			continue;
@@ -1108,7 +1108,7 @@ void G_PrecacheItems( void )
 	}
 
 	// precache items
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 	{
 		item = GS_FindItemByTag( WEAP_INSTAGUN );
 		PrecacheItem( item );

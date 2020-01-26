@@ -207,7 +207,7 @@ bool AI_NodeHasTimedOut( edict_t *self )
 	if( self->ai->goal_node == NODE_INVALID )
 		return true;
 
-	if( !GS_MatchPaused() )
+	if( !GS_MatchPaused( &g_gs ) )
 		self->ai->node_timeout += game.frametime;
 
 	// Try again?
@@ -240,7 +240,7 @@ void AI_ReachedEntity( edict_t *self )
 		return;
 
 	// find all bots which have this node as goal and tell them their goal is reached
-	for( ent = game.edicts + 1; PLAYERNUM( ent ) < gs.maxclients; ent++ )
+	for( ent = game.edicts + 1; PLAYERNUM( ent ) < g_gs.maxclients; ent++ )
 	{
 		if( !ent->ai || ent->ai->type == AI_INACTIVE )
 			continue;

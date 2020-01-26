@@ -909,8 +909,8 @@ void BOT_DMclass_FindEnemy( edict_t *self )
 	int i;
 
 	if( G_ISGHOSTING( self ) 
-		|| GS_MatchState() == MATCH_STATE_COUNTDOWN
-		|| GS_ShootingDisabled() )
+		|| GS_MatchState( &g_gs ) == MATCH_STATE_COUNTDOWN
+		|| GS_ShootingDisabled( &g_gs ) )
 	{
 		self->ai->enemyReactionDelay = 0;
 		self->enemy = self->ai->latched_enemy = NULL;
@@ -942,7 +942,7 @@ void BOT_DMclass_FindEnemy( edict_t *self )
 		if( self->ai->status.entityWeights[i] <= 0 || (goalEnt->ent->flags & FL_NOTARGET) )
 			continue;
 
-		if( GS_TeamBasedGametype() && goalEnt->ent->s.team == self->s.team )
+		if( GS_TeamBasedGametype( &g_gs ) && goalEnt->ent->s.team == self->s.team )
 			continue;
 
 		if( ( goalEnt->ent->flags & FL_BUSY ) && ( level.gametype.forceTeamHumans == level.gametype.forceTeamBots ) )
@@ -1100,7 +1100,7 @@ static bool BOT_DMclass_CheckShot( edict_t *ent, vec3_t point )
 			return false;
 
 		// check if the player we found is at our team
-		if( game.edicts[tr.ent].s.team == ent->s.team && GS_TeamBasedGametype() )
+		if( game.edicts[tr.ent].s.team == ent->s.team && GS_TeamBasedGametype( &g_gs ) )
 			return false;
 	}
 
@@ -1318,7 +1318,7 @@ float BOT_DMclass_PlayerWeight( edict_t *self, edict_t *enemy )
 		return 0.2;
 
 	//if not team based give some weight to every one
-	if( GS_TeamBasedGametype() && ( enemy->s.team == self->s.team ) )
+	if( GS_TeamBasedGametype( &g_gs ) && ( enemy->s.team == self->s.team ) )
 		return 0;
 
 	// if having EF_CARRIER we can assume it's someone important
@@ -1484,7 +1484,7 @@ static void BOT_DMclass_UpdateStatus( edict_t *self )
 //==========================================
 static void BOT_DMclass_VSAYmessages( edict_t *self )
 {
-	if( GS_MatchState() != MATCH_STATE_PLAYTIME )
+	if( GS_MatchState( &g_gs ) != MATCH_STATE_PLAYTIME )
 		return;
 	if( level.gametype.dummyBots || bot_dummy->integer )
 		return;
@@ -1508,9 +1508,9 @@ static void BOT_DMclass_VSAYmessages( edict_t *self )
 	if( self->ai->vsay_timeout > level.time )
 		return;
 
-	if( GS_MatchDuration() && game.serverTime + 4000 > GS_MatchEndTime() )
+	if( GS_MatchDuration( &g_gs ) && game.serverTime + 4000 > GS_MatchEndTime( &g_gs ) )
 	{
-		self->ai->vsay_timeout = game.serverTime + ( 1000 + (GS_MatchEndTime() - game.serverTime) );
+		self->ai->vsay_timeout = game.serverTime + ( 1000 + (GS_MatchEndTime( &g_gs ) - game.serverTime) );
 		if( rand() & 1 )
 			G_BOTvsay_f( self, "goodgame", false );
 		return;
@@ -1522,7 +1522,7 @@ static void BOT_DMclass_VSAYmessages( edict_t *self )
 	if( random() > 0.1 + 1.0f / game.numBots )
 		return;
 
-	if( GS_TeamBasedGametype() && !GS_InvidualGameType() )
+	if( GS_TeamBasedGametype( &g_gs ) && !GS_InvidualGameType( &g_gs ) )
 	{
 		if( self->health < 20 && random() > 0.3 )
 		{
@@ -1670,7 +1670,7 @@ static void BOT_DMclass_RunFrame( edict_t *self )
 	memset( &ucmd, 0, sizeof( ucmd ) );
 
 	//get ready if in the game
-	if( GS_MatchState() <= MATCH_STATE_WARMUP && !level.ready[PLAYERNUM(self)]
+	if( GS_MatchState( &g_gs ) <= MATCH_STATE_WARMUP && !level.ready[PLAYERNUM(self)]
 	&& self->r.client->teamstate.timeStamp + 4000 < level.time )
 		G_Match_Ready( self );
 

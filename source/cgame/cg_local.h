@@ -877,6 +877,7 @@ bool CG_IsScoreboardShown( void );
 //
 extern cvar_t *cdeveloper;
 extern cvar_t *cg_showClamp;
+extern gs_state_t cg_gs;
 
 // wsw
 extern cvar_t *cg_showObituaries;

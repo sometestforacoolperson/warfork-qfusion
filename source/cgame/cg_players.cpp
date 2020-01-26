@@ -189,7 +189,7 @@ void CG_LoadClientInfo( cg_clientInfo_t *ci, const char *info, int client )
 
 	assert( ci );
 	assert( info );
-	assert( client >= 0 && client < gs.maxclients );
+	assert( client >= 0 && client < cg_gs.maxclients );
 
 	if( !Info_Validate( info ) )
 		CG_Error( "Invalid client info" );

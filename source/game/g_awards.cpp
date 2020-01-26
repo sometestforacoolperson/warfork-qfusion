@@ -54,7 +54,7 @@ void G_PlayerAward( edict_t *ent, const char *awardMsg )
 		stats->awardAllocator = LinearAllocator( sizeof( gameaward_t ), 0, _G_LevelMalloc, _G_LevelFree );
 
 	// ch : this doesnt work for race right?
-	if( GS_MatchState() == MATCH_STATE_PLAYTIME || GS_MatchState() == MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME || GS_MatchState( &g_gs ) == MATCH_STATE_POSTMATCH )
 	{
 		// ch : we store this locally to send to MM
 		// first check if we already have this one on the clients list
@@ -79,7 +79,7 @@ void G_PlayerAward( edict_t *ent, const char *awardMsg )
 	}
 
 	// add it to every player who's chasing this player
-	for( other = game.edicts + 1; PLAYERNUM( other ) < gs.maxclients; other++ )
+	for( other = game.edicts + 1; PLAYERNUM( other ) < g_gs.maxclients; other++ )
 	{
 		if( !other->r.client || !other->r.inuse || !other->r.client->resp.chase.active )
 			continue;
@@ -108,7 +108,7 @@ void G_PlayerMetaAward( edict_t *ent, const char *awardMsg )
 		stats->awardAllocator = LinearAllocator( sizeof( gameaward_t ), 0, _G_LevelMalloc, _G_LevelFree );
 
 	// ch : this doesnt work for race right?
-	if( GS_MatchState() == MATCH_STATE_PLAYTIME )
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME )
 	{
 		// ch : we store this locally to send to MM
 		// first check if we already have this one on the clients list
@@ -260,7 +260,7 @@ void G_AwardResetPlayerComboStats( edict_t *ent )
 	// combo from LB can be cancelled only if player's dead, if he missed or if he hasnt shot with LB for too long
 	resetvalue = ( G_IsDead( ent ) ? 0 : COMBO_FLAG( WEAP_LASERGUN ) );
 
-	for( i = 0; i < gs.maxclients; i++ )
+	for( i = 0; i < g_gs.maxclients; i++ )
 		game.clients[i].resp.awardInfo.combo[PLAYERNUM( ent )] &= resetvalue;
 }
 
@@ -275,7 +275,7 @@ void G_AwardPlayerMissedLasergun( edict_t *self, int mod )
 	int i;
 	if( mod == MOD_LASERGUN_W || mod == MOD_LASERGUN_S )
 	{
-		for( i = 0; i < gs.maxclients; i++ )  // cancelling lasergun combo award
+		for( i = 0; i < g_gs.maxclients; i++ )  // cancelling lasergun combo award
 			game.clients[i].resp.awardInfo.combo[PLAYERNUM( self )] &= ~COMBO_FLAG( WEAP_LASERGUN );
 	}
 }
@@ -442,7 +442,7 @@ void G_AwardPlayerKilled( edict_t *self, edict_t *inflictor, edict_t *attacker, 
 	if ( G_ModToAmmo( mod ) != AMMO_NONE )
 		attacker->r.client->level.stats.accuracy_frags[G_ModToAmmo( mod )-AMMO_GUNBLADE]++;
 
-	if( GS_MatchState() == MATCH_STATE_PLAYTIME /* && !strcmp( "duel", gs.gametypeName ) */)
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME /* && !strcmp( "duel", g_gs.gametypeName ) */)
 	{
 		// ch : frag log
 		stats = &attacker->r.client->level.stats;
@@ -453,7 +453,7 @@ void G_AwardPlayerKilled( edict_t *self, edict_t *inflictor, edict_t *attacker, 
 		lfrag->mm_attacker = attacker->r.client->mm_session;
 		lfrag->mm_victim = self->r.client->mm_session;
 		lfrag->weapon = G_ModToAmmo( mod ) - AMMO_GUNBLADE;
-		lfrag->time = ( game.serverTime - GS_MatchStartTime() ) / 1000;
+		lfrag->time = ( game.serverTime - GS_MatchStartTime( &g_gs ) ) / 1000;
 	}
 }
 
@@ -510,7 +510,7 @@ void G_AwardRaceRecord( edict_t *self )
 void G_AwardFairPlay( edict_t *ent )
 {
 	// only award during postmatch
-	if( GS_MatchState() != MATCH_STATE_POSTMATCH ) {
+	if( GS_MatchState( &g_gs ) != MATCH_STATE_POSTMATCH ) {
 		return;
 	}
 	if( level.finalMatchDuration <= SIGNIFICANT_MATCH_DURATION ) {

@@ -1454,7 +1454,7 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 				cg_volume_effects->value, ATTN_NORM );
 		}
 
-		if( ent->ownerNum && ent->ownerNum < gs.maxclients + 1 )
+		if( ent->ownerNum && ent->ownerNum < cg_gs.maxclients + 1 )
 		{
 			cg_entities[ent->ownerNum].localEffects[LOCALEFFECT_EV_PLAYER_TELEPORT_IN] = cg.time;
 			VectorCopy( ent->origin, cg_entities[ent->ownerNum].teleportedTo );
@@ -1464,7 +1464,7 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 	case EV_PLAYER_TELEPORT_IN:
 		trap_S_StartFixedSound(CG_MediaSfx(cgs.media.sfxTeleportIn), ent->origin, CHAN_AUTO, cg_volume_effects->value, ATTN_NORM);
 
-		if( ent->ownerNum && ent->ownerNum < gs.maxclients + 1 )
+		if( ent->ownerNum && ent->ownerNum < cg_gs.maxclients + 1 )
 		{
 			cg_entities[ent->ownerNum].localEffects[LOCALEFFECT_EV_PLAYER_TELEPORT_IN] = cg.time;
 			VectorCopy( ent->origin, cg_entities[ent->ownerNum].teleportedTo );
@@ -1474,7 +1474,7 @@ void CG_EntityEvent( entity_state_t *ent, int ev, int parm, bool predicted )
 	case EV_PLAYER_TELEPORT_OUT:
 		trap_S_StartFixedSound(CG_MediaSfx(cgs.media.sfxTeleportOut), ent->origin, CHAN_AUTO, cg_volume_effects->value, ATTN_NORM);
 
-		if( ent->ownerNum && ent->ownerNum < gs.maxclients + 1 )
+		if( ent->ownerNum && ent->ownerNum < cg_gs.maxclients + 1 )
 		{
 			cg_entities[ent->ownerNum].localEffects[LOCALEFFECT_EV_PLAYER_TELEPORT_OUT] = cg.time;
 			VectorCopy( ent->origin, cg_entities[ent->ownerNum].teleportedFrom );

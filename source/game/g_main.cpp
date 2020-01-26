@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 game_locals_t game;
 level_locals_t level;
 spawn_temp_t st;
+gs_state_t g_gs;
 
 struct mempool_s *gamepool;
 struct mempool_s *levelpool;
@@ -195,12 +196,12 @@ static void G_GS_RoundUpToHullSize( vec3_t mins, vec3_t maxs )
 */
 static void G_InitGameShared( void )
 {
-	memset( &gs, 0, sizeof( gs_state_t ) );
-	gs.module = GS_MODULE_GAME;
+	memset( &g_gs, 0, sizeof( gs_state_t ) );
+	g_gs.module = GS_MODULE_GAME;
 
-	gs.maxclients = atoi( trap_GetConfigString( CS_MAXCLIENTS ) );
-	if( gs.maxclients < 1 || gs.maxclients > MAX_EDICTS )
-		G_Error( "Invalid maxclients value %i\n", gs.maxclients );
+	g_gs.maxclients = atoi( trap_GetConfigString( CS_MAXCLIENTS ) );
+	if( g_gs.maxclients < 1 || g_gs.maxclients > MAX_EDICTS )
+		G_Error( "Invalid maxclients value %i\n", g_gs.maxclients );
 
 	module_PredictedEvent = G_PredictedEvent;
 	module_Error = G_Error;
@@ -355,11 +356,11 @@ void G_Init( unsigned int seed, unsigned int framemsec, int protocol, const char
 	game.edicts = ( edict_t * )G_Malloc( game.maxentities * sizeof( game.edicts[0] ) );
 
 	// initialize all clients for this game
-	game.clients = ( gclient_t * )G_Malloc( gs.maxclients * sizeof( game.clients[0] ) );
+	game.clients = ( gclient_t * )G_Malloc( g_gs.maxclients * sizeof( game.clients[0] ) );
 
 	game.quits = NULL;
 
-	game.numentities = gs.maxclients + 1;
+	game.numentities = g_gs.maxclients + 1;
 
 	trap_LocateEntities( game.edicts, sizeof( game.edicts[0] ), game.numentities, game.maxentities );
 
@@ -665,7 +666,7 @@ void G_ExitLevel( void )
 	G_SnapClients();
 
 	// clear some things before going to next level
-	for( i = 0; i < gs.maxclients; i++ )
+	for( i = 0; i < g_gs.maxclients; i++ )
 	{
 		ent = game.edicts + 1 + i;
 		if( !ent->r.inuse )

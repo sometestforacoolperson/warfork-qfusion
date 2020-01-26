@@ -62,7 +62,7 @@ float PlayersRangeFromSpot( edict_t *spot, int ignore_team )
 
 	bestplayerdistance = 9999999;
 
-	for( n = 1; n <= gs.maxclients; n++ )
+	for( n = 1; n <= g_gs.maxclients; n++ )
 	{
 		player = &game.edicts[n];
 
@@ -133,7 +133,7 @@ static edict_t *SelectRandomDeathmatchSpawnPoint( edict_t *ent )
 	range1 = range2 = 99999;
 	spot1 = spot2 = NULL;
 
-	if( ent && GS_TeamBasedGametype() )
+	if( ent && GS_TeamBasedGametype( &g_gs ) )
 		ignore_team = ent->s.team;
 
 	while( ( spot = G_Find( spot, FOFS( classname ), "info_player_deathmatch" ) ) != NULL )
@@ -285,7 +285,7 @@ bool G_OffsetSpawnPoint( vec3_t origin, vec3_t box_mins, vec3_t box_maxs, float 
 		{
 			if( trace.ent == 0 )
 				worldfound++;
-			else if( trace.ent < gs.maxclients )
+			else if( trace.ent < g_gs.maxclients )
 				playersFound++;
 			continue;
 		}
@@ -325,7 +325,7 @@ void SelectSpawnPoint( edict_t *ent, edict_t **spawnpoint, vec3_t origin, vec3_t
 {
 	edict_t	*spot = NULL;
 
-	if( GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH )
 	{
 		spot = G_SelectIntermissionSpawnPoint();
 	}
@@ -540,9 +540,9 @@ void G_SpawnQueue_ReleaseTeamQueue( int team )
 		return;
 
 	// try to spawn them
-	for( count = 0; ( queue->start < queue->head ) && ( count < gs.maxclients ); queue->start++, count++ )
+	for( count = 0; ( queue->start < queue->head ) && ( count < g_gs.maxclients ); queue->start++, count++ )
 	{
-		if( queue->list[queue->start % MAX_CLIENTS] <= 0 || queue->list[queue->start % MAX_CLIENTS] > gs.maxclients )
+		if( queue->list[queue->start % MAX_CLIENTS] <= 0 || queue->list[queue->start % MAX_CLIENTS] > g_gs.maxclients )
 			continue;
 
 		ent = &game.edicts[queue->list[queue->start % MAX_CLIENTS]];
@@ -571,7 +571,7 @@ void G_SpawnQueue_AddClient( edict_t *ent )
 	if( !ent || !ent->r.client )
 		return;
 
-	if( ENTNUM( ent ) <= 0 || ENTNUM( ent ) > gs.maxclients )
+	if( ENTNUM( ent ) <= 0 || ENTNUM( ent ) > g_gs.maxclients )
 		return;
 
 	if( ent->r.client->team < TEAM_SPECTATOR|| ent->r.client->team >= GS_MAX_TEAMS )
@@ -626,7 +626,7 @@ void G_SpawnQueue_Think( void )
 			}
 			else
 			{
-				maxCount = ( queue->wave_maxcount < 1 ) ? gs.maxclients : queue->wave_maxcount; // max count per reinforcement wave
+				maxCount = ( queue->wave_maxcount < 1 ) ? g_gs.maxclients : queue->wave_maxcount; // max count per reinforcement wave
 				queue->nextWaveTime = level.time + ( queue->wave_time * 1000 );
 			}
 			break;
@@ -645,7 +645,7 @@ void G_SpawnQueue_Think( void )
 		// try to spawn them
 		for( count = 0; ( queue->start < queue->head ) && ( count < maxCount ); queue->start++, count++ )
 		{
-			if( queue->list[queue->start % MAX_CLIENTS] <= 0 || queue->list[queue->start % MAX_CLIENTS] > gs.maxclients )
+			if( queue->list[queue->start % MAX_CLIENTS] <= 0 || queue->list[queue->start % MAX_CLIENTS] > g_gs.maxclients )
 				continue;
 
 			ent = &game.edicts[queue->list[queue->start % MAX_CLIENTS]];

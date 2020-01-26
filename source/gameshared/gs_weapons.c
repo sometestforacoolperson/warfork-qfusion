@@ -265,14 +265,14 @@ bool G_GetLaserbeamPoint( gs_laserbeamtrail_t *trail, player_state_t *playerStat
 #undef 	LASERGUN_WEAK_TRAIL_BACKUP
 #undef 	LASERGUN_WEAK_TRAIL_MASK
 
-static bool GS_CheckBladeAutoAttack( player_state_t *playerState, int timeDelta )
+static bool GS_CheckBladeAutoAttack( gs_state_t *gs, player_state_t *playerState, int timeDelta )
 {
 	vec3_t origin, dir, end;
 	trace_t trace;
 	entity_state_t *targ, *player;
 	gs_weapon_definition_t *weapondef = GS_GetWeaponDef( WEAP_GUNBLADE );
 
-	if( playerState->POVnum <= 0 || (int)playerState->POVnum > gs.maxclients )
+	if( playerState->POVnum <= 0 || (int)playerState->POVnum > gs->maxclients )
 		return false;
 
 	if( !( playerState->pmove.stats[PM_STAT_FEATURES] & PMFEAT_GUNBLADEAUTOATTACK ) )
@@ -285,7 +285,7 @@ static bool GS_CheckBladeAutoAttack( player_state_t *playerState, int timeDelta 
 
 	// check for a player to touch
 	module_Trace( &trace, origin, vec3_origin, vec3_origin, end, playerState->POVnum, CONTENTS_BODY, timeDelta );
-	if( trace.ent <= 0 || trace.ent > gs.maxclients )
+	if( trace.ent <= 0 || trace.ent > gs->maxclients )
 		return false;
 
 	player = module_GetEntityState( playerState->POVnum, 0 );
@@ -293,7 +293,7 @@ static bool GS_CheckBladeAutoAttack( player_state_t *playerState, int timeDelta 
 	if( !( targ->effects & EF_TAKEDAMAGE ) || targ->type != ET_PLAYER )
 		return false;
 
-	if( GS_TeamBasedGametype() && ( targ->team == player->team ) )
+	if( GS_TeamBasedGametype( gs ) && ( targ->team == player->team ) )
 		return false;
 
 	return true;
@@ -402,14 +402,14 @@ bool GS_CheckAmmoInWeapon( player_state_t *playerState, int checkweapon )
 /*
 * GS_ThinkPlayerWeapon
 */
-int GS_ThinkPlayerWeapon( player_state_t *playerState, int buttons, int msecs, int timeDelta )
+int GS_ThinkPlayerWeapon( gs_state_t *gs, player_state_t *playerState, int buttons, int msecs, int timeDelta )
 {
 	firedef_t *firedef;
 	bool refire = false;
 
 	assert( playerState->stats[STAT_PENDING_WEAPON] >= 0 && playerState->stats[STAT_PENDING_WEAPON] < WEAP_TOTAL );
 
-	if( GS_MatchPaused() )
+	if( GS_MatchPaused( gs ) )
 		return playerState->stats[STAT_WEAPON];
 
 	if( playerState->pmove.pm_type != PM_NORMAL )
@@ -512,7 +512,7 @@ int GS_ThinkPlayerWeapon( player_state_t *playerState, int buttons, int msecs, i
 		if( playerState->stats[STAT_WEAPON_TIME] > 0 )
 			goto done;
 
-		if( !GS_ShootingDisabled() )
+		if( !GS_ShootingDisabled( gs ) )
 		{
 			if( buttons & BUTTON_ATTACK )
 			{
@@ -543,7 +543,7 @@ int GS_ThinkPlayerWeapon( player_state_t *playerState, int buttons, int msecs, i
 			else if( playerState->stats[STAT_WEAPON] == WEAP_GUNBLADE &&
 				playerState->pmove.stats[PM_STAT_NOUSERCONTROL] <= 0 &&
 				playerState->pmove.stats[PM_STAT_NOAUTOATTACK] <= 0 &&
-				GS_CheckBladeAutoAttack( playerState, timeDelta ) )
+				GS_CheckBladeAutoAttack( gs, playerState, timeDelta ) )
 			{
 				firedef = &GS_GetWeaponDef( WEAP_GUNBLADE )->firedef_weak;
 				playerState->weaponState = WEAPON_STATE_FIRING;
@@ -569,7 +569,7 @@ int GS_ThinkPlayerWeapon( player_state_t *playerState, int buttons, int msecs, i
 			module_PredictedEvent( playerState->POVnum, EV_FIREWEAPON, parm );
 
 		// waste ammo
-		if( !GS_InfiniteAmmo() && playerState->stats[STAT_WEAPON] != WEAP_GUNBLADE )
+		if( !GS_InfiniteAmmo( gs ) && playerState->stats[STAT_WEAPON] != WEAP_GUNBLADE )
 		{
 			if( firedef->ammo_id != AMMO_NONE && firedef->usage_count )
 				playerState->inventory[firedef->ammo_id] -= firedef->usage_count;

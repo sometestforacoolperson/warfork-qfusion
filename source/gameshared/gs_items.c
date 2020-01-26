@@ -1100,7 +1100,7 @@ gsitem_t *GS_FindItemByName( const char *name )
 /*
 * GS_Cmd_UseItem
 */
-gsitem_t *GS_Cmd_UseItem( player_state_t *playerState, const char *string, int typeMask )
+gsitem_t *GS_Cmd_UseItem( gs_state_t *gs, player_state_t *playerState, const char *string, int typeMask )
 {
 	gsitem_t *item = NULL;
 
@@ -1129,7 +1129,7 @@ gsitem_t *GS_Cmd_UseItem( player_state_t *playerState, const char *string, int t
 	// we don't have this item in the inventory
 	if( !playerState->inventory[item->tag] )
 	{
-		if( gs.module == GS_MODULE_CGAME && !( item->type & IT_WEAPON ) )
+		if( gs->module == GS_MODULE_CGAME && !( item->type & IT_WEAPON ) )
 			module_Printf( "Item %s is not in inventory\n", item->name );
 		return NULL;
 	}
@@ -1183,7 +1183,7 @@ gsitem_t *GS_Cmd_UseItem( player_state_t *playerState, const char *string, int t
 /*
 * GS_Cmd_UseWeaponStep_f
 */
-static gsitem_t *GS_Cmd_UseWeaponStep_f( player_state_t *playerState, int step, int predictedWeaponSwitch )
+static gsitem_t *GS_Cmd_UseWeaponStep_f( gs_state_t *gs, player_state_t *playerState, int step, int predictedWeaponSwitch )
 {
 	gsitem_t *item;
 	int curSlot, newSlot;
@@ -1214,7 +1214,7 @@ static gsitem_t *GS_Cmd_UseWeaponStep_f( player_state_t *playerState, int step, 
 		if( newSlot < 0 )
 			newSlot = WEAP_TOTAL - 1;
 
-		if( ( item = GS_Cmd_UseItem( playerState, va( "%i", newSlot ), IT_WEAPON ) ) != NULL )
+		if( ( item = GS_Cmd_UseItem( gs, playerState, va( "%i", newSlot ), IT_WEAPON ) ) != NULL )
 			return item;
 	}
 	while( newSlot != curSlot );
@@ -1225,17 +1225,17 @@ static gsitem_t *GS_Cmd_UseWeaponStep_f( player_state_t *playerState, int step, 
 /*
 * GS_Cmd_NextWeapon_f
 */
-gsitem_t *GS_Cmd_NextWeapon_f( player_state_t *playerState, int predictedWeaponSwitch )
+gsitem_t *GS_Cmd_NextWeapon_f( gs_state_t *gs, player_state_t *playerState, int predictedWeaponSwitch )
 {
-	return GS_Cmd_UseWeaponStep_f( playerState, 1, predictedWeaponSwitch );
+	return GS_Cmd_UseWeaponStep_f( gs, playerState, 1, predictedWeaponSwitch );
 }
 
 /*
 * GS_Cmd_PrevWeapon_f
 */
-gsitem_t *GS_Cmd_PrevWeapon_f( player_state_t *playerState, int predictedWeaponSwitch )
+gsitem_t *GS_Cmd_PrevWeapon_f( gs_state_t *gs, player_state_t *playerState, int predictedWeaponSwitch )
 {
-	return GS_Cmd_UseWeaponStep_f( playerState, -1, predictedWeaponSwitch );
+	return GS_Cmd_UseWeaponStep_f( gs, playerState, -1, predictedWeaponSwitch );
 }
 
 //=====================================

@@ -96,7 +96,7 @@ static void G_Client_UnlinkBodies( edict_t *ent )
 	int i;
 
 	// find bodies linked to us
-	body = &game.edicts[gs.maxclients + 1];
+	body = &game.edicts[g_gs.maxclients + 1];
 	for( i = 0; i < BODY_QUEUE_SIZE; body++, i++ )
 	{
 		if( !body->r.inuse )
@@ -189,7 +189,7 @@ static edict_t *CopyToBodyQue( edict_t *ent, edict_t *attacker, int damage )
 	edict_t	*body;
 	int contents;
 
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 		return NULL;
 
 	contents = G_PointContents( ent->s.origin );
@@ -199,7 +199,7 @@ static edict_t *CopyToBodyQue( edict_t *ent, edict_t *attacker, int damage )
 	G_Client_UnlinkBodies( ent );
 
 	// grab a body que and cycle to the next one
-	body = &game.edicts[gs.maxclients + level.body_que + 1];
+	body = &game.edicts[g_gs.maxclients + level.body_que + 1];
 	level.body_que = ( level.body_que + 1 ) % BODY_QUEUE_SIZE;
 
 	// send an effect on the removed body
@@ -389,7 +389,7 @@ void G_Client_InactivityRemove( gclient_t *client )
 	if( g_inactivity_maxtime->value == 0.0f )
 		return;
 
-	if( ( GS_MatchState() != MATCH_STATE_PLAYTIME ) || !level.gametype.removeInactivePlayers )
+	if( ( GS_MatchState( &g_gs ) != MATCH_STATE_PLAYTIME ) || !level.gametype.removeInactivePlayers )
 		return;
 
 	// inactive for too long
@@ -591,7 +591,7 @@ void G_ClientRespawn( edict_t *self, bool ghost )
 	client->ps.POVnum = ENTNUM( self );
 
 	// set movement info
-	client->ps.pmove.stats[PM_STAT_MAXSPEED] = (short)DEFAULT_PLAYERSPEED;
+	client->ps.pmove.stats[PM_STAT_MAXSPEED] = (short)DEFAULT_PLAYERSPEED( &g_gs );
 	client->ps.pmove.stats[PM_STAT_JUMPSPEED] = (short)DEFAULT_JUMPSPEED;
 	client->ps.pmove.stats[PM_STAT_DASHSPEED] = (short)DEFAULT_DASHSPEED;
 
@@ -683,7 +683,7 @@ bool G_PlayerCanTeleport( edict_t *player )
 		return false;
 	if ( player->r.client->ps.pmove.pm_type > PM_SPECTATOR )
 		return false;
-	if ( GS_MatchState( ) == MATCH_STATE_COUNTDOWN ) // match countdown
+	if ( GS_MatchState( &g_gs  ) == MATCH_STATE_COUNTDOWN ) // match countdown
 		return false;
 	return true;
 }
@@ -903,7 +903,7 @@ static void G_SetName( edict_t *ent, const char *original_name )
 	trynum = 1;
 	do
 	{
-		for( i = 0; i < gs.maxclients; i++ )
+		for( i = 0; i < g_gs.maxclients; i++ )
 		{
 			other = game.edicts + 1 + i;
 			if( !other->r.inuse || !other->r.client || other == ent )
@@ -934,7 +934,7 @@ static void G_SetName( edict_t *ent, const char *original_name )
 			}
 		}
 	}
-	while( i != gs.maxclients && trynum <= MAX_CLIENTS );
+	while( i != g_gs.maxclients && trynum <= MAX_CLIENTS );
 
 	Q_strncpyz( ent->r.client->netname, name, sizeof( ent->r.client->netname ) );
 }
@@ -1012,7 +1012,7 @@ void think_MoveTypeSwitcher( edict_t *ent )
 {
 	edict_t *owner;
 
-	if( ent->s.ownerNum > 0 && ent->s.ownerNum <= gs.maxclients )
+	if( ent->s.ownerNum > 0 && ent->s.ownerNum <= g_gs.maxclients )
 	{
 		owner = &game.edicts[ent->s.ownerNum];
 		if( owner->r.client )
@@ -1034,7 +1034,7 @@ static void G_UpdatePlayerInfoString( int playerNum )
 	char playerString[MAX_INFO_STRING];
 	gclient_t *client;
 
-	assert( playerNum >= 0 && playerNum < gs.maxclients );
+	assert( playerNum >= 0 && playerNum < g_gs.maxclients );
 	client = &game.clients[playerNum];
 
 	// update client information in cgame
@@ -1057,7 +1057,7 @@ static void G_UpdateMMPlayerInfoString( int playerNum )
 	char playerString[MAX_INFO_STRING];
 	gclient_t *client;
 
-	assert( playerNum >= 0 && playerNum < gs.maxclients );
+	assert( playerNum >= 0 && playerNum < g_gs.maxclients );
 	client = &game.clients[playerNum];
 
 	if( playerNum >= MAX_MMPLAYERINFOS ) {
@@ -1393,9 +1393,9 @@ void ClientDisconnect( edict_t *ent, const char *reason )
 		return;
 
 	// always report in RACE mode
-	if( GS_RaceGametype() 
-		|| ( ent->r.client->team != TEAM_SPECTATOR && ( GS_MatchState() == MATCH_STATE_PLAYTIME || GS_MatchState() == MATCH_STATE_POSTMATCH ) ) )
-		G_AddPlayerReport( ent, GS_MatchState() == MATCH_STATE_POSTMATCH );
+	if( GS_RaceGametype( &g_gs ) 
+		|| ( ent->r.client->team != TEAM_SPECTATOR && ( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME || GS_MatchState( &g_gs ) == MATCH_STATE_POSTMATCH ) ) )
+		G_AddPlayerReport( ent, GS_MatchState( &g_gs ) == MATCH_STATE_POSTMATCH );
 
 	for( team = TEAM_PLAYERS; team < GS_MAX_TEAMS; team++ )
 		G_Teams_UnInvitePlayer( team, ent );
@@ -1460,8 +1460,8 @@ void G_MoveClientToTV( edict_t *ent )
 	}
 
 	best = NULL;
-	for( i = 0; i < gs.maxclients; i++ ) {
-		client = &game.clients[(last_tv + 1 + i) % gs.maxclients];
+	for( i = 0; i < g_gs.maxclients; i++ ) {
+		client = &game.clients[(last_tv + 1 + i) % g_gs.maxclients];
 		if( !client->isTV || client->connecting ) {
 			// not a TV or not ready yet
 			continue;
@@ -1662,7 +1662,7 @@ void ClientThink( edict_t *ent, usercmd_t *ucmd, int timeDelta )
 	client->ucmd = *ucmd;
 
 	// can exit intermission after two seconds, not counting postmatch
-	if( GS_MatchState() == MATCH_STATE_WAITEXIT && ( ucmd->buttons & BUTTON_ATTACK ) && game.serverTime > GS_MatchStartTime() + 2000 )
+	if( GS_MatchState( &g_gs ) == MATCH_STATE_WAITEXIT && ( ucmd->buttons & BUTTON_ATTACK ) && game.serverTime > GS_MatchStartTime( &g_gs ) + 2000 )
 		level.exitNow = true;
 
 	// (is this really needed?:only if not cared enough about ps in the rest of the code)
@@ -1673,7 +1673,7 @@ void ClientThink( edict_t *ent, usercmd_t *ucmd, int timeDelta )
 
 	client->ps.pmove.gravity = level.gravity;
 
-	if( GS_MatchState() >= MATCH_STATE_POSTMATCH || GS_MatchPaused() 
+	if( GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH || GS_MatchPaused( &g_gs ) 
 		|| ( ent->movetype != MOVETYPE_PLAYER && ent->movetype != MOVETYPE_NOCLIP ) )
 		client->ps.pmove.pm_type = PM_FREEZE;
 	else if( ent->s.type == ET_GIB )
@@ -1694,7 +1694,7 @@ void ClientThink( edict_t *ent, usercmd_t *ucmd, int timeDelta )
 		pm.snapinitial = true;
 
 	// perform a pmove
-	Pmove( &pm );
+	Pmove(  &g_gs,&pm );
 
 	// save results of pmove
 	client->old_pmove = client->ps.pmove;
@@ -1757,7 +1757,7 @@ void ClientThink( edict_t *ent, usercmd_t *ucmd, int timeDelta )
 		}
 	}
 
-	ent->s.weapon = GS_ThinkPlayerWeapon( &client->ps, ucmd->buttons, ucmd->msec, client->timeDelta );
+	ent->s.weapon = GS_ThinkPlayerWeapon(  &g_gs,&client->ps, ucmd->buttons, ucmd->msec, client->timeDelta );
 
 	if( G_IsDead( ent ) )
 	{
@@ -1768,7 +1768,7 @@ void ClientThink( edict_t *ent, usercmd_t *ucmd, int timeDelta )
 		client->resp.snap.buttons |= ucmd->buttons;
 
 	// trigger the instashield
-	if( GS_Instagib() && g_instashield->integer )
+	if( GS_Instagib( &g_gs ) && g_instashield->integer )
 	{
 		if( client->ps.pmove.pm_type == PM_NORMAL && pm.cmd.upmove < 0 &&
 			client->resp.instashieldCharge == INSTA_SHIELD_MAX && 
@@ -1802,7 +1802,7 @@ void G_ClientThink( edict_t *ent )
 	ent->r.client->ps.POVnum = ENTNUM( ent ); // set self
 
 	// load instashield
-	if( GS_Instagib() && g_instashield->integer )
+	if( GS_Instagib( &g_gs ) && g_instashield->integer )
 	{
 		if( ent->s.team >= TEAM_PLAYERS && ent->s.team < GS_MAX_TEAMS )
 		{
@@ -1839,7 +1839,7 @@ void G_CheckClientRespawnClick( edict_t *ent )
 	if( !ent->r.inuse || !ent->r.client || !G_IsDead( ent ) )
 		return;
 
-	if( GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH )
 		return;
 
 	if( trap_GetClientState( PLAYERNUM( ent ) ) >= CS_SPAWNED )

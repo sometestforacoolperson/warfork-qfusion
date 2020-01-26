@@ -252,47 +252,47 @@ static int CG_GetMatchState( const void *parameter )
 {
 	if( cgs.demoTutorial )
 		return MATCH_STATE_NONE;
-	return GS_MatchState();
+	return GS_MatchState( &cg_gs );
 }
 
 static int CG_GetMatchDuration( const void *parameter )
 {
-	return GS_MatchDuration();
+	return GS_MatchDuration( &cg_gs );
 }
 
 static int CG_GetOvertime( const void *parameter )
 {
-	return GS_MatchExtended();
+	return GS_MatchExtended( &cg_gs );
 }
 
 static int CG_GetInstagib( const void *parameter )
 {
-	return GS_Instagib();
+	return GS_Instagib( &cg_gs );
 }
 
 static int CG_GetTeamBased( const void *parameter )
 {
-	return GS_TeamBasedGametype();
+	return GS_TeamBasedGametype( &cg_gs );
 }
 
 static int CG_InvidualGameType( const void *parameter )
 {
-	return GS_InvidualGameType();
+	return GS_InvidualGameType( &cg_gs );
 }
 
 static int CG_RaceGameType( const void *parameter )
 {
-	return GS_RaceGametype();
+	return GS_RaceGametype( &cg_gs );
 }
 
 static int CG_TutorialGameType( const void *parameter )
 {
-	return GS_TutorialGametype();
+	return GS_TutorialGametype( &cg_gs );
 }
 
 static int CG_Paused( const void *parameter )
 {
-	return GS_MatchPaused();
+	return GS_MatchPaused( &cg_gs );
 }
 
 static int CG_GetZoom( const void *parameter )
@@ -492,7 +492,7 @@ static int CG_GetRaceVars( const void* parameter )
 	int iNum;
 	vec3_t hor_vel, view_dir, an;
 
-	if( GS_MatchState() != MATCH_STATE_WARMUP && !GS_RaceGametype() )
+	if( GS_MatchState( &cg_gs ) != MATCH_STATE_WARMUP && !GS_RaceGametype( &cg_gs ) )
 		return 0;
 
 	switch( index ) {
@@ -578,7 +578,7 @@ static int CG_GetAccel( const void* parameter )
 		accel += accelHistory[i];
 	accel /= (float)(ACCEL_SAMPLE_COUNT);
 
-	if( GS_MatchState() != MATCH_STATE_WARMUP && !GS_RaceGametype() )
+	if( GS_MatchState( &cg_gs ) != MATCH_STATE_WARMUP && !GS_RaceGametype( &cg_gs ) )
 		return 0;
 
 	return (int)accel;
@@ -915,7 +915,7 @@ void CG_SC_Obituary( void )
 		{
 			// teamkill
 			if( cg_entities[attackerNum].current.team == cg_entities[victimNum].current.team &&
-			   GS_TeamBasedGametype() )
+			   GS_TeamBasedGametype( &cg_gs ) )
 			{
 				current->type = OBITUARY_TEAM;
 				if( cg_showObituaries->integer & CG_OBITUARY_CONSOLE )
@@ -1252,7 +1252,7 @@ static float cg_touch_dropWeaponX, cg_touch_dropWeaponY;
 static void CG_CheckTouchWeaponDrop( void )
 {
 	if( !cg_touch_dropWeapon ||
-		!GS_CanDropWeapon() ||
+		!GS_CanDropWeapon( &cg_gs ) ||
 		( cg.frame.playerState.pmove.pm_type != PM_NORMAL ) ||
 		!( cg.predictedPlayerState.inventory[cg_touch_dropWeapon] ) )
 	{
@@ -2295,7 +2295,7 @@ static bool CG_LFuncDrawHelpMessage( struct cg_layoutnode_s *commandnode, struct
 			int font_height = trap_SCR_FontHeight( CG_GetLayoutCursorFont() );
 			const char *helpmessage = "";
 			vec4_t color;
-			bool showhelp = cg_showhelp->integer || GS_TutorialGametype();
+			bool showhelp = cg_showhelp->integer || GS_TutorialGametype( &cg_gs );
 
 			// scale alpha to text appears more faint if the player's moving
 			Vector4Copy( layout_cursor_color, color );
@@ -2477,7 +2477,7 @@ static bool CG_LFuncDrawPlayerName( struct cg_layoutnode_s *commandnode, struct 
 	if( cgs.demoTutorial )
 		return true;
 
-	if( ( index >= 0 && index < gs.maxclients ) && cgs.clientInfo[index].name[0] )
+	if( ( index >= 0 && index < cg_gs.maxclients ) && cgs.clientInfo[index].name[0] )
 	{
 		vec4_t color;
 		VectorCopy( colorWhite, color );
@@ -2496,7 +2496,7 @@ static bool CG_LFuncDrawCleanPlayerName( struct cg_layoutnode_s *commandnode, st
 	if( cgs.demoTutorial )
 		return true;
 
-	if( ( index >= 0 && index < gs.maxclients ) && cgs.clientInfo[index].name[0] )
+	if( ( index >= 0 && index < cg_gs.maxclients ) && cgs.clientInfo[index].name[0] )
 	{
 		trap_SCR_DrawString( layout_cursor_x, layout_cursor_y, layout_cursor_align,
 			COM_RemoveColorTokensExt( cgs.clientInfo[index].name, true ), CG_GetLayoutCursorFont(), layout_cursor_color );
@@ -2951,7 +2951,7 @@ static bool CG_LFuncTouchScores( struct cg_layoutnode_s *commandnode, struct cg_
 
 static void CG_QuickMenuUpFunc( int id, unsigned int time )
 {
-	if( GS_MatchState() < MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &cg_gs ) < MATCH_STATE_POSTMATCH )
 		CG_ShowQuickMenu( 0 );
 }
 
@@ -2959,7 +2959,7 @@ static bool CG_LFuncTouchQuickMenu( struct cg_layoutnode_s *commandnode, struct 
 {
 	int side = ( int )CG_GetNumericArg( &argumentnode );
 
-	if( GS_MatchState() < MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &cg_gs ) < MATCH_STATE_POSTMATCH )
 	{
 		if( CG_TouchArea( TOUCHAREA_HUD_QUICKMENU,
 			CG_HorizontalAlignForWidth( layout_cursor_x, layout_cursor_align, layout_cursor_width ),

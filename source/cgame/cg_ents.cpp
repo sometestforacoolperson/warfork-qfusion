@@ -73,7 +73,7 @@ static bool CG_UpdateLinearProjectilePosition( centity_t *cent )
 	if( !state->linearMovement )
 		return -1;
 
-	if( GS_MatchPaused() )
+	if( GS_MatchPaused( &cg_gs ) )
 		serverTime = cg.frame.serverTime;
 	else
 		serverTime = cg.time + cgs.extrapolationTime;
@@ -276,7 +276,7 @@ int CG_LostMultiviewPOV( void )
 	int best, value, fallback;
 	int i, index;
 
-	best = gs.maxclients;
+	best = cg_gs.maxclients;
 	index = fallback = -1;
 
 	for( i = 0; i < cg.frame.numplayers; i++ )
@@ -332,7 +332,7 @@ static void CG_UpdatePlayerState( void )
 		index = -1;
 		for( i = 0; i < cg.frame.numplayers; i++ )
 		{
-			if( cg.frame.playerStates[i].playerNum < (unsigned)gs.maxclients 
+			if( cg.frame.playerStates[i].playerNum < (unsigned)cg_gs.maxclients 
 				&& cg.frame.playerStates[i].playerNum == cg.multiviewPlayerNum )
 			{
 				index = i;
@@ -388,7 +388,7 @@ bool CG_NewFrameSnap( snapshot_t *frame, snapshot_t *lerpframe )
 		cg.oldFrame = *frame;
 
 	cg.frame = *frame;
-	gs.gameState = frame->gameState;
+	cg_gs.gameState = frame->gameState;
 
 	cg.portalInView = false;
 
@@ -1417,7 +1417,7 @@ void CG_ResetItemTimers( void )
 */
 static void CG_UpdateItemTimerEnt( centity_t *cent )
 {
-	if( GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &cg_gs ) >= MATCH_STATE_POSTMATCH )
 		return;
 
 	cent->item = GS_FindItemByTag( cent->current.itemNum );

@@ -115,7 +115,7 @@ void GClip_BackUpCollisionFrame( void )
 		cframe->clipEdicts[i].r.inuse = svedict->r.inuse;
 		cframe->clipEdicts[i].r.solid = svedict->r.solid;
 		if( !svedict->r.inuse || svedict->r.solid == SOLID_NOT 
-			|| ( svedict->r.solid == SOLID_TRIGGER && !(i >= 1 && i <= gs.maxclients) ) )
+			|| ( svedict->r.solid == SOLID_TRIGGER && !(i >= 1 && i <= g_gs.maxclients) ) )
 			continue;
 
 		cframe->clipEdicts[i].r = svedict->r;
@@ -146,7 +146,7 @@ static c4clipedict_t *GClip_GetClipEdictForDeltaTime( int entNum, int deltaTime 
 	}
 
 	if( !ent->r.inuse || ent->r.solid == SOLID_NOT 
-		|| ( ent->r.solid == SOLID_TRIGGER && !(entNum >= 1 && entNum <= gs.maxclients) ) )
+		|| ( ent->r.solid == SOLID_TRIGGER && !(entNum >= 1 && entNum <= g_gs.maxclients) ) )
 	{
 		clipent->r = ent->r;
 		clipent->s = ent->s;
@@ -1095,7 +1095,7 @@ void G_PMoveTouchTriggers( pmove_t *pm, vec3_t previous_origin )
 	vec3_t mins, maxs;
 	edict_t	*ent;
 
-	if( pm->playerState->POVnum <= 0 || (int)pm->playerState->POVnum > gs.maxclients )
+	if( pm->playerState->POVnum <= 0 || (int)pm->playerState->POVnum > g_gs.maxclients )
 		return;
 
 	ent = game.edicts + pm->playerState->POVnum;

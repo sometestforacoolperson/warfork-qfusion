@@ -199,7 +199,7 @@ static bool G_GametypeFilterMatch( const char *filter )
 	temp = G_CopyString( filter );
 	tok = strtok( temp, list_separators );
 	while( tok ) {
-		if( !Q_stricmp( tok, gs.gametypeName ) ) {
+		if( !Q_stricmp( tok, g_gs.gametypeName ) ) {
 			match = true;
 			break;
 		}
@@ -220,11 +220,11 @@ static bool G_CanSpawnEntity( edict_t *ent )
 	if( ent == world )
 		return true;
 
-	if( !GS_TeamBasedGametype() && st.notfree )
+	if( !GS_TeamBasedGametype( &g_gs ) && st.notfree )
 		return false;
-	if( ( GS_TeamBasedGametype() && ( GS_MaxPlayersInTeam() == 1 ) ) && ( st.notduel || st.notfree ) )
+	if( ( GS_TeamBasedGametype( &g_gs ) && ( GS_MaxPlayersInTeam( &g_gs ) == 1 ) ) && ( st.notduel || st.notfree ) )
 		return false;
-	if( ( GS_TeamBasedGametype() && ( GS_MaxPlayersInTeam() != 1 ) ) && st.notteam )
+	if( ( GS_TeamBasedGametype( &g_gs ) && ( GS_MaxPlayersInTeam( &g_gs ) != 1 ) ) && st.notteam )
 		return false;
 
 	// check for Q3TA-style inhibition key
@@ -662,7 +662,7 @@ void G_PrecacheMedia( void )
 	trap_SoundIndex( va( S_ANNOUNCER_SCORE_TIED_LEAD_1_to_2, 1 ) );
 	trap_SoundIndex( va( S_ANNOUNCER_SCORE_TIED_LEAD_1_to_2, 2 ) );
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		trap_SoundIndex( va( S_ANNOUNCER_SCORE_TEAM_TAKEN_LEAD_1_to_2, 1 ) );
 		trap_SoundIndex( va( S_ANNOUNCER_SCORE_TEAM_TAKEN_LEAD_1_to_2, 2 ) );
@@ -738,14 +738,14 @@ static void G_FreeEntities( void )
 	else
 	{
 		G_FreeEdict( world );
-		for( i = gs.maxclients + 1; i < game.maxentities; i++ )
+		for( i = g_gs.maxclients + 1; i < game.maxentities; i++ )
 		{
 			if( game.edicts[i].r.inuse )
 				G_FreeEdict( game.edicts + i );
 		}
 	}
 	
-	game.numentities = gs.maxclients + 1;
+	game.numentities = g_gs.maxclients + 1;
 }
 
 /*
@@ -890,7 +890,7 @@ void G_InitLevel( char *mapname, char *entities, int entstrlen, unsigned int lev
 	G_StringPoolInit();
 
 	memset( &level, 0, sizeof( level_locals_t ) );
-	memset( &gs.gameState, 0, sizeof( gs.gameState ) );
+	memset( &g_gs.gameState, 0, sizeof( g_gs.gameState ) );
 
 	level.time = levelTime;
 	level.gravity = g_gravity->value;
@@ -910,7 +910,7 @@ void G_InitLevel( char *mapname, char *entities, int entstrlen, unsigned int lev
 	G_FreeEntities();
 
 	// link client fields on player ents
-	for( i = 0; i < gs.maxclients; i++ )
+	for( i = 0; i < g_gs.maxclients; i++ )
 	{
 		game.edicts[i+1].s.number = i+1;
 		game.edicts[i+1].r.client = &game.clients[i];
@@ -976,7 +976,7 @@ void G_ResetLevel( void )
 	int i;
 	
 	G_FreeEdict( world );
-	for( i = gs.maxclients + 1; i < game.maxentities; i++ )
+	for( i = g_gs.maxclients + 1; i < game.maxentities; i++ )
 	{
 		if( game.edicts[i].r.inuse )
 			G_FreeEdict( game.edicts + i );
@@ -1053,6 +1053,6 @@ static void SP_worldspawn( edict_t *ent )
 	if( st.colorCorrection )
 	{
 		level.colorCorrection = trap_ImageIndex( st.colorCorrection );
-		gs.gameState.stats[GAMESTAT_COLORCORRECTION] = level.colorCorrection;
+		g_gs.gameState.stats[GAMESTAT_COLORCORRECTION] = level.colorCorrection;
 	}
 }

@@ -248,7 +248,7 @@ static bool SCR_ParseSpectator( scr_spectator_t *result, const char **ptrptr, bo
 
 	result->playerNum = atoi( token );
 
-	if( result->playerNum < 0 || result->playerNum >= gs.maxclients )
+	if( result->playerNum < 0 || result->playerNum >= cg_gs.maxclients )
 		return false;
 
 	if( havePing )
@@ -539,7 +539,7 @@ static bool SCR_SkipColumn( char type )
 	switch( type )
 	{
 	case 'r':
-		return GS_MatchState() != MATCH_STATE_WARMUP;
+		return GS_MatchState( &cg_gs ) != MATCH_STATE_WARMUP;
 	}
 
 	return false;
@@ -583,7 +583,7 @@ static int SCR_DrawTeamTab( const char **ptrptr, int *curteam, int x, int y, int
 		CG_TeamColor( team, teamcolor );
 	teamcolor[3] = SCB_BACKGROUND_ALPHA; // make transparent
 
-	if( GS_TeamBasedGametype() ) // we only draw the team tabs in team based gametypes
+	if( GS_TeamBasedGametype( &cg_gs ) ) // we only draw the team tabs in team based gametypes
 	{
 		dir = ( team == TEAM_ALPHA ) ? -1 : 1;
 		align = ( team == TEAM_ALPHA ) ? ALIGN_RIGHT_TOP : ALIGN_LEFT_TOP;
@@ -732,7 +732,7 @@ static int SCR_DrawPlayerTab( const char **ptrptr, int team, int x, int y, int p
 	struct shader_s *icon;
 	bool highlight = false, trans = false;
 
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &cg_gs ) )
 	{
 		dir = ( team == TEAM_ALPHA ) ? -1 : 1;
 		align = ( team == TEAM_ALPHA ) ? ALIGN_RIGHT_TOP : ALIGN_LEFT_TOP;
@@ -796,7 +796,7 @@ static int SCR_DrawPlayerTab( const char **ptrptr, int team, int x, int y, int p
 				i = -1 - i;
 			}
 
-			if( i < 0 || i >= gs.maxclients )
+			if( i < 0 || i >= cg_gs.maxclients )
 				Q_strncpyz( string, "invalid", sizeof( string ) );
 			else
 				Q_strncpyz( string, cgs.clientInfo[i].name, sizeof( string ) );
@@ -951,7 +951,7 @@ void CG_DrawScoreboard( void )
 	// draw title
 	Q_strncpyz( title, cgs.configStrings[CS_GAMETYPETITLE], sizeof( title ) );
 	if( !title[0] )
-		Q_strncpyz( title, gs.gametypeName, sizeof( title ) );
+		Q_strncpyz( title, cg_gs.gametypeName, sizeof( title ) );
 	Q_strupr( title );
 
 	trap_SCR_DrawString( xpos, ypos, ALIGN_CENTER_TOP, title, titlefont, whiteTransparent );
@@ -1090,7 +1090,7 @@ bool CG_IsScoreboardShown( void )
 		return false;
 
 	if( cgs.demoPlaying || cg.frame.multipov || cgs.tv )
-		return cg.showScoreboard || ( GS_MatchState() > MATCH_STATE_PLAYTIME );
+		return cg.showScoreboard || ( GS_MatchState( &cg_gs ) > MATCH_STATE_PLAYTIME );
 
 	return ( cg.predictedPlayerState.stats[STAT_LAYOUTS] & STAT_LAYOUT_SCOREBOARD ) ? true : false;
 }

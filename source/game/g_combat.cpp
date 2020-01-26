@@ -163,14 +163,14 @@ void G_Killed( edict_t *targ, edict_t *inflictor, edict_t *attacker, int damage,
 	{
 		if( attacker && targ != attacker )
 		{
-			if( GS_IsTeamDamage( &targ->s, &attacker->s ) )
+			if( GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) )
 				attacker->snap.teamkill = true;
 			else
 				attacker->snap.kill = true;
 		}
 
 		// count stats
-		if( GS_MatchState() == MATCH_STATE_PLAYTIME )
+		if( GS_MatchState( &g_gs ) == MATCH_STATE_PLAYTIME )
 		{
 			targ->r.client->level.stats.deaths++;
 			teamlist[targ->s.team].stats.deaths++;
@@ -182,7 +182,7 @@ void G_Killed( edict_t *targ, edict_t *inflictor, edict_t *attacker, int damage,
 			}
 			else
 			{
-				if( GS_IsTeamDamage( &targ->s, &attacker->s ) )
+				if( GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) )
 				{
 					attacker->r.client->level.stats.teamfrags++;
 					teamlist[attacker->s.team].stats.teamfrags++;
@@ -347,7 +347,7 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
 	client = targ->r.client;
 
 	// Cgg - race mode: players don't interact with one another
-	if( GS_RaceGametype() )
+	if( GS_RaceGametype( &g_gs ) )
 	{
 		if( attacker->r.client && targ->r.client && attacker != targ )
 			return;
@@ -360,7 +360,7 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
 	// stun
 	if( g_allow_stun->integer && !( dflags & (DAMAGE_NO_STUN|FL_GODMODE) )
 		&& (int)stun > 0 && targ->r.client && targ->r.client->resp.takeStun &&
-		!GS_IsTeamDamage( &targ->s, &attacker->s ) && ( targ != attacker ) )
+		!GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) && ( targ != attacker ) )
 	{
 		if( dflags & DAMAGE_STUN_CLAMP )
 		{
@@ -377,7 +377,7 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
 	statDmg = ( attacker != targ ) && ( mod != MOD_TELEFRAG );
 
 	// apply handicap on the damage given
-	if( statDmg && attacker->r.client && !GS_Instagib() )
+	if( statDmg && attacker->r.client && !GS_Instagib( &g_gs ) )
 	{
 		// handicap is a percentage value
 		if( attacker->r.client->handicap != 0 )
@@ -397,23 +397,23 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
 			save = damage;
 		}
 		// never damage in timeout
-		else if( GS_MatchPaused() )
+		else if( GS_MatchPaused( &g_gs ) )
 		{
 			take = save = 0;
 		}
 		// ca has self splash damage disabled
-		else if( ( dflags & DAMAGE_RADIUS ) && attacker == targ && !GS_SelfDamage() )
+		else if( ( dflags & DAMAGE_RADIUS ) && attacker == targ && !GS_SelfDamage( &g_gs ) )
 		{
 			take = save = 0;
 		}
 		// don't get damage from players in race
-		else if( ( GS_RaceGametype() ) && attacker->r.client && targ->r.client &&
+		else if( ( GS_RaceGametype( &g_gs ) ) && attacker->r.client && targ->r.client &&
 			( attacker->r.client != targ->r.client ) )
 		{
 			take = save = 0;
 		}
 		// team damage avoidance
-		else if( GS_IsTeamDamage( &targ->s, &attacker->s ) && !G_Gametype_CanTeamDamage( dflags ) )
+		else if( GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) && !G_Gametype_CanTeamDamage( dflags ) )
 		{
 			take = save = 0;
 		}
@@ -421,7 +421,7 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
 		else if( targ->r.client && targ->r.client->ps.inventory[POWERUP_SHELL] > 0 )
 		{
 			// warshell offers full protection in instagib
-			if( GS_Instagib() )
+			if( GS_Instagib( &g_gs ) )
 			{
 				take = 0;
 				save = damage;
@@ -459,14 +459,14 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
         
 		// RG calls G_Damage for every bullet, so we accumulate damage
 		// in G_Fire_SunflowerPattern and show one number there instead
-		if( !GS_Instagib() && mod != MOD_RIOTGUN_W && mod != MOD_RIOTGUN_S ) {
+		if( !GS_Instagib( &g_gs ) && mod != MOD_RIOTGUN_W && mod != MOD_RIOTGUN_S ) {
 			edict_t * damage = G_SpawnEvent( EV_DAMAGE, 0, targ->s.origin );
 			damage->r.svflags |= SVF_ONLYOWNER;
 			damage->s.ownerNum = ENTNUM( attacker );
 			damage->s.damage = HEALTH_TO_INT( take + asave );
 		}
         
-		if( GS_IsTeamDamage( &targ->s, &attacker->s ) )
+		if( GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) )
 		{
 			attacker->r.client->level.stats.total_teamdamage_given += take + asave;
 			teamlist[attacker->s.team].stats.total_teamdamage_given += take + asave;
@@ -479,7 +479,7 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
 	{
 		client->level.stats.total_damage_received += take + asave;
 		teamlist[targ->s.team].stats.total_damage_received += take + asave;
-		if( GS_IsTeamDamage( &targ->s, &attacker->s ) )
+		if( GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) )
 		{
 			client->level.stats.total_teamdamage_received += take + asave;
 			teamlist[targ->s.team].stats.total_teamdamage_received += take + asave;
@@ -529,7 +529,7 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
 	targ->health = targ->health - take;
 
 	// add damage done to stats
-	if( !GS_IsTeamDamage( &targ->s, &attacker->s ) && statDmg && G_ModToAmmo( mod ) != AMMO_NONE && client && attacker->r.client )
+	if( !GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) && statDmg && G_ModToAmmo( mod ) != AMMO_NONE && client && attacker->r.client )
 	{
 		attacker->r.client->level.stats.accuracy_hits[G_ModToAmmo( mod )-AMMO_GUNBLADE]++;
 		attacker->r.client->level.stats.accuracy_damage[G_ModToAmmo( mod )-AMMO_GUNBLADE] += damage;
@@ -544,7 +544,7 @@ void G_Damage( edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_
 	{
 		if( attacker )
 		{
-			if( GS_IsTeamDamage( &targ->s, &attacker->s ) )
+			if( GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) )
 				attacker->snap.damageteam_given += take + asave; // we want to know how good our hit was, so saved also matters
 			else
 				attacker->snap.damage_given += take + asave;

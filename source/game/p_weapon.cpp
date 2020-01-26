@@ -96,7 +96,7 @@ bool Pickup_Weapon( edict_t *other, const gsitem_t *item, int flags, int ammo_co
 	if( !(flags & DROPPED_ITEM) )
 	{
 		// weapons stay in race
-		if( GS_RaceGametype() && ( other->r.client->ps.inventory[item->tag] != 0 ) )
+		if( GS_RaceGametype( &g_gs ) && ( other->r.client->ps.inventory[item->tag] != 0 ) )
 			return false;
 	}
 

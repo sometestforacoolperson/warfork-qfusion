@@ -59,7 +59,7 @@ void G_UpdateScoreBoardMessages( void )
 
 update:
 	// send to players who have scoreboard visible
-	for( i = 0; i < gs.maxclients; i++ )
+	for( i = 0; i < g_gs.maxclients; i++ )
 	{
 		ent = game.edicts + 1 + i;
 		if( !ent->r.inuse || !ent->r.client )
@@ -131,7 +131,7 @@ void G_ScoreboardMessage_AddSpectators( void )
 	if( !len )
 		return;
 
-	if( GS_HasChallengers() && (challengers = G_Teams_ChallengersQueue()) != NULL )
+	if( GS_HasChallengers( &g_gs ) && (challengers = G_Teams_ChallengersQueue()) != NULL )
 	{
 		// add the challengers
 		Q_strncpyz( entry, "&w ", sizeof(entry) );
@@ -311,7 +311,7 @@ static unsigned int G_FindPointedPlayer( edict_t *self )
 	VectorSet( vieworg, self->r.client->ps.pmove.origin[0], self->r.client->ps.pmove.origin[1], self->r.client->ps.pmove.origin[2] + self->r.client->ps.viewheight );
 	AngleVectors( self->r.client->ps.viewangles, viewforward, NULL, NULL );
 
-	for( i = 0; i < gs.maxclients; i++ )
+	for( i = 0; i < g_gs.maxclients; i++ )
 	{
 		other = PLAYERENT( i );
 		if( !other->r.inuse )
@@ -365,13 +365,13 @@ void G_SetClientStats( edict_t *ent )
 	client->ps.stats[STAT_LAYOUTS] = 0;
 
 	// don't force scoreboard when dead during timeout
-	if( ent->r.client->level.showscores || GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( ent->r.client->level.showscores || GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH )
 		client->ps.stats[STAT_LAYOUTS] |= STAT_LAYOUT_SCOREBOARD;
-	if( GS_TeamBasedGametype() && !GS_InvidualGameType() )
+	if( GS_TeamBasedGametype( &g_gs ) && !GS_InvidualGameType( &g_gs ) )
 		client->ps.stats[STAT_LAYOUTS] |= STAT_LAYOUT_TEAMTAB;
-	if( GS_HasChallengers() && ent->r.client->queueTimeStamp )
+	if( GS_HasChallengers( &g_gs ) && ent->r.client->queueTimeStamp )
 		client->ps.stats[STAT_LAYOUTS] |= STAT_LAYOUT_CHALLENGER;
-	if( GS_MatchState() <= MATCH_STATE_WARMUP && level.ready[PLAYERNUM( ent )] )
+	if( GS_MatchState( &g_gs ) <= MATCH_STATE_WARMUP && level.ready[PLAYERNUM( ent )] )
 		client->ps.stats[STAT_LAYOUTS] |= STAT_LAYOUT_READY;
 	if( G_SpawnQueue_GetSystem( ent->s.team ) == SPAWNSYSTEM_INSTANT )
 		client->ps.stats[STAT_LAYOUTS] |= STAT_LAYOUT_INSTANTRESPAWN;
@@ -393,7 +393,7 @@ void G_SetClientStats( edict_t *ent )
 	//
 	// armor
 	//
-	if( GS_Instagib() )
+	if( GS_Instagib( &g_gs ) )
 	{
 		if( g_instashield->integer )
 			client->ps.stats[STAT_ARMOR] = ARMOR_TO_INT( 100.0f * ( client->resp.instashieldCharge / INSTA_SHIELD_MAX ) );
@@ -426,7 +426,7 @@ void G_SetClientStats( edict_t *ent )
 	//
 	// Team scores
 	//
-	if( GS_TeamBasedGametype() )
+	if( GS_TeamBasedGametype( &g_gs ) )
 	{
 		// team based
 		i = 0;
@@ -459,7 +459,7 @@ void G_SetClientStats( edict_t *ent )
 	// pointed player
 	client->ps.stats[STAT_POINTED_TEAMPLAYER] = 0;
 	client->ps.stats[STAT_POINTED_PLAYER] = G_FindPointedPlayer( ent );
-	if( client->ps.stats[STAT_POINTED_PLAYER] && GS_TeamBasedGametype() )
+	if( client->ps.stats[STAT_POINTED_PLAYER] && GS_TeamBasedGametype( &g_gs ) )
 	{
 		edict_t	*e = &game.edicts[client->ps.stats[STAT_POINTED_PLAYER]];
 		if( e->s.team == ent->s.team )
@@ -501,7 +501,7 @@ void G_SetClientStats( edict_t *ent )
 	if( client->teamstate.last_killer )
 	{
 		edict_t *targ = ent, *attacker = client->teamstate.last_killer;
-		client->ps.stats[STAT_LAST_KILLER] = (attacker->r.client && !GS_IsTeamDamage( &targ->s, &attacker->s ) ? 
+		client->ps.stats[STAT_LAST_KILLER] = (attacker->r.client && !GS_IsTeamDamage(  &g_gs,&targ->s, &attacker->s ) ? 
 			ENTNUM( attacker ) : 0);
 	}
 	else

@@ -91,7 +91,7 @@ static void G_Client_DeadView( edict_t *ent )
 	client = ent->r.client;
 
 	// find the body
-	for( body = game.edicts + gs.maxclients; ENTNUM( body ) < gs.maxclients + BODY_QUEUE_SIZE + 1; body++ )
+	for( body = game.edicts + g_gs.maxclients; ENTNUM( body ) < g_gs.maxclients + BODY_QUEUE_SIZE + 1; body++ )
 	{
 		if( !body->r.inuse || body->r.svflags & SVF_NOCLIENT )
 			continue;
@@ -152,7 +152,7 @@ void G_ClientAddDamageIndicatorImpact( gclient_t *client, int damage, const vec3
 	if( damage < 1 )
 		return;
 
-	if( !client || client - game.clients < 0 || client - game.clients >= gs.maxclients )
+	if( !client || client - game.clients < 0 || client - game.clients >= g_gs.maxclients )
 		return;
 
 	if( !basedir )
@@ -367,7 +367,7 @@ static void G_SetClientEffects( edict_t *ent )
 {
 	gclient_t *client = ent->r.client;
 
-	if( G_IsDead( ent ) || GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( G_IsDead( ent ) || GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH )
 		return;
 
 	if( client->ps.inventory[POWERUP_QUAD] > 0 )
@@ -459,7 +459,7 @@ void G_ClientEndSnapFrame( edict_t *ent )
 
 	// If the end of unit layout is displayed, don't give
 	// the player any normal movement attributes
-	if( GS_MatchState() >= MATCH_STATE_POSTMATCH )
+	if( GS_MatchState( &g_gs ) >= MATCH_STATE_POSTMATCH )
 	{
 		G_SetClientStats( ent );
 	}
