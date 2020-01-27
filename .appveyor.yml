@@ -5,10 +5,10 @@ configuration: Release
 environment:
   matrix:
   - BUILD_PLATFORM: x86
-    VS_GENERATOR: Visual Studio 15 2017 Win32
+    VS_GENERATOR: Visual Studio 15 2017
   - USE_SDL2: 1
     BUILD_PLATFORM: x86
-    VS_GENERATOR: Visual Studio 15 2017 Win32
+    VS_GENERATOR: Visual Studio 15 2017
   - BUILD_PLATFORM: x64
     VS_GENERATOR: Visual Studio 15 2017 Win64
   - USE_SDL2: 1
@@ -16,7 +16,6 @@ environment:
     VS_GENERATOR: Visual Studio 15 2017 Win64
 install:
 - cmd: >-
-    git submodule update --init --recursive
 
     IF not exist "build_%BUILD_PLATFORM%" mkdir "build_%BUILD_PLATFORM%"
 
