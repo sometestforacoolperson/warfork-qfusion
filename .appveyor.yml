@@ -1,9 +1,14 @@
 version: 1.0.{build}
-skip_branch_with_pr: true
+skip_branch_with_pr: false
 image: Visual Studio 2017
 configuration: Release
 environment:
   matrix:
+  - BUILD_PLATFORM: x86
+    VS_GENERATOR: Visual Studio 15 2017 Win32
+  - USE_SDL2: 1
+    BUILD_PLATFORM: x86
+    VS_GENERATOR: Visual Studio 15 2017 Win32
   - BUILD_PLATFORM: x64
     VS_GENERATOR: Visual Studio 15 2017 Win64
   - USE_SDL2: 1
@@ -11,6 +16,7 @@ environment:
     VS_GENERATOR: Visual Studio 15 2017 Win64
 install:
 - cmd: >-
+    git submodule update --init --recursive
 
     IF not exist "build_%BUILD_PLATFORM%" mkdir "build_%BUILD_PLATFORM%"
 
@@ -34,3 +40,19 @@ build_script:
     IF "%USE_SDL2%"=="" 7z a ..\..\..\win_%BUILD_PLATFORM%-Release.zip * -r -x!*.exp -x!*.lib
 
     cd ..\..\..\
+artifacts:
+- path: win_x86-Release.zip
+- path: win_x64-Release.zip
+- path: win_x86-SDL-Release.zip
+- path: win_x64-SDL-Release.zip
+deploy:
+- provider: Environment
+  name: Automatic Github releases for qfusion
+  on:
+    branch: /(master|ci|warsow_2.1)/
+    APPVEYOR_REPO_TAG: true
+notifications:
+- provider: GitHubPullRequest
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: false
