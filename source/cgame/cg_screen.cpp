@@ -72,7 +72,6 @@ cvar_t *cg_showPickup;
 cvar_t *cg_showTimer;
 cvar_t *cg_showAwards;
 cvar_t *cg_showZoomEffect;
-cvar_t *cg_showCaptureAreas;
 
 cvar_t *cg_showPlayerNames;
 cvar_t *cg_showPlayerNames_alpha;
