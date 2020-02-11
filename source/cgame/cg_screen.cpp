@@ -329,7 +329,6 @@ void CG_ScreenInit( void )
 	cg_showViewBlends =	trap_Cvar_Get( "cg_showViewBlends", "1", CVAR_ARCHIVE );
 	cg_showAwards =		trap_Cvar_Get( "cg_showAwards", "1", CVAR_ARCHIVE );
 	cg_showZoomEffect =	trap_Cvar_Get( "cg_showZoomEffect", "1", CVAR_ARCHIVE );
-	cg_showCaptureAreas = trap_Cvar_Get( "cg_showCaptureAreas", "1", CVAR_ARCHIVE );
 
 	cg_showPlayerNames =	    trap_Cvar_Get( "cg_showPlayerNames", "1", CVAR_ARCHIVE );
 	cg_showPlayerNames_alpha =  trap_Cvar_Get( "cg_showPlayerNames_alpha", "0.4", CVAR_ARCHIVE );
