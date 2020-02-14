@@ -182,7 +182,7 @@ static bool CL_SoundModule_Load( const char *name, sound_import_t *import, bool 
 */
 void CL_SoundModule_Init( bool verbose )
 {
-	static const char *sound_modules[] = { "qf", "openal" };
+	static const char *sound_modules[] = { "openal" };
 	static const int num_sound_modules = sizeof( sound_modules )/sizeof( sound_modules[0] );
 	sound_import_t import;
 
