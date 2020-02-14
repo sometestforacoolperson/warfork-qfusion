@@ -43,12 +43,10 @@ matrix:
             - cmake
             - build-essential
             - libsdl2-dev
-            - libopenal-dev
             - libvorbis-dev
             - libtheora-dev
             - libfreetype6-dev
             - zlib1g-dev
-            - libcurl4-gnutls-dev
 
 before_install:
 
