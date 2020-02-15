@@ -225,7 +225,6 @@ const char *Sys_FS_GetHomeDirectory( void )
 
 	if( home[0] == '\0' )
 	{
-#ifndef __ANDROID__
 		const char *homeEnv = getenv( "HOME" );
 		const char *base = NULL, *local = "";
 
@@ -250,7 +249,6 @@ const char *Sys_FS_GetHomeDirectory( void )
 				( (const char *)APPLICATION ) + 1, APP_VERSION_MAJOR, APP_VERSION_MINOR );
 #endif
 		}
-#endif
 	}
 
 	if( home[0] == '\0' )
@@ -291,28 +289,11 @@ const char *Sys_FS_GetCacheDirectory( void )
 				( (const char *)APPLICATION ) + 1, APP_VERSION_MAJOR, APP_VERSION_MINOR );
 #endif
 		}
-#endif
 	}
 
 	if( cache[0] == '\0' )
 		return NULL;
 	return cache;
-}
-
-/*
-* Sys_FS_GetSecureDirectory
-*/
-const char *Sys_FS_GetSecureDirectory( void )
-{
-	return NULL;
-}
-
-/*
-* Sys_FS_GetMediaDirectory
-*/
-const char *Sys_FS_GetMediaDirectory( fs_mediatype_t type )
-{
-	return NULL;
 }
 
 /*
@@ -327,7 +308,7 @@ const char *Sys_FS_GetRuntimeDirectory( void )
 
 	if( runtime[0] == '\0' )
 	{
-#ifndef __ANDROID__
+
 #ifndef __MACOSX__
 		const char *base = NULL, *local = "";
 
@@ -339,7 +320,7 @@ const char *Sys_FS_GetRuntimeDirectory( void )
 				( (const char *)APPLICATION ) + 1, APP_VERSION_MAJOR, APP_VERSION_MINOR );
 		}
 #endif
-#endif
+
 	}
 
 	if( runtime[0] != '\0' )
@@ -348,6 +329,7 @@ const char *Sys_FS_GetRuntimeDirectory( void )
 
 	return NULL;
 }
+
 
 /*
 * Sys_FS_LockFile
@@ -432,12 +414,4 @@ void Sys_FS_UnMMapFile( void *mapping, void *data, size_t size, size_t mapping_o
 	if( !data )
 		return;
 	munmap( (char *)data - mapping_offset, size + mapping_offset );
-}
-
-/*
-* Sys_FS_AddFileToMedia
-*/
-void Sys_FS_AddFileToMedia( const char *filename )
-{
-
 }
