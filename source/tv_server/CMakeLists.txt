@@ -1,6 +1,6 @@
 project(${QFUSION_TVSERVER_NAME})
 
-include_directories(${ZLIB_INCLUDE_DIR} ${CURL_INCLUDE_DIR})
+include_directories(${ZLIB_INCLUDE_DIR} "../../libs")
 
 file(GLOB TV_SERVER_HEADERS
     "*.h"

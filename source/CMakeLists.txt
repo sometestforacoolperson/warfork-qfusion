@@ -40,6 +40,8 @@ set(LIBROCKET_DIR ${CMAKE_HOME_DIRECTORY}/../third-party/libRocket)
 set(LIBROCKET_INCLUDE_DIR ${LIBROCKET_DIR}/Include)
 set(LIBROCKET_SOURCE_DIR ${LIBROCKET_DIR}/Source)
 
+add_definitions(-DCURL_STATICLIB)
+
 # Windows specific settings
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(QFUSION_WINDOWS_ARCH "x86")
@@ -52,19 +54,25 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 		"../libsrcs/src/libogg"
 		"../libsrcs/src/libvorbis"
 		"../libsrcs/src/libtheora"
-		"../libsrcs/src/libcurl/include"
 		"../libsrcs/src/zlib"
 		"../libsrcs/src/libfreetype"
 		"../libsrcs/src/SDL2/include"
-		"../libsrcs/src/OpenAL-MOB/include/AL"
     )
 
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DCURL_STATICLIB -DWIN32 -D_WINDOWS)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWIN32 -D_WINDOWS)
 
-    if (MSVC)
-        set(CMAKE_LIBRARY_PATH "../libsrcs/lib/win32/${QFUSION_WINDOWS_ARCH}/debug")
+   # if (MSVC)
+   #      set(CMAKE_LIBRARY_PATH "../libsrcs/lib/win32/${QFUSION_WINDOWS_ARCH}/debug")
+   # else()
+   #     set(CMAKE_LIBRARY_PATH "../libsrcs/lib/win32/${QFUSION_WINDOWS_ARCH}/mingw")
+   # endif()
+
+    if (CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(LIBS_ARCH "windows-release")
+		set(CMAKE_LIBRARY_PATH "../libsrcs/lib/win32/x64/release")
     else()
-        set(CMAKE_LIBRARY_PATH "../libsrcs/lib/win32/${QFUSION_WINDOWS_ARCH}/mingw")
+        set(LIBS_ARCH "windows-debug")
+		set(CMAKE_LIBRARY_PATH "../libsrcs/lib/win32/x64/debug")
     endif()
 
     if (MSVC)
@@ -103,11 +111,6 @@ endif()
 
 # Linux or mingw specific settings
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
-    # If no build type was specified - use release build settings
-    if (NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE "Release")
-    endif()
-
     add_definitions(-D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE)
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wno-unused-function -fvisibility=hidden -Winvalid-pch")
@@ -124,6 +127,12 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=500")
+	
+	if (CMAKE_BUILD_TYPE STREQUAL "Release")
+		set(LIBS_ARCH "linux-release")
+	else()
+		set(LIBS_ARCH "linux-debug")
+	endif()
 
     # -Wl,--as-needed
     add_common_link_flags("-Wl,--as-needed")
@@ -138,6 +147,9 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
         add_common_link_flags("-static -static-libgcc -static-libstdc++")
     endif()
 endif()
+
+set(CURL_LIBRARY "${CMAKE_SOURCE_DIR}/../libs/curl/${LIBS_ARCH}/${CMAKE_STATIC_LIBRARY_PREFIX}curl${CMAKE_STATIC_LIBRARY_SUFFIX}")
+set(OPENAL_LIBRARY "${CMAKE_SOURCE_DIR}/../libs/openal/${LIBS_ARCH}/${CMAKE_STATIC_LIBRARY_PREFIX}openal${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
 # Linux-only specific settings
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -163,10 +175,8 @@ if (NOT GAME_MODULES_ONLY)
     find_package(Ogg REQUIRED)
     find_package(Vorbis REQUIRED)
     find_package(Theora REQUIRED)
-    find_package(CURL REQUIRED)
     find_package(ZLIB REQUIRED)
     find_package(Freetype REQUIRED)
-    find_package(OpenAL REQUIRED)
 
     # We need SDL only on non-Windows platforms or when with SDL2-backend
     if (USE_SDL2 OR (${CMAKE_SYSTEM_NAME} MATCHES "Linux"))
@@ -207,16 +217,12 @@ if (NOT GAME_MODULES_ONLY)
         find_windows_release_libs(OGG_LIBRARY)
         find_windows_release_libs(VORBIS_LIBRARIES)
         find_windows_release_libs(THEORA_LIBRARY)
-        find_windows_release_libs(CURL_LIBRARY)
         find_windows_release_libs(ANGELSCRIPT_LIBRARY)
         find_windows_release_libs(SDL2_LIBRARIES)
     endif()
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux") # Do not add 'OR MINGW' here - we need to use suffix-prefix settings from Windows
-    set(CURL_LIBRARY "")
-    add_definitions(-DLIBCURL_RUNTIME)
-
     set(OGG_LIBRARY "")
     add_definitions(-DOGGLIB_RUNTIME)
 

@@ -378,8 +378,6 @@ static bool VID_LoadRefresh( const char *name )
 	import.FS_RemoveDirectory = &FS_RemoveDirectory;
 	import.FS_GameDirectory = &FS_GameDirectory;
 	import.FS_WriteDirectory = &FS_WriteDirectory;
-	import.FS_MediaDirectory = &FS_MediaDirectory;
-	import.FS_AddFileToMedia = &FS_AddFileToMedia;
 
 	import.CIN_Open = &VID_RefModule_CIN_Open;
 	import.CIN_NeedNextFrame = &CIN_NeedNextFrame;
