@@ -88,8 +88,6 @@ typedef struct
 	bool ( *FS_RemoveDirectory )( const char *dirname );
 	const char * ( *FS_GameDirectory )( void );
 	const char * ( *FS_WriteDirectory )( void );
-	const char * ( *FS_MediaDirectory )( fs_mediatype_t type );
-	void ( *FS_AddFileToMedia )( const char *filename );
 
 	struct cinematics_s *( *CIN_Open )( const char *name, unsigned int start_time, bool *yuv, float *framerate );
 	bool ( *CIN_NeedNextFrame )( struct cinematics_s *cin, unsigned int curtime );

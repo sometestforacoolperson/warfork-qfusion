@@ -412,10 +412,3 @@ void Sys_FS_UnMMapFile( void *mapping, void *data, size_t size, size_t mapping_o
 	if( mapping )
 		CloseHandle( (HANDLE)mapping );
 }
-
-/*
-* Sys_FS_AddFileToMedia
-*/
-void Sys_FS_AddFileToMedia( const char *filename )
-{
-}

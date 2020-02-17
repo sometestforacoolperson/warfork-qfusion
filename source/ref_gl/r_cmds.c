@@ -136,10 +136,6 @@ void R_TakeScreenShot( const char *path, const char *name, const char *fmtString
 	}
 	
 R_ScreenShot( checkname, x, y, w, h, false, true, false, silent );
-	
-	if( media ) {
-		ri.FS_AddFileToMedia( checkname );
-	}
 }
 
 /*
@@ -149,7 +145,6 @@ void R_ScreenShot_f( void )
 {
 	int i;
 	const char *name;
-	const char *mediadir;
 	size_t path_size;
 	char *path;
 	char timestamp_str[MAX_QPATH];
@@ -159,19 +154,9 @@ void R_ScreenShot_f( void )
 
 	name = ri.Cmd_Argv( 1 );
 
-	mediadir = ri.FS_MediaDirectory( FS_MEDIA_IMAGES );
-	if( mediadir )
-	{
-		path_size = strlen( mediadir ) + 1 /* '/' */ + strlen( glConfig.applicationName ) + 1 /* '/' */ + 1;
-		path = alloca( path_size );
-		Q_snprintfz( path, path_size, "%s/%s/", mediadir, glConfig.applicationName );
-	}
-	else
-	{
-		path_size = strlen( ri.FS_WriteDirectory() ) + 1 /* '/' */ + strlen( ri.FS_GameDirectory() ) + strlen( "/screenshots/" ) + 1;
-		path = alloca( path_size );
-		Q_snprintfz( path, path_size, "%s/%s/screenshots/", ri.FS_WriteDirectory(), ri.FS_GameDirectory() );
-	}
+	path_size = strlen( ri.FS_WriteDirectory() ) + 1 /* '/' */ + strlen( ri.FS_GameDirectory() ) + strlen( "/screenshots/" ) + 1;
+	path = alloca( path_size );
+	Q_snprintfz( path, path_size, "%s/%s/screenshots/", ri.FS_WriteDirectory(), ri.FS_GameDirectory() );
 	
 	// validate timestamp string
 	for( i = 0; i < 2; i++ )
