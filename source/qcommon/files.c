@@ -1239,10 +1239,6 @@ static int _FS_FOpenFile( const char *filename, int *filenum, int mode, bool bas
 		const char *dir;
 
 		dir = FS_WriteDirectory();
-		if( secure )
-			dir = FS_SecureDirectory();
-		else if( cache )
-			dir = FS_CacheDirectory();
 
 		if( base )
 		{
@@ -3363,27 +3359,6 @@ const char *FS_CacheDirectory( void )
 }
 
 /*
-* FS_SecureDirectory
-*
-* Returns directory with higher security (for instance, not accessible for other apps)
-*/
-const char *FS_SecureDirectory( void )
-{
-	const char *dir = Sys_FS_GetSecureDirectory();
-	return dir ? dir : FS_WriteDirectory();
-}
-
-/*
-* FS_MediaDirectory
-*
-* Returns the external directory for media files
-*/
-const char *FS_MediaDirectory( fs_mediatype_t type )
-{
-	return Sys_FS_GetMediaDirectory( type );
-}
-
-/*
 * FS_DownloadsDirectory
 * 
 * Returns directory where we can store downloads to, no gamedir attached.
@@ -4141,14 +4116,6 @@ int FS_RemoveNotifications( int bitmask )
 {
 	fs_notifications &= ~bitmask;
 	return fs_notifications;
-}
-
-/*
-* FS_AddFileToMedia
-*/
-void FS_AddFileToMedia( const char *filename )
-{
-	Sys_FS_AddFileToMedia( filename );
 }
 
 /*

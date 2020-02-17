@@ -52,7 +52,7 @@ static int fdots = 0;
 */
 static bool FS_DirentIsDir( const struct dirent64 *d, const char *base )
 {
-#if ( defined( _DIRENT_HAVE_D_TYPE )
+#if ( defined( _DIRENT_HAVE_D_TYPE ) && defined ( DT_DIR ) )
 	return ( d->d_type == DT_DIR );
 #else
 	size_t pathSize;
