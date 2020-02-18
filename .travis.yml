@@ -6,7 +6,6 @@ cache:
     - $HOME/.deps
 notifications:
   email: false
-
 matrix:
   include:
     - os: osx
@@ -26,18 +25,40 @@ matrix:
             - cmake
             - build-essential
             - libsdl2-dev
-            - libvorbis-dev
             - libtheora-dev	
+            - libvorbis-dev
             - libfreetype6-dev
             - zlib1g-dev
-
+            - libpulse-dev
+            - libpulse0=1:8.0-0ubuntu3.10
+            - libpulse-mainloop-glib0=1:8.0-0ubuntu3.10
 install:
   - if [[ "$QF_ARCH" == "x86_64" ]]; then export CC=clang CXX=clang++; fi
   - cd "$TRAVIS_BUILD_DIR/source"
   - if [[ "$QF_ARCH" == "x86_64" ]]; then cmake .; fi
   - if [[ "$QF_ARCH" == "OSX" ]]; then cmake -G Xcode .; fi
+  - cd "$TRAVIS_BUILD_DIR"
 
 script:
   - cd source
   - if [[ "$QF_ARCH" == "x86_64" ]]; then make -j8; fi
   - if [[ "$QF_ARCH" == "OSX" ]]; then xcodebuild -project qfusion.xcodeproj/ -jobs 4 -configuration Release -scheme ALL_BUILD | xcpretty; fi
+before_deploy:
+  - cd build
+  - echo "${TRAVIS_COMMIT}" >commit.txt
+  - if [[ "$QF_ARCH" == "OSX" ]]; then cd Release && tar -czvf ../../tmp.tar.gz *.app && cd ..; fi
+  - if [[ "$QF_ARCH" != "OSX" ]]; then tar -czvf ../tmp.tar.gz * --exclude *.a --exclude base*/*.a libs/*.a; fi
+  - cd ..
+  - mv tmp.tar.gz ${QF_ARCH}-Release.tar.gz
+
+deploy:
+  provider: releases
+  api_key:
+    secure: 
+  skip_cleanup: true
+  file_glob: true
+  file: "*-Release.tar.gz"
+  overwrite: true
+  on:
+    repo: warfork/warfork-qfusion
+    tags: true
