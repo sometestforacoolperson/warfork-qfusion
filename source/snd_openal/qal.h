@@ -30,14 +30,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #if defined ( _WIN32 ) 
-#include <al.h>
-#include <alc.h>
+#include <openal/al.h>
+#include <openal/alc.h>
 #elif defined ( __MACOSX__ )
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
+#include <openal/al.h>
+#include <openal/alc.h>
 #else
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <openal/al.h>
+#include <openal/alc.h>
 #endif
 
 #ifdef OPENAL_RUNTIME
