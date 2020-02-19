@@ -15,7 +15,7 @@ file(GLOB angelwrap_SOURCES
     "../gameshared/q_*.c"
 )
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 	set(ANGELWRAP_PLATFORM_LIBRARIES "pthread")
 else ()
         set(ANGELWRAP_PLATFORM_LIBRARIES "")

@@ -2,7 +2,7 @@ project(${QFUSION_CLIENT_NAME})
 
 include_directories(${ZLIB_INCLUDE_DIR} "../../libs")
 
-if (USE_SDL2 OR (${CMAKE_SYSTEM_NAME} MATCHES "Linux"))
+if (USE_SDL2 OR (${CMAKE_SYSTEM_NAME} MATCHES "Linux") OR (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD"))
     include_directories(${SDL2_INCLUDE_DIR})
 endif()
 
@@ -140,7 +140,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	endif()
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
 	set(CLIENT_PLATFORM_HEADERS "")
 
     if (USE_SDL2)

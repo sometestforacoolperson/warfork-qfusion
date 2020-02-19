@@ -115,15 +115,15 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 # Linux or mingw specific settings
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD" OR MINGW)
     add_definitions(-D_LARGEFILE64_SOURCE -D_LARGEFILE_SOURCE)
 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pipe -Wall -Wno-unused-function -fvisibility=hidden -Winvalid-pch")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0 -D_DEBUG")
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -fno-strict-aliasing -ffast-math -funroll-loops -msse2 -O2")
 
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-        set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+	    set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -std=c++11")
     endif()
@@ -131,7 +131,11 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
 
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=500")
+    if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700")
+    else()
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -D_POSIX_C_SOURCE=200112L -D_XOPEN_SOURCE=500")
+    endif()
 	
 	if (CMAKE_BUILD_TYPE STREQUAL "Release")
 		set(LIBS_ARCH "linux-release")
@@ -145,6 +149,10 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
     # -s in release link flags
     add_release_link_flags("-s")
 
+    if (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+	    add_common_link_flags("-Wl,-z,notext")
+    endif()
+
     if (MINGW)
         add_definitions(-D_WIN32_WINNT=_WIN32_WINNT_VISTA)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unknown-pragmas")
@@ -153,11 +161,17 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
     endif()
 endif()
 
-set(CURL_LIBRARY "${CMAKE_SOURCE_DIR}/../libs/curl/${LIBS_ARCH}/${CMAKE_STATIC_LIBRARY_PREFIX}curl${CMAKE_STATIC_LIBRARY_SUFFIX}")
-set(OPENAL_LIBRARY "${CMAKE_SOURCE_DIR}/../libs/openal/${LIBS_ARCH}/${CMAKE_STATIC_LIBRARY_PREFIX}openal${CMAKE_STATIC_LIBRARY_SUFFIX}")
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
+    set(CURL_LIBRARY "${CMAKE_SOURCE_DIR}/../libs/curl/${LIBS_ARCH}/${CMAKE_STATIC_LIBRARY_PREFIX}curl${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(OPENAL_LIBRARY "${CMAKE_SOURCE_DIR}/../libs/openal/${LIBS_ARCH}/${CMAKE_STATIC_LIBRARY_PREFIX}openal${CMAKE_STATIC_LIBRARY_SUFFIX}")
+else()
+    find_package(CURL REQUIRED)
+    find_package(ZLIB REQUIRED)
+    find_package(OpenAL REQUIRED)
+endif()
 
 # Linux-only specific settings
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
     if (CMAKE_CROSSCOMPILING)
         set(CMAKE_LIBRARY_ARCHITECTURE "${CMAKE_SYSTEM_PROCESSOR}-linux-gnu")
         link_directories("${CMAKE_FIND_ROOT_PATH}/usr/lib/${CMAKE_SYSTEM_PROCESSOR}-linux-gnu")
@@ -182,9 +196,12 @@ if (NOT GAME_MODULES_ONLY)
     find_package(Theora REQUIRED)
     find_package(ZLIB REQUIRED)
     find_package(Freetype REQUIRED)
+    find_package(X11 REQUIRED)
+
+    include_directories(${X11_INCLUDE_DIR})
 
     # We need SDL only on non-Windows platforms or when with SDL2-backend
-    if (USE_SDL2 OR (${CMAKE_SYSTEM_NAME} MATCHES "Linux"))
+    if (USE_SDL2 OR (${CMAKE_SYSTEM_NAME} MATCHES "Linux") OR (${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD"))
         set(USE_SDL2 1)
         find_package(SDL2 REQUIRED)
     endif()
@@ -194,7 +211,7 @@ if (NOT GAME_MODULES_ONLY)
     endif()
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR MINGW)
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD" OR MINGW)
     if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         STRING(TOLOWER "win32_${QFUSION_WINDOWS_ARCH}.tar.gz" TAR_GZ_NAME)
     else()
@@ -227,7 +244,7 @@ if (NOT GAME_MODULES_ONLY)
     endif()
 endif()
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux") # Do not add 'OR MINGW' here - we need to use suffix-prefix settings from Windows
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux" OR ${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD") # Do not add 'OR MINGW' here - we need to use suffix-prefix settings from Windows
     set(OGG_LIBRARY "")
     add_definitions(-DOGGLIB_RUNTIME)
 
