@@ -30,9 +30,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <netinet/tcp.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <sys/param.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#if !defined(PF_INET)
+#       define PF_INET AF_INET
+#       define PF_INET6 AF_INET6
+#endif
 #endif
 
 #define	MAX_LOOPBACK	4

@@ -27,7 +27,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/ioctl.h>
 #include <sys/uio.h>
 #if !defined ( __APPLE__ )
+#if defined(__FreeBSD__)
+#include <sys/types.h>
+#include <sys/uio.h>
+#else
 #include <sys/sendfile.h>
+#endif
 #endif
 #include <errno.h>
 #include <arpa/inet.h>

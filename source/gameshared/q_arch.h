@@ -257,7 +257,9 @@ typedef uintptr_t socket_handle_t;
 
 #define VAR( x ) #x
 
+#if !defined(__FreeBSD__)
 #include <alloca.h>
+#endif
 
 // wsw : aiwa : 64bit integers and integer-pointer types
 typedef int ioctl_param_t;

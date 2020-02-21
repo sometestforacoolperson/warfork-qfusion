@@ -118,7 +118,9 @@ static void InitSig( void )
 	catchsig( SIGQUIT, signal_handler );
 	catchsig( SIGILL, signal_handler );
 	catchsig( SIGTRAP, signal_handler );
+#if !defined(__FreeBSD__)
 	catchsig( SIGIOT, signal_handler );
+#endif
 	catchsig( SIGBUS, signal_handler );
 	catchsig( SIGFPE, signal_handler );
 	catchsig( SIGSEGV, signal_handler );

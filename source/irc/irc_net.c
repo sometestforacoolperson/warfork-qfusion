@@ -3,7 +3,7 @@
 
 #ifdef _WIN32
 #	include <winerror.h>
-#   include <ws2tcpip.h>
+#	include <ws2tcpip.h>
 #else
 #	include <netinet/in.h>
 #	include <arpa/inet.h>
@@ -12,6 +12,10 @@
 #	include <unistd.h>
 #	include <fcntl.h>
 #	include <errno.h>
+#	if !defined(PF_INET)
+#	define PF_INET AF_INET
+#	define PF_INET6 AF_INET6
+#	endif
 #endif
 
 bool Irc_Net_Connect(const char *host, unsigned short port, irc_socket_t *sock) {
