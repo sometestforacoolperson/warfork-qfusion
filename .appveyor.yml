@@ -4,11 +4,6 @@ image: Visual Studio 2017
 configuration: Release
 environment:
   matrix:
-  - BUILD_PLATFORM: x86
-    VS_GENERATOR: Visual Studio 15 2017
-  - USE_SDL2: 1
-    BUILD_PLATFORM: x86
-    VS_GENERATOR: Visual Studio 15 2017
   - BUILD_PLATFORM: x64
     VS_GENERATOR: Visual Studio 15 2017 Win64
   - USE_SDL2: 1
