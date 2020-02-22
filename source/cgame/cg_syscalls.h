@@ -598,16 +598,6 @@ static inline int trap_SCR_DrawMultilineString( int x, int y, const char *str, i
 	return CGAME_IMPORT.SCR_DrawMultilineString( x, y, str, halign, maxwidth, maxlines, font, color, 0 );
 }
 
-static inline void trap_SCR_DrawRawChar( int x, int y, wchar_t num, struct qfontface_s *font, vec4_t color )
-{
-	CGAME_IMPORT.SCR_DrawRawChar( x, y, num, font, color );
-}
-
-static inline void trap_SCR_DrawClampChar( int x, int y, wchar_t num, int xmin, int ymin, int xmax, int ymax, struct qfontface_s *font, vec4_t color )
-{
-	CGAME_IMPORT.SCR_DrawClampChar( x, y, num, xmin, ymin, xmax, ymax, font, color );
-}
-
 static inline int trap_SCR_FontHeight( struct qfontface_s *font )
 {
 	return CGAME_IMPORT.SCR_FontHeight( font );

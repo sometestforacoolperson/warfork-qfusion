@@ -54,7 +54,6 @@ cvar_t *cg_weaponlist;
 cvar_t *cg_crosshair;
 cvar_t *cg_crosshair_size;
 cvar_t *cg_crosshair_color;
-cvar_t *cg_crosshair_font;
 
 cvar_t *cg_crosshair_strong;
 cvar_t *cg_crosshair_strong_size;
@@ -305,15 +304,14 @@ void CG_ScreenInit( void )
 	cg_weaponlist =		trap_Cvar_Get( "cg_weaponlist", "1", CVAR_ARCHIVE );
 
 	cg_crosshair =		trap_Cvar_Get( "cg_crosshair", "1", CVAR_ARCHIVE );
-	cg_crosshair_size =	trap_Cvar_Get( "cg_crosshair_size", "24", CVAR_ARCHIVE );
+	cg_crosshair_size =	trap_Cvar_Get( "cg_crosshair_size", "32", CVAR_ARCHIVE );
 	cg_crosshair_color =	trap_Cvar_Get( "cg_crosshair_color", "255 255 255", CVAR_ARCHIVE );
-	cg_crosshair_font =		trap_Cvar_Get( "cg_crosshair_font", "Warsow Crosshairs", CVAR_ARCHIVE );
 	cg_crosshair_damage_color =	trap_Cvar_Get( "cg_crosshair_damage_color", "255 0 0", CVAR_ARCHIVE );
 	cg_crosshair_color->modified = true;
 	cg_crosshair_damage_color->modified = false;
 
 	cg_crosshair_strong =	    trap_Cvar_Get( "cg_crosshair_strong", "0", CVAR_ARCHIVE );
-	cg_crosshair_strong_size =  trap_Cvar_Get( "cg_crosshair_strong_size", "24", CVAR_ARCHIVE );
+	cg_crosshair_strong_size =  trap_Cvar_Get( "cg_crosshair_strong_size", "32", CVAR_ARCHIVE );
 	cg_crosshair_strong_color = trap_Cvar_Get( "cg_crosshair_strong_color", "255 255 255", CVAR_ARCHIVE );
 	cg_crosshair_strong_color->modified = true;
 
@@ -479,7 +477,7 @@ void CG_DrawCrosshair( int x, int y, int align )
 
 	if( cg_crosshair->modified )
 	{
-		if( cg_crosshair->integer > 26 || cg_crosshair->integer < 0 )
+		if( cg_crosshair->integer >= NUM_CROSSHAIRS || cg_crosshair->integer < 0 )
 			trap_Cvar_Set( cg_crosshair->name, "0" );
 		cg_crosshair->modified = false;
 	}
@@ -487,9 +485,9 @@ void CG_DrawCrosshair( int x, int y, int align )
 	if( cg_crosshair_size->modified )
 	{
 		if( cg_crosshair_size->integer < 0 )
-			trap_Cvar_Set( cg_crosshair_size->name, "0" );
-		else if( cg_crosshair_size->integer > 64 )
-			trap_Cvar_Set( cg_crosshair_size->name, "64" );
+			trap_Cvar_Set( cg_crosshair_size->name, "32" );
+		else if( cg_crosshair_size->integer > 2000 )
+			trap_Cvar_Set( cg_crosshair_size->name, "32" );
 		cg_crosshair_size->modified = false;
 	}
 
@@ -519,7 +517,7 @@ void CG_DrawCrosshair( int x, int y, int align )
 
 	if( cg_crosshair_strong->modified )
 	{
-		if( cg_crosshair_strong->integer > 26 || cg_crosshair_strong->integer < 0 )
+		if( cg_crosshair_strong->integer >= NUM_CROSSHAIRS || cg_crosshair_strong->integer < 0 )
 			trap_Cvar_Set( cg_crosshair_strong->name, "0" );
 		cg_crosshair_strong->modified = false;
 	}
@@ -527,9 +525,9 @@ void CG_DrawCrosshair( int x, int y, int align )
 	if( cg_crosshair_strong_size->modified )
 	{
 		if( cg_crosshair_strong_size->integer < 0 )
-			trap_Cvar_Set( cg_crosshair_strong_size->name, "0" );
-		else if( cg_crosshair_strong_size->integer > 64 )
-			trap_Cvar_Set( cg_crosshair_strong_size->name, "64" );
+			trap_Cvar_Set( cg_crosshair_strong_size->name, "32" );
+		else if( cg_crosshair_strong_size->integer > 2000 )
+			trap_Cvar_Set( cg_crosshair_strong_size->name, "32" );
 		cg_crosshair_strong_size->modified = false;
 	}
 
