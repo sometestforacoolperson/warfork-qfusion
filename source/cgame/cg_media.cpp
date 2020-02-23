@@ -294,6 +294,9 @@ struct shader_s *CG_MediaShader( cgs_media_handle_t *mediashader )
 */
 void CG_RegisterMediaShaders( void )
 {
+	
+	int i;
+		
 	shader_headnode = NULL;
 
 	cgs.media.shaderParticle = CG_RegisterMediaShader( "particle", true );

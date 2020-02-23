@@ -438,34 +438,6 @@ static int CG_CrosshairDimensions( int x, int y, int size, int align, int *sx, i
 }
 
 /*
-* CG_DrawCrosshairChar
-*/
-static void CG_DrawCrosshairChar( int x, int y, int size, int num, vec_t *color )
-{
-	struct qfontface_s *font = trap_SCR_RegisterSpecialFont( cg_crosshair_font->string, QFONT_STYLE_NONE, size );
-	if( !font )
-	{
-		trap_Cvar_Set( cg_crosshair_font->name, cg_crosshair_font->dvalue );
-		font = trap_SCR_RegisterSpecialFont( cg_crosshair_font->string, QFONT_STYLE_NONE, size );
-	}
-
-	wchar_t blackChar, colorChar;
-	if( num )
-	{
-		blackChar = 'A' - 1 + num;
-		colorChar = 'a' - 1 + num;
-	}
-	else
-	{
-		blackChar = '?';
-		colorChar = '!';
-	}
-
-	trap_SCR_DrawRawChar( x, y, blackChar, font, colorBlack );
-	trap_SCR_DrawRawChar( x, y, colorChar, font, color );
-}
-
-/*
 * CG_DrawCrosshair
 */
 void CG_DrawCrosshair( int x, int y, int align )
@@ -524,9 +496,7 @@ void CG_DrawCrosshair( int x, int y, int align )
 
 	if( cg_crosshair_strong_size->modified )
 	{
-		if( cg_crosshair_strong_size->integer < 0 )
-			trap_Cvar_Set( cg_crosshair_strong_size->name, "32" );
-		else if( cg_crosshair_strong_size->integer > 2000 )
+		if( cg_crosshair_strong_size->integer < 0 || cg_crosshair_strong_size->integer > 2000 )
 			trap_Cvar_Set( cg_crosshair_strong_size->name, "32" );
 		cg_crosshair_strong_size->modified = false;
 	}
@@ -558,15 +528,20 @@ void CG_DrawCrosshair( int x, int y, int align )
 		firedef_t *firedef = GS_FiredefForPlayerState( &cg.predictedPlayerState, cg.predictedPlayerState.stats[STAT_WEAPON] );
 		if( firedef && firedef->fire_mode == FIRE_MODE_STRONG ) // strong
 		{
+			
 			size = CG_CrosshairDimensions( x, y, cg_crosshair_strong_size->integer, align, &sx, &sy );
-			CG_DrawCrosshairChar( sx, sy, size, cg_crosshair_strong->integer, chColorStrong );
+			trap_R_DrawStretchPic( sx, sy, size, size, 0, 0, 1, 1, chColorStrong,
+			CG_MediaShader( cgs.media.shaderCrosshair[cg_crosshair_strong->integer] ) );
+
 		}
 	}
 
 	if( cg_crosshair->integer && cg_crosshair_size->integer && ( cg.predictedPlayerState.stats[STAT_WEAPON] != WEAP_NONE ) )
 	{
-		size = CG_CrosshairDimensions( x, y, cg_crosshair_size->integer, align, &sx, &sy );
-		CG_DrawCrosshairChar( sx, sy, size, cg_crosshair->integer, chColor );
+			size = CG_CrosshairDimensions( x, y, cg_crosshair_size->integer, align, &sx, &sy );
+			trap_R_DrawStretchPic( x, y, size, size, 0, 0, 1, 1, chColor,
+			CG_MediaShader( cgs.media.shaderCrosshair[cg_crosshair->integer] ) );
+
 	}
 }
 
