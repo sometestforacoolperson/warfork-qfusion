@@ -51,7 +51,7 @@ static int parse_xpm_meta_elem(const char *elem, int *start)
 	*/
 	int i, len;
 
-	len = strlen(elem);
+	len = (int)strlen( elem );
 	/*
 		Wir suchen nach dem naechsten Leerzeichen in elem
 	*/
