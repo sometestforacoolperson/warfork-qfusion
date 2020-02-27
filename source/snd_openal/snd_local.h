@@ -66,7 +66,7 @@ typedef struct sfx_s
 	bool inMemory;
 	bool isLocked;
 	int used;           // Time last used
-} sfx_t;
+} sfx_s;
 
 extern cvar_t *s_volume;
 extern cvar_t *s_musicvolume;
