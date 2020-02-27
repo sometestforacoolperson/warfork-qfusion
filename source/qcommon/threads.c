@@ -168,7 +168,7 @@ typedef struct qbufPipe_s
 	qcondvar_t *nonempty_condvar;
 	qmutex_t *nonempty_mutex;
 	char *buf;
-} qbufPipe_t;
+} qbufPipe_s;
 
 /*
 * QBufPipe_Create
