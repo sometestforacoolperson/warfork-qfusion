@@ -1339,6 +1339,8 @@ static rserr_t R_PostInit( void )
     rf.speedsMsgLock = ri.Mutex_Create();
 	rf.debugSurfaceLock = ri.Mutex_Create();
 
+	RJ_Init();
+
 	R_InitDrawLists();
 
 	if( !R_RegisterGLExtensions() ) {
@@ -1419,10 +1421,10 @@ static void R_InitVolatileAssets( void )
 	R_InitCoronas();
 	R_InitCustomColors();
 
-	rsh.envShader = R_LoadShader( "$environment", SHADER_TYPE_OPAQUE_ENV, true );
-	rsh.skyShader = R_LoadShader( "$skybox", SHADER_TYPE_SKYBOX, true );
-	rsh.whiteShader = R_LoadShader( "$whiteimage", SHADER_TYPE_2D, true );
-	rsh.emptyFogShader = R_LoadShader( "$emptyfog", SHADER_TYPE_FOG, true );
+	rsh.envShader = R_LoadShader( "$environment", SHADER_TYPE_OPAQUE_ENV, true, NULL );
+	rsh.skyShader = R_LoadShader( "$skybox", SHADER_TYPE_SKYBOX, true, NULL );
+	rsh.whiteShader = R_LoadShader( "$whiteimage", SHADER_TYPE_2D, true, NULL );
+	rsh.emptyFogShader = R_LoadShader( "$emptyfog", SHADER_TYPE_FOG, true, NULL );
 
 	if( !rsh.nullVBO ) {
 		rsh.nullVBO = R_InitNullModelVBO();
@@ -1539,6 +1541,8 @@ void R_Shutdown( bool verbose )
 
     ri.Mutex_Destroy( &rf.speedsMsgLock );
 	ri.Mutex_Destroy( &rf.debugSurfaceLock );
+
+	RJ_Shutdown();
 
 	// shut down OS specific OpenGL stuff like contexts, etc.
 	GLimp_Shutdown();

@@ -46,6 +46,11 @@ enum
 	,IT_3D				= 1<<19
 	,IT_STENCIL			= 1<<20		// for IT_DEPTH or IT_DEPTHRB textures, whether there's stencil
 	,IT_NO_DATA_SYNC	= 1<<21		// owned by the drawing thread, do not sync in the frontend thread
+	,IT_WAL				= 1<<22
+	,IT_MIPTEX			= 1<<23
+	,IT_MIPTEX_FULLBRIGHT = 1<<24
+	,IT_LEFTHALF		= 1<<25
+	,IT_RIGHTHALF		= 1<<26
 };
 
 /**
@@ -119,5 +124,6 @@ image_t *R_Create3DImage( const char *name, int width, int height, int layers, i
 void R_ReplaceImage( image_t *image, uint8_t **pic, int width, int height, int flags, int minmipsize, int samples );
 void R_ReplaceSubImage( image_t *image, int layer, int x, int y, uint8_t **pic, int width, int height );
 void R_ReplaceImageLayer( image_t *image, int layer, uint8_t **pic );
+unsigned *R_LoadPalette( int flags );
 
 #endif // R_IMAGE_H

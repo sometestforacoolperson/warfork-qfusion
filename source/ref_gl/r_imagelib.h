@@ -38,6 +38,10 @@ typedef struct
 	uint8_t *pixels;
 } r_imginfo_t;
 
+r_imginfo_t LoadPCX( const char *name, uint8_t *( *allocbuf )( void *, size_t, const char *, int ), void *uptr );
+
+r_imginfo_t LoadWAL( const char *name, uint8_t *( *allocbuf )( void *, size_t, const char *, int ), void *uptr );
+
 r_imginfo_t IMG_LoadImage( const char * filename, uint8_t *( *allocbuf )( void *, size_t, const char *, int ), void *uptr );
 
 bool WriteScreenShot( const char * filename, r_imginfo_t *info, int type );
