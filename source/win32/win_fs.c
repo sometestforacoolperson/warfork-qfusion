@@ -26,14 +26,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <shlobj.h>
 
 #ifndef CSIDL_APPDATA
-# define CSIDL_APPDATA					0x001A
+# define CSIDL_APPDATA					0x001A          // Application Data
 #endif
 
 #ifndef CSIDL_PERSONAL
-# define CSIDL_PERSONAL					0x0005        // My Documents
+# define CSIDL_PERSONAL					0x0005          // My Documents
+#endif
+
+#ifndef CSIDL_PROGRAM_FILESX86
+# define CSIDL_PROGRAM_FILESX86			0x002A          // Program Files x86
 #endif
 
 #define USE_MY_DOCUMENTS
+#define USE_STEAM_WORKSHOP
 
 static char *findbase = NULL;
 static char *findpath = NULL;
@@ -244,6 +249,46 @@ const char *Sys_FS_GetHomeDirectory( void )
 #endif
 
 	return home;
+}
+
+/*
+* Sys_FS_GetSteamWorkshopDirectory
+*/
+const char *Sys_FS_GetSteamWorkshopDirectory( void )
+{
+
+#ifdef USE_STEAM_WORKSHOP
+	int csisw = CSIDL_PROGRAM_FILESX86;
+#endif
+
+	static char workshophome[MAX_PATH] = { '\0' };
+	if( workshophome[0] != '\0' )
+		return workshophome;
+
+#ifndef SHGetFolderPath
+	HINSTANCE shFolderDll = LoadLibrary( "shfolder.dll" );
+
+	if( !shFolderDll )
+		shFolderDll = LoadLibrary( "shell32.dll" );
+
+	SHGetFolderPath = GetProcAddress( shFolderDll, "SHGetFolderPathA" );
+	if( SHGetFolderPath )
+		SHGetFolderPath( NULL, csisw, 0, 0, workshophome );
+
+	FreeLibrary( shFolderDll );
+#else
+	SHGetFolderPath( 0, csisw, 0, 0, workshophome );
+#endif
+
+	if ( workshophome[0] == '\0' )
+		return NULL;
+
+#ifdef USE_STEAM_WORKSHOP
+	Q_strncpyz( workshophome, va( "%s/Steam/steamapps/workshop/content/671610/", COM_SanitizeFilePath( workshophome ) ), sizeof( workshophome ) );
+#endif
+
+	return workshophome;
+
 }
 
 /*

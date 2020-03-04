@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define __SYS_FS_H
 
 const char *Sys_FS_GetHomeDirectory( void );
+const char *Sys_FS_GetSteamWorkshopDirectory( void );
 const char *Sys_FS_GetCacheDirectory( void );
 const char *Sys_FS_GetSecureDirectory( void );
 const char *Sys_FS_GetMediaDirectory( fs_mediatype_t type );
