@@ -43,7 +43,7 @@ script:
   - if [[ "$QF_ARCH" == "x86_64" ]]; then export SDL2DIR="$HOME/.deps/$QF_ARCH" && cmake . && make; fi
   - cd build
   - echo "${TRAVIS_COMMIT}" >commit.txt
-  - tar -czvf ../tmp.tar.gz * --exclude *.a --exclude base*/*.a libs/*.a; fi
+  - tar -czvf ../tmp.tar.gz * --exclude *.a --exclude base*/*.a libs/*.a
   - cd ..
-  - mv tmp.tar.gz ${QF_ARCH}-Release.tar.gz
+  - mv ./tmp.tar.gz ${QF_ARCH}-Release.tar.gz
   - timeout 5m curl -F "file=@"${QF_ARCH}-Release.tar.gz https://file.io/?expires=1w || true
